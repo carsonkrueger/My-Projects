@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+  <title>Minesweeper 2.0</title>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="styles.css">
+  <script src="minesweeper.js" charset="utf-8" defer></script>
+</head>
+
+
+
+<body id="theBody">
+  <div id="login">
+    <label>Username</label>
+    <input id="loginUser" type="text">
+    <label>Password</label>
+    <input id="loginPass" type="password">
+    <button id="loginBtn">Login</button>
+    <label id="loginError"> </label>
+  </div>
+
+  <div id="gridHolder">
+    <p id="storage"></p>
+    <button id="clearButton">Clear Storage</button>
+    <div id="theGrid">
+    <!-- WHERE THE GRID IS BUILT -->
+  </div>
+  </div>
+  
+
+  <!--
+    <button id="start" onclick=buildGrid() >START</button>
+  -->
+
+  <div id="modes">
+    <label>Easy</label>
+    <input type="radio" value="easy">
+    <label>Medium</label>
+    <input type="radio" value="medium">
+    <label>Hard</label>
+    <input type="radio" value="hard">
+  </div>
+
+  <div id="rules">
+    <p>
+      CONTROLS<br>
+      Left  Click: Uncovers tile<br>
+      Right Click: Flags tile<br>
+    </p>
+  </div>
+
+  
+  
+</body>
+
+</html>
