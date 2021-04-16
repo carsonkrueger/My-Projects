@@ -37,7 +37,8 @@ private:
     Payment *payment;
 
 public:
-    Order(int theOId, std::string theDate, int theCId, std::vector<LineItem> theItems) : order_id(theOId), order_date(theDate), cust_id(theCId), line_items(theItems){};
+    Order(int theOId, std::string theDate, int theCId, std::vector<LineItem> theItems, Payment *thePayment) : order_id(theOId), order_date(theDate),
+                                                                                                              cust_id(theCId), line_items(theItems), payment(thePayment){};
     //~Order();
 
     double total() {}
@@ -289,6 +290,7 @@ int main()
         std::string theZip = cust.at(5);
         std::string thePhone = cust.at(6);
         std::string theEmail = cust.at(7);
+        Payment pptr;
         for (const auto &order : orders_vec) // for every order in the orders global vector
         {
             int theOrderId = std::stoi(order[1]);
@@ -296,9 +298,9 @@ int main()
 
             if (std::stoi(cust[0]) == theCustId)
             {
-                if (order.size() >= 3) //IF order IS NOT PAYMENT
+                if (order.size() >= 3) //IF order IS NOT PAYMENT (orders.txt contains payment line every other line)
                 {
-                    for (int j = 3; j < order.size(); j++) //loops thru items in orders global vec
+                    for (int j = 3; j < order.size(); j++) //loops thru items in orders global vec (4...n)
                     {
                         auto pair = split(order[j], '-'); //item-quantity pair, split by '-'
                         int itemId = std::stoi(pair[0]);
@@ -316,26 +318,27 @@ int main()
                             }
                         }
                     }
-                    Order theOrderObject = Order(theOrderId, theDate, theCustId, line_items_temp);
-                    all_cust_orders_vec.push_back(theOrderObject);
                 }
                 else
                 { //IF ORDER IS PAYMENT
-                    int *pptr;
                     std::string paymentType = order[0];
                     double amount = order;
                     if (paymentType == "1")
                     {
-                        pptr = new Credit()
+                        pptr = new Credit();
                     }
                     else if (paymentType == "2")
                     {
+                        pptr = new PayPal();
                     }
                     else if (paymentType == "3")
                     {
+                        pptr = new WireTransfer();
                     }
                 }
             }
+            Order theOrderObject = Order(theOrderId, theDate, theCustId, line_items_temp, pptr);
+            all_cust_orders_vec.push_back(theOrderObject);
             //ofs << order.print_detail();
         }
         Customer TheCustomer = Customer(theCustId, theName, theStreet, theCity, theState, theZip, thePhone, theEmail, all_cust_orders_vec);
