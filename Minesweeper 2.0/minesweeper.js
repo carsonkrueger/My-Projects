@@ -7,6 +7,7 @@ const button = document.getElementById("start");
 const body = document.getElementById("theBody");
 const storageParagraph = document.getElementById("storage");
 const clearButton = document.getElementById("clearButton");
+const parsedData = document.getElementById("parsedData");
 
 let gameBoard = [];
 const width = 20;
@@ -16,7 +17,6 @@ const emptyAmount = width * width - bombAmount;
 const bombBoard = Array(bombAmount).fill("b");
 const emptyBoard = Array(emptyAmount).fill("e");
 let shuffledBoard = emptyBoard.concat(bombBoard);
-shuffle();
 
 const form = {
   username: document.getElementById("loginUser"),
@@ -45,6 +45,7 @@ form.submit.addEventListener("click", (ev) => {
       response = JSON.parse(request.responseText);
       form.errorMsg.innerHTML = response.result + " username/password";
       if (response.result === "valid") {
+        doJsonServerThing();
         buildGrid();
 
         loginDiv.style.display = "none";
@@ -59,25 +60,45 @@ form.submit.addEventListener("click", (ev) => {
         form.errorMsg.style.color = "red";
       }
     } catch (error) {
-      console.log("could not parse request into JSON");
+      console.log(error);
     }
     //form.errorMsg.value = request.responseText;
   };
 });
+
+function doJsonServerThing() {
+  let req = new XMLHttpRequest();
+
+  req.onreadystatechange = function () {
+    let resp = this.responseText;
+    let obj = JSON.parse(resp).gameBoardy;
+    
+    shuffledBoard = [];
+    obj.forEach((el) => {
+      //console.log(el.isBomb);
+        shuffledBoard.push(el.isBomb) 
+      }
+    );
+    parsedData.innerHTML = resp;
+  };
+
+  req.open("GET", (url = "gameBoardy.json"), false);
+  req.send();
+}
 
 clearButton.addEventListener("click", (ev) => {
   localStorage.clear();
   storageParagraph.innerHTML = "";
 });
 
-function shuffle() {
-  shuffledBoard.sort(() => Math.random() - 0.5);
-  gameBoard = [];
-  //console.log(shuffledBoard);
-}
+// function shuffle() {  <----------------------------------------------------------MAKE SURE TO UNCOMMENT
+//   shuffledBoard.sort(() => Math.random() - 0.5);
+//   gameBoard = [];
+//   //console.log(shuffledBoard);
+// }
 
 function buildGrid() {
-  shuffle();
+  //shuffle();    <----------------------------------------------------------MAKE SURE TO UNCOMMENT
   //button.innerHTML = "RESET";
   theGrid.style = "border: grey solid 4px;";
   grid.innerHTML = ""; //deconstructs for resetting
