@@ -1,5 +1,6 @@
 //document.addEventListener("DOMContentLoaded", () => {
-const loginDiv = document.getElementById("login");
+//const loginDiv = document.getElementById("login");
+let gameoverDiv = document.getElementById("gameoverDiv");
 const modes = document.getElementById("modes");
 const rules = document.getElementById("rules");
 const grid = document.getElementById("theGrid");
@@ -14,72 +15,35 @@ const width = 20;
 const bombAmount = 50;
 const emptyAmount = width * width - bombAmount;
 
+let flagScore = 0;
+let uncoverScore = 0;
+
 const bombBoard = Array(bombAmount).fill("b");
 const emptyBoard = Array(emptyAmount).fill("e");
 let shuffledBoard = emptyBoard.concat(bombBoard);
 
-const form = {
-  username: document.getElementById("loginUser"),
-  password: document.getElementById("loginPass"),
-  submit: document.getElementById("loginBtn"),
-  errorMsg: document.getElementById("loginError"),
-};
+localStorage.setItem("time", Date());
+let timestamp = localStorage.getItem("time");
+storageParagraph.innerHTML = "Current Date: " + timestamp;
 
-form.submit.addEventListener("click", (ev) => {
-  const data =
-    "userName=" + form.username.value + "&password=" + form.password.value;
+doJsonServerThing();
+buildGrid();
 
-  let request = new XMLHttpRequest();
-  request.open(
-    "POST",
-    (url =
-      "http://universe.tc.uvu.edu/cs2550/assignments/PasswordCheck/check.php")
-  );
-  request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-  request.send(data);
-
-  request.onload = () => {
-    let response = null;
-
-    try {
-      response = JSON.parse(request.responseText);
-      form.errorMsg.innerHTML = response.result + " username/password";
-      if (response.result === "valid") {
-        doJsonServerThing();
-        buildGrid();
-
-        loginDiv.style.display = "none";
-        rules.style.display = "flex";
-        modes.style.display = "flex";
-        clearButton.style.display = "flex";
-
-        localStorage.setItem("cs2550timestamp", response.timestamp);
-        let timestamp = localStorage.getItem("cs2550timestamp");
-        storageParagraph.innerHTML = "Timestamp: " + timestamp;
-      } else if (response.result === "invalid") {
-        form.errorMsg.style.color = "red";
-      }
-    } catch (error) {
-      console.log(error);
-    }
-    //form.errorMsg.value = request.responseText;
-  };
-});
+rules.style.display = "flex";
+clearButton.style.display = "flex";
 
 function doJsonServerThing() {
   let req = new XMLHttpRequest();
 
   req.onreadystatechange = function () {
     let resp = this.responseText;
-    let obj = JSON.parse(resp).gameBoardy;
-    
-    shuffledBoard = [];
+    let theString = "";
+    let obj = JSON.parse(resp).randomString;
     obj.forEach((el) => {
-      //console.log(el.isBomb);
-        shuffledBoard.push(el.isBomb) 
-      }
-    );
-    parsedData.innerHTML = resp;
+      theString += el.txt + " ";
+    })
+    parsedData.innerHTML = theString;
+    //console.log(resp);
   };
 
   req.open("GET", (url = "gameBoardy.json"), false);
@@ -91,15 +55,20 @@ clearButton.addEventListener("click", (ev) => {
   storageParagraph.innerHTML = "";
 });
 
-// function shuffle() {  <----------------------------------------------------------MAKE SURE TO UNCOMMENT
-//   shuffledBoard.sort(() => Math.random() - 0.5);
-//   gameBoard = [];
-//   //console.log(shuffledBoard);
-// }
+function shuffle() {
+  //<----------------------------------------------------------MAKE SURE TO UNCOMMENT
+  shuffledBoard.sort(() => Math.random() - 0.5);
+  gameBoard = [];
+  //console.log(shuffledBoard);
+}
 
 function buildGrid() {
-  //shuffle();    <----------------------------------------------------------MAKE SURE TO UNCOMMENT
-  //button.innerHTML = "RESET";
+  flagScore = 0;
+  uncoverScore = 0;
+
+  gameoverDiv.style.display = "none";
+  shuffle(); //<----------------------------------------------------------MAKE SURE TO UNCOMMENT
+  button.innerHTML = "RESET";
   theGrid.style = "border: grey solid 4px;";
   grid.innerHTML = ""; //deconstructs for resetting
 
@@ -119,6 +88,11 @@ function buildGrid() {
         ev.preventDefault();
         tileImg.src =
           tileImg.src === theImgPath ? "flagged.png" : "covered.png";
+        flagScore += tileImg.src === theImgPath ? -1 : 1;
+        if (uncoverScore === emptyAmount && flagScore === bombAmount) {
+          Win();
+          return;
+        }
       },
       false
     );
@@ -133,11 +107,14 @@ function uncover(sqr) {
   let isBomb = shuffledBoard[id] === "b" ? true : false;
 
   if (isBomb) {
-    Gameover();
     sqr.src = "bomb.png"; // <-------------------- GAMEOVER
-    console.log("GAMEOVER... not implemented yet");
+    Gameover();
   } else {
     // IF sqr IS NOT A BOMB
+    if (uncoverScore === emptyAmount && flagScore === bombAmount) {
+      Win();
+      return;
+    }
     calcBombsNearRecursively(sqr);
   }
 }
@@ -150,8 +127,11 @@ function calcBombsNearRecursively(sqr) {
 
   if (bombsNear == 0) {
     sqr.parentNode.innerHTML = "";
+    uncoverScore += 1;
     clearTilesNear(id); // <-------- RECURSIVELY CLEARS TILES NEAR
   } else {
+    uncoverScore += 1;
+    //console.log(uncoverScore);
     sqr.parentNode.innerHTML = String(bombsNear);
   }
 }
@@ -159,11 +139,17 @@ function calcBombsNearRecursively(sqr) {
 function clearTilesNear(oldId) {
   //RECURSIVE
   const indexes = [-1, -20, +20, +1];
+  const topIndexes = [-19, -21];
+  const rightIndexes = [-19, 21];
+  const bottomIndexes = [19, 21];
+  const leftIndexes = [19, -21];
 
   indexes.forEach((el) => {
     if (oldId % 20 === 0 && el === -1) {
+      // if on edge
       return;
     } else if ((oldId - 19) % 20 === 0 && el === 1) {
+      // if on edge
       return;
     }
     let newSqr = 0;
@@ -177,12 +163,18 @@ function clearTilesNear(oldId) {
       return;
     }
 
+    uncoverScore += 1;
+    //console.log(uncoverScore);
     if (findBombs(newId) === 0) {
       newSqr.parentNode.innerHTML = "";
       clearTilesNear(newId);
     } else {
       newSqr.parentNode.innerHTML = findBombs(newId);
     }
+    // else if ((oldId - newId) === 1){
+
+    //   newSqr.parentNode.innerHTML = findBombs(newId);
+    // }
   });
 }
 
@@ -210,9 +202,17 @@ function findBombs(id) {
   return bombsNear;
 }
 
+function Win() {
+  gameoverDiv.innerHTML = "YOU WIN!";
+  grid.style.pointerEvents = "none";
+  gameoverDiv.style.display = "flex";
+  gameoverDiv.style.color = "green";
+}
+
 function Gameover() {
-  //let transparentDiv = document.createElement("div");
-  //transparentDiv.setAttribute("id", "tdiv");
-  //body.appendChild(transparentDiv);
+  gameoverDiv.innerHTML = "GAME OVER";
+  grid.style.pointerEvents = "none";
+  gameoverDiv.style.display = "flex";
+  gameoverDiv.style.color = "red";
 }
 //});

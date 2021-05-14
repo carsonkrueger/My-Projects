@@ -12,14 +12,6 @@
 
 
 <body id="theBody">
-  <div id="login">
-    <label>Username</label>
-    <input id="loginUser" type="text">
-    <label>Password</label>
-    <input id="loginPass" type="password">
-    <button id="loginBtn">Login</button>
-    <label id="loginError"> </label>
-  </div>
 
   <div id="gridHolder">
     <p id="storage"></p>
@@ -29,29 +21,33 @@
   </div>
   </div>
   
-  <div id="parsedData"></div>
-  <!--
+  
+  
     <button id="start" onclick=buildGrid() >START</button>
-  -->
+ 
 
-  <div id="modes">
+  <!-- <div id="modes">
     <label>Easy</label>
     <input type="radio" value="easy">
     <label>Medium</label>
     <input type="radio" value="medium">
     <label>Hard</label>
     <input type="radio" value="hard">
-  </div>
+  </div> -->
 
   <div id="rules">
     <p>
       CONTROLS<br>
-      Left  Click: Uncovers tile<br>
-      Right Click: Flags tile<br>
+      Left  Click: Uncovers tile.<br>
+      Right Click: Flags tile.<br><br>
+      Flag all bombs, and uncover <br>
+      all empty tiles to win! <br>
     </p>
   </div>
 
-  
+  <div id="gameoverDiv"></div>
+
+  <div id="parsedData"></div>
   
 </body>
 

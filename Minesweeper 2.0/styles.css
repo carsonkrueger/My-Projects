@@ -35,6 +35,7 @@ body {
 }
 
 #start {
+  margin-top: 7px;
   left: 48%;
   height: 20px;
 }
@@ -69,4 +70,14 @@ body {
 #rules {
   display: none;
   width: 40%;
+}
+
+#gameoverDiv {
+  display: none;
+  margin: auto;
+  font-size: 40px;
+}
+
+#parsedData {
+  color: blue;
 }
