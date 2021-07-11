@@ -68,59 +68,43 @@ class VisualSorters:
 
     # --------------------MERGE DATA------------------------------------------------------------------
 
-    def mergeData(self, left, right):
-        print(left, end="---")
-        print(right)
+    def mergeSort(array):
+        if len(array) > 1:
 
-        try:
-            if (len(left) == 0):
-                return
+            # Finding the mid of the arrayay
+            mid = len(array)//2
 
-            if (len(right) == 0):
-                return
+            # Dividing the arrayay elements
+            left = array[:mid]
 
-        except(TypeError):
-            return
+            # into 2 halves
+            right = array[mid:]
 
-        result = []
-        index_left = index_right = 0
+            # Sorting the first half
+            mergeSort(left)
 
-        while len(result) < len(left) + len(right):
-            #print(left, end=" ")
-            # print(right)
-            # print(result)
-            if left[index_left] <= right[index_right]:
-                result.append(left[index_left])
-                index_left += 1
-            else:
-                result.append(right[index_right])
-                index_right += 1
+            # Sorting the second half
+            mergeSort(right)
 
-            # self.data = left + right
-            # self.drawBar()
+            i = j = k = 0
 
-            if index_right == len(right):
-                result += left[index_left:]
-                # self.drawBar()
-                break
+            # Copy data to temp arrayays left[] and right[]
+            while i < len(left) and j < len(right):
+                if left[i] < right[j]:
+                    array[k] = left[i]
+                    i += 1
+                else:
+                    array[k] = right[j]
+                    j += 1
+                k += 1
 
-            if index_left == len(left):
-                result += right[index_right:]
-                # self.drawBar()
-                break
+            # Checking if any element was left
+            while i < len(left):
+                array[k] = left[i]
+                i += 1
+                k += 1
 
-    # ---------------------MERGE SORT----------------------------------------------------------------
-
-    def merge(self, array):
-        # print(array)
-
-        if len(array) < 2:
-            return array
-        # print(array[midpoint:])
-
-        midpoint = len(array) // 2
-        print(array[:midpoint], end=" ")
-        print(array[midpoint:])
-
-        self.mergeData(left=self.merge(array[:midpoint]),
-                       right=self.merge(array[midpoint:]))
+            while j < len(right):
+                array[k] = right[j]
+                j += 1
+                k += 1
