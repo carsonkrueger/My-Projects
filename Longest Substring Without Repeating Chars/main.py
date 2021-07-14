@@ -2,10 +2,8 @@ class Solution:
     def lengthOfLongestSubstring(self, s: str) -> int:
         longest = ""
         lengthOfS = len(s)
-        if(len(s) == "None"):
-            return 0
-        elif(len(s) == 1):
-            return 1
+        if(lengthOfS < 2):
+            return lengthOfS
 
         for i in range(lengthOfS):
             newStr = ""  # reset newStr
