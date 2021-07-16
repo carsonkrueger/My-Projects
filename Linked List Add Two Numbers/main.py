@@ -31,7 +31,11 @@ class Solution:
         sum += str(int(concatVal1) + int(concatVal2))
         print(sum)
 
-        return (concatVal1, concatVal2)
+        list1 = []
+        for x in reversed(sum):
+            list1 += x
+
+        return (list1)
 
 
 def main():
