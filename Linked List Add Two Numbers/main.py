@@ -10,42 +10,69 @@ class ListNode:
 
 
 class Solution:
-    def addTwoNumbers(self, l1: ListNode, l2: ListNode):  # -> ListNode:
-        currNode1 = l1
-        currNode2 = l2
+    def addTwoNumbers(self, l1: ListNode, l2: ListNode) -> ListNode:
 
-        concatVal1 = ""
-        concatVal2 = ""
+        concatVal1 = concatVal2 = ""
 
-        while(True):
-            concatVal1 += str(currNode1.val)
-            concatVal2 += str(currNode2.val)
+        while(l1):
+            concatVal1 = str(l1.val) + concatVal1
+            l1 = l1.next
 
-            if(currNode1.next == None or currNode2.next == None):
-                break
+        if not l1:
+            concatVal1 = "0"
 
-            currNode1 = currNode1.next
-            currNode2 = currNode2.next
+        while(l2):
+            concatVal2 = str(l2.val) + concatVal2
+            l2 = l2.next
 
-        sum = ""
-        sum += str(int(concatVal1) + int(concatVal2))
-        print(sum)
+        if not l2:
+            concatVal2 = "0"
 
-        list1 = []
-        for x in reversed(sum):
-            list1 += x
+        sum = int(concatVal1) + int(concatVal2)
+        initial = cur = ListNode()
 
-        return (list1)
+        for i in reversed(str(sum)):
+            cur.val = int(i)
+            cur = cur.next
+
+        print(initial.next)
+        return(initial.next)
+
+        #     n1, n2 = "", ""
+
+        # while l1:
+        #     n1 = str(l1.val) +  n1
+        #     l1 = l1.next
+
+        # while l2:
+        #     n2 = str(l2.val) +  n2
+        #     l2 = l2.next
+
+        # if not n1:
+        #     n1 = "0"
+
+        # if not n2:
+        #     n2 = "0"
+
+        # summ = int(n1) + int(n2)
+
+        # dummy = cur = ListNode()
+
+        # for i in reversed(str(summ)):
+        #     cur.next = ListNode(int(i))
+        #     cur = cur.next
+
+        # return dummy.next
 
 
 def main():
-    e3 = ListNode(2)
+    e3 = ListNode(3)
     e2 = ListNode(4, e3)
-    e1 = ListNode(3, e2)
+    e1 = ListNode(2, e2)
 
-    p3 = ListNode(5)
+    p3 = ListNode(4)
     p2 = ListNode(6, p3)
-    p1 = ListNode(4, p2)
+    p1 = ListNode(5, p2)
 
     # 342 -> [2,4,3]
     # 465 -> [5,6,4]
