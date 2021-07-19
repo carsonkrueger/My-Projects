@@ -18,51 +18,24 @@ class Solution:
             concatVal1 = str(l1.val) + concatVal1
             l1 = l1.next
 
-        if not l1:
-            concatVal1 = "0"
-
         while(l2):
             concatVal2 = str(l2.val) + concatVal2
             l2 = l2.next
 
-        if not l2:
+        if not concatVal1:
+            concatVal1 = "0"
+
+        if not concatVal2:
             concatVal2 = "0"
 
         sum = int(concatVal1) + int(concatVal2)
         initial = cur = ListNode()
 
         for i in reversed(str(sum)):
-            cur.val = int(i)
+            cur.next = ListNode(int(i))
             cur = cur.next
 
-        print(initial.next)
         return(initial.next)
-
-        #     n1, n2 = "", ""
-
-        # while l1:
-        #     n1 = str(l1.val) +  n1
-        #     l1 = l1.next
-
-        # while l2:
-        #     n2 = str(l2.val) +  n2
-        #     l2 = l2.next
-
-        # if not n1:
-        #     n1 = "0"
-
-        # if not n2:
-        #     n2 = "0"
-
-        # summ = int(n1) + int(n2)
-
-        # dummy = cur = ListNode()
-
-        # for i in reversed(str(summ)):
-        #     cur.next = ListNode(int(i))
-        #     cur = cur.next
-
-        # return dummy.next
 
 
 def main():
