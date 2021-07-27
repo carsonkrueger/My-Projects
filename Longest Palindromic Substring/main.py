@@ -7,69 +7,32 @@ class Solution:
             return ""
 
         longest = ""
-        temp = ""
-        x = 0
-        newStartingIndex = 1
+        longLen = 0
 
-        while(x < len(s)):  # abcncba
+        for i in range(len(s)):
+            left, right = i, i
 
-            temp += s[x]
-            tempLen = len(temp)
-            midpoint = tempLen//2
+            while(left >= 0 and right < len(s) and s[left] == s[right]):
+                if(right - left + 1) > longLen:
+                    longest = s[left:right+1]
+                    longLen = (right - left + 1)
+                left -= 1
+                right += 1
 
-            # if tempLen == 2:
-            #     if temp[0] == temp[1] and len(longest) > tempLen:
-            #         longest = temp
-
-            if tempLen % 2 == 0 and tempLen > 1:  # EVEN LENGTH
-                if(temp[0:midpoint]) == temp[:midpoint-1:-1]:
-                    #print(temp, "EVEN")
-
-                    if tempLen > len(longest):
-                        longest = temp
-                        temp = ""
-
-            elif tempLen % 2 == 1 and tempLen > 1:  # ODD LENGTH
-                if((temp[0:midpoint]) == temp[:midpoint:-1]):
-                    #print(temp, "ODD")
-
-                    if(tempLen > len(longest)):
-                        longest = temp
-                        temp = ""
-
-            if x == len(s) - 1 and newStartingIndex < len(s) - 1:
-                temp = ''
-                x = newStartingIndex
-                newStartingIndex += 1
-
-            x += 1
+            left, right = i, i+1
+            while(left >= 0 and right < len(s) and s[left] == s[right]):
+                if(right - left + 1) > longLen:
+                    longest = s[left:right+1]
+                    longLen = (right - left + 1)
+                left -= 1
+                right += 1
 
         return longest
-
-        # longest = ''
-        # depth = 0
-
-        # for char in s:
-        #     temp = ''
-
-        #     for i in range(depth, len(s)):
-        #         temp += s[i]
-        #         midpoint = len(temp) // 2
-        #         offset = 0 if len(temp) % 2 == 1 else 1
-
-        #         if(temp[0:midpoint] == temp[:midpoint - offset:-1]):
-        #             #print(temp, "PALINDROME")
-        #             longest = temp if len(temp) > len(longest) else longest
-
-        #     depth += 1
-
-        # return longest
 
 
 def main():
     sol = Solution()
-    palindromeInput = "vnjwvalrbypfcbqnmopltjnoifmzwgvpzqzsdtvawndpjtpmpjbjionjifqtvvocpeaftvhpdgjjfafunfndztdjkcxyihtsyppendfzzjeyxlbwpdygiqmdqcdbmgyjigrmfkswcwryaydjilqqxvcnyvviesuncslvzikawwqykqwdfibggezufqihcjkebapmgkvwixywgdextafxycnipjglsndkyjoqfyfljfkkvoieksmavdlmlhhnstesibffiopqvlyuidvrawndbzonwzbsjmpeqoglmdbinkovqpzfkxihzitdopnomseqhmrrkcsvrzziphwpuhjngeotwcrebcmbtirkgeavojtmpakcewmexhxacngknokxsvtqobdgckutpexswgwqzbosjpxauyflnylfcxsucsehqvakbpvfmkelmkspsqxnutwfwacpqqvovdqafeylobneojdsgqowcbxfsvuqusdbylcgcvgrofgvzubakjmlbffjhrafvnqttwuyhokzpmhlludpbowuxzrebxsdusalljfjgjkucwzpmndqncykvfnbrxcrcaxwisjpstejjqbpwegpxyrtyafxklgralnkwxkmjpuqfixzkonznmguyizlancpxdzcfkgiotyelegprbaytdhbutbuihkxnbtuqrtezaskfqsmrznfohhlqp"
-    # palindromeInput = "abba"  # CHANGE ME TO TEST
+    palindromeInput = "abba"  # CHANGE ME TO TEST
     print("returned", sol.longestPalindrome(palindromeInput))
     # palindromeInput = "oabba"  # CHANGE ME TO TEST
     # print("returned", sol.longestPalindrome(palindromeInput))
