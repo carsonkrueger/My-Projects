@@ -9,51 +9,53 @@ class Solution:
         zigZaggedStr = ""
         numOfMiddleLetters = numRows // 2
         offsetToNextLetter = numOfMiddleLetters + numRows
-        secondOffsetToNextLetter = 0
+        secondOffsetToLetter = 0
         index = 0
         resetIndex = 1
         isSwitch = True
-
         if(numRows == 1):
             return s
         else:
             x = 0
             while(x != len(s)):
 
-                print(x, end="**")
+                print(x, end=" -> ")
+
                 try:
                     zigZaggedStr += s[index]  # ADDS to zigZaggedStr
                 except IndexError:  # if out of bounds
-                    print("Out of Range: ", IndexError)
+                    #print("Out of Range: ", IndexError)
                     index = resetIndex
                     resetIndex += 1
+                    offsetToNextLetter -= 2
+                    secondOffsetToLetter += 2
 
                     if offsetToNextLetter == 0:
-                        offsetToNextLetter = numOfMiddleLetters + numRows
-                        secondOffsetToNextLetter = 0
+                        isSwitch = False
                     else:
-                        offsetToNextLetter -= 2
-                        secondOffsetToNextLetter += 2
+                        isSwitch = True
                     continue
 
-                print(offsetToNextLetter, secondOffsetToNextLetter)
+                print(index, s[index], offsetToNextLetter,
+                      secondOffsetToLetter)
 
-                if isSwitch is True and offsetToNextLetter > 0:
+                if isSwitch is True:
                     index += offsetToNextLetter
-                    if(secondOffsetToNextLetter > 0):
+                    if(secondOffsetToLetter > 0):
                         isSwitch = False
                 else:
-                    index += secondOffsetToNextLetter
+                    index += secondOffsetToLetter
                     if(offsetToNextLetter > 0):
                         isSwitch = True
                 x += 1
-
             print(zigZaggedStr)
+            return zigZaggedStr
 
 
 def main():
-    s = "PAYPALISHIRING"
-    numRows = 4
+    s = "ABC"
+    # print("LEN", len(s))
+    numRows = 2
     sol = Solution()
     sol.convert(s, numRows)
 
