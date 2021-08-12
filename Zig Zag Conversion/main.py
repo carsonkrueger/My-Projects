@@ -1,13 +1,8 @@
-class newStr:
-    def __init__(self, str=""):
-        self.str = str
-
-
 class Solution:
     def convert(self, s: str, numRows: int) -> str:
 
         zigZaggedStr = ""
-        numOfMiddleLetters = numRows // 2
+        numOfMiddleLetters = numRows - 2
         offsetToNextLetter = numOfMiddleLetters + numRows
         secondOffsetToLetter = 0
         index = 0
@@ -53,9 +48,9 @@ class Solution:
 
 
 def main():
-    s = "ABC"
+    s = "PAYPALISHIRING"
     # print("LEN", len(s))
-    numRows = 2
+    numRows = 4
     sol = Solution()
     sol.convert(s, numRows)
 
