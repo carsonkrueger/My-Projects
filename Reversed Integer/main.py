@@ -8,27 +8,6 @@ class Solution:
         if y < -2147483648 or y > 2147483648:
             return 0
         return y
-        # n = 1
-
-        # if(x < 0):
-        #     x *= -1
-        #     n = -1
-
-        # x = reversed(str(x))
-        # s = ""
-        # cur = next(x)
-
-        # while(cur):
-        #     try:
-        #         s += str(cur)
-        #         cur = next(x)
-        #     except:
-        #         break
-
-        # s = int(s)
-        # if(s > 2147483648 or s < -2147483648):
-        #     s = 0
-        # return s * n
 
 
 def main():
