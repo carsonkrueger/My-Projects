@@ -1,50 +1,32 @@
 class Solution:
     def convert(self, s: str, numRows: int) -> str:
-
-        zigZaggedStr = ""
-        numOfMiddleLetters = numRows - 2
-        offsetToNextLetter = numOfMiddleLetters + numRows
-        secondOffsetToLetter = 0
-        index = 0
-        resetIndex = 1
-        isSwitch = True
-        if(numRows == 1):
+        if numRows >= len(s) or numRows == 1:
             return s
-        else:
-            x = 0
-            while(x != len(s)):
 
-                print(x, end=" -> ")
-
-                try:
-                    zigZaggedStr += s[index]  # ADDS to zigZaggedStr
-                except IndexError:  # if out of bounds
-                    #print("Out of Range: ", IndexError)
-                    index = resetIndex
-                    resetIndex += 1
-                    offsetToNextLetter -= 2
-                    secondOffsetToLetter += 2
-
-                    if offsetToNextLetter == 0:
-                        isSwitch = False
-                    else:
-                        isSwitch = True
-                    continue
-
-                print(index, s[index], offsetToNextLetter,
-                      secondOffsetToLetter)
-
-                if isSwitch is True:
-                    index += offsetToNextLetter
-                    if(secondOffsetToLetter > 0):
-                        isSwitch = False
-                else:
-                    index += secondOffsetToLetter
-                    if(offsetToNextLetter > 0):
-                        isSwitch = True
-                x += 1
-            print(zigZaggedStr)
-            return zigZaggedStr
+        step = numRows + (numRows - 2)
+        sts = step
+        res = ''
+        jump = 0
+        start = 0
+        for i in range(numRows, 0, -1):
+            if i == numRows:
+                res += s[start::step]
+                jump += 2
+                start += 1
+            elif i == 1:
+                res += s[start::sts]
+            else:
+                res += s[start]
+                c = start + step
+                while c < len(s):
+                    res += s[c]
+                    if c+jump < len(s):
+                        res += s[c + jump]
+                    c = c + jump + step
+                jump += 2
+                start += 1
+            step -= 2
+        return res
 
 
 def main():
