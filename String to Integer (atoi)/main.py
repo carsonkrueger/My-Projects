@@ -10,10 +10,11 @@ class Solution:
         s = s.strip()
 
         for i in range(len(s)):
-            if s[i].isalnum():
+            if s[i].isnumeric():
                 if i == 0:
                     return 0
                 s = s[0:i]
+            else:
                 break
 
         s = int(s)
