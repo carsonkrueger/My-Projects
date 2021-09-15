@@ -1,23 +1,39 @@
+import time
+
+
 class search:
     def __init__(self, lyst, higher, lower, target) -> None:
-        self.higher = higher
-        self.lower = lower
-        self.halfpoint = lyst[len(lyst)//2]
+        self.halfpoint = len(lyst)//2
+        self.higher = len(lyst)
+        self.lower = 0
         self.target = target
 
-        self.linear_search(lyst, target)  # CALLS FUNCTIONS
+        # self.linear_search(lyst, target)  # CALLS FUNCTIONS
         self.binary_search(lyst, target)
-        self.jump_search(lyst, target)
+        # self.jump_search(lyst, target)
 
     def linear_search(self, lyst, target) -> bool:
         for i in lyst:
             if lyst[i] == target:
+                # print("FOUND i:", lyst[i])
                 return True
         return False
 
     def binary_search(self, lyst, target) -> bool:
-        if (target == self.halfpoint):
-            return True
+        while(self.halfpoint != target):
+            print(self.halfpoint)
+            if self.halfpoint == -1:
+                return
+            if (target == lyst[self.halfpoint]):
+                return True
+            elif (lyst[self.halfpoint] < target):  # target is higher
+                self.lower = self.halfpoint + 1
+                # move halfpoint up
+                self.halfpoint += (self.higher - self.halfpoint)//2
+            elif (lyst[self.halfpoint] > target):  # target is lower
+                self.higher = self.halfpoint - 1
+                # move halfpoint down
+                self.halfpoint += (self.halfpoint - self.lower)//2
 
     def jump_search(self, lyst, target) -> bool:
         pass
@@ -29,9 +45,12 @@ def main():
     lyst.sort()
     higher = len(lyst)
     lower = 0
-    target = 9
+    target = 6
 
+    timer = time.perf_counter()
     srch = search(lyst, higher, lower, target)
+    timer = time.perf_counter() - timer
+    print("TIME: ", timer)
 
 
 if __name__ == "__main__":
