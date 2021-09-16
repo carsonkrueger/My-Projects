@@ -1,4 +1,5 @@
 import time
+import math
 
 
 class search:
@@ -9,8 +10,8 @@ class search:
         self.target = target
 
         # self.linear_search(lyst, target)  # CALLS FUNCTIONS
-        self.binary_search(lyst, target)
-        # self.jump_search(lyst, target)
+        # self.binary_search(lyst, target)
+        self.jump_search(lyst, target)
 
     def linear_search(self, lyst, target) -> bool:
         for i in lyst:
@@ -39,7 +40,29 @@ class search:
             return False
 
     def jump_search(self, lyst, target) -> bool:
-        pass
+        jump = math.sqrt(len(lyst))
+        point = 0
+
+        while(point != target):
+
+            if(point - target <= 100):  # sequential search if less than 100
+                while(point != target):
+                    if lyst[point] == target:
+                        print("FOUND i:", lyst[point])
+                        return True
+                    point += 1
+                return False
+
+            if(point > target):
+                point -= jump
+                jump = math.floor(math.sqrt(jump - point))
+
+            if(point < target):
+                point += jump
+
+        if(point == target):
+            print("OUT OF FUNCTION, FOUND i:", lyst[point])
+            return True
 
 
 def main():
