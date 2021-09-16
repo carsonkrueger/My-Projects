@@ -20,20 +20,23 @@ class search:
         return False
 
     def binary_search(self, lyst, target) -> bool:
-        while(self.halfpoint != target):
-            print(self.halfpoint)
-            if self.halfpoint == -1:
-                return
-            if (target == lyst[self.halfpoint]):
-                return True
-            elif (lyst[self.halfpoint] < target):  # target is higher
+        if self.higher >= self.lower:
+
+            self.halfpoint = self.lower + (self.higher - self.lower) // 2
+
+            if lyst[self.halfpoint] == target:
+                return self.halfpoint
+
+            elif lyst[self.halfpoint] > target:
+                self.higher = self.halfpoint-1
+                return self.binary_search(lyst, target)
+
+            else:
                 self.lower = self.halfpoint + 1
-                # move halfpoint up
-                self.halfpoint += (self.higher - self.halfpoint)//2
-            elif (lyst[self.halfpoint] > target):  # target is lower
-                self.higher = self.halfpoint - 1
-                # move halfpoint down
-                self.halfpoint += (self.halfpoint - self.lower)//2
+                return self.binary_search(lyst, target)
+
+        else:
+            return False
 
     def jump_search(self, lyst, target) -> bool:
         pass
