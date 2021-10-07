@@ -42,23 +42,29 @@ class CourseList:
                 break
             prev = cur
             cur = cur.next
- 
+
         # if key was not present in linked list
         if(cur == None):
             return
- 
+
         # Unlink the node from linked list
         prev.next = cur.next
- 
+
         cur = None
 
     def remove_all(self, number): #removes ALL occurrences of the specified Course
         cur = self.head
- 
-        while(cur.next != None):
-            if cur.clas.
-            
 
+        if cur is not None:
+            while cur.clas.coursNum == number:
+                self.head = cur.next
+                cur = None
+                return
+
+        while cur is not None:
+            if cur.clas.coursNum == number:
+                self.remove(number)
+            cur = cur.next
 
     def find(self, number): #find the first occurrance of the specified course in the list or return -1
         temp = self

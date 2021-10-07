@@ -17,7 +17,7 @@ def main():
             LinkedList.insert(Node(course))  # inserts middle elements
         line = f.readline()
     
-    LinkedList.remove(2810)
+    LinkedList.remove_all(1030)
     f.close()
     LinkedList.__str__()
     
