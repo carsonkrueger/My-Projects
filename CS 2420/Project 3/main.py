@@ -17,7 +17,7 @@ def main():
             LinkedList.insert(Node(course))  # inserts middle elements
         line = f.readline()
     
-    LinkedList.remove_all(1030)
+    print("gpa:", LinkedList.calculate_gpa())
     f.close()
     LinkedList.__str__()
     

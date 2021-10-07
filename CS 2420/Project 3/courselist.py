@@ -58,8 +58,7 @@ class CourseList:
         if cur is not None:
             while cur.clas.coursNum == number:
                 self.head = cur.next
-                cur = None
-                return
+                cur = cur.next
 
         while cur is not None:
             if cur.clas.coursNum == number:
@@ -67,46 +66,38 @@ class CourseList:
             cur = cur.next
 
     def find(self, number): #find the first occurrance of the specified course in the list or return -1
-        temp = self
-        if temp.course.coursNum == number:
-            return self.course
+        cur = self.head
+        pos = 0
 
-        while temp.course.coursNum != number:
-            if temp.course.coursNum == number:
-                return temp
-            elif temp.next == None:
-                break
-            temp = temp.next
-            
+        while cur is not None:
+            if cur.clas.coursNum == number:
+                return pos
+            pos += 1
+            cur = cur.next
+
         return -1
-
+            
     def size(self): #return the number of items in the list
-        temp = self
+        cur = self.head
         size = 0
 
-        if temp.next == None:
+        while cur is not None:
             size += 1
-            return size
-
-        while temp.next != None:
-            size += 1
-            temp = temp.next
+            cur = cur.next
 
         return size
 
     def calculate_gpa(self): #return the GPA using all courses in the list
-        temp = self
-        totalGpa = 0
+        cur = self.head
+        total = 0
+        size = 0
 
-        if temp.next == None:
-            totalGpa += self.course.gpa
-            return totalGpa
-
-        while temp.next != None:
-            totalGpa += self.course.gpa
-            temp = temp.next
-
-        return totalGpa
+        while cur is not None:
+            total += cur.clas.gpa
+            size += 1
+            cur = cur.next
+            
+        return float(round(total / size, 2))
 
     def is_sorted(): #return True if the list is sorted by Course Number, False otherwise
         pass
