@@ -1,9 +1,11 @@
-# data = [1400,Introduction to Programming,4,3.61410,C++ Programming,4,2.62810,Computer Architecture,3,3.82420,Introduction to Data Structures,4,3.21030,Introduction to Computers,2,3.2]
+"""Driver module"""
+
 from courselist import CourseList
 from course import Course
 
 
 def main():
+    #main function
     f = open("data.txt", "r")
     line = f.readline()
     LinkedList = CourseList()
@@ -18,7 +20,6 @@ def main():
             LinkedList.insert(course)  # inserts middle elements
         line = f.readline()
     f.close()
-    #print("sorted?:", LinkedList.is_sorted())
 
     for _ in LinkedList:
         print(_)
@@ -27,4 +28,5 @@ def main():
 
 
 if __name__ == "__main__":
+    """calls main function"""
     main()
