@@ -81,6 +81,7 @@ def selection_sort(lyst):
                 min = j
 
         lyst[i], lyst[min] = lyst[min], lyst[i]
+        print(lyst)
     return lyst
 
 
@@ -111,6 +112,8 @@ def is_sorted(lyst):
 
 def main():
     """main function"""
+    lyst = [53, 60, 80, 90, 23, 12, 56 ,67, 32, 80]
+    insertion_sort(lyst)
     pass
 
 if __name__ == "__main__":
