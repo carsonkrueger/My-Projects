@@ -4,7 +4,7 @@ class Course:
     """must have default values for all parameters and must validate all parameters."""
 
     def __init__(self, num=0, name="", hours=0.0, gpa=0.0):
-        #initializes Course
+        """initializes Course"""
         if isinstance(num, int) and num >= 0:
             self.course_num = num
         else:
