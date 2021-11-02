@@ -11,6 +11,7 @@ Lessons Learned:
 '''
 from pathlib import Path
 from string import whitespace, punctuation
+import string
 
 
 
@@ -52,27 +53,23 @@ class Pair:
         return f'({self.letter}, {self.count})'
 
 def make_tree():
-    ''' A helper function to build the tree.
+    from bst import BST
+
+    bst = BST()
+    f = open("around-the-world-in-80-days-3.txt")
+
+    for line in f:
+        #line.translate(str.maketrans('', '', string.punctuation))
+        for letter in line:
+            #print(letter.lower(), end="")
+            bst.add(Pair(letter))
     
-    The test code depends on this function being available from main.
-    :param: None
-    :returns: A binary search tree
-    '''
-    pass
+    return bst
 
 def main():
     ''' Program kicks off here.'''
-    from bst import BST
-    bst = BST()
-
-    f = open("around-the-world-in-80-days-3.txt")
-
-    #print("A" < "b")
-
-    for line in f:
-        for letter in line:
-            print(letter.lower(), end="")
-            bst.add(letter)
+    tree = make_tree()
+    print(tree.inorder())
     
 if __name__ == "__main__":
     main()
