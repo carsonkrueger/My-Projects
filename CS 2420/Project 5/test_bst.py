@@ -37,29 +37,35 @@ from random import seed, sample
 from bst import BST
 from main import Pair, make_tree
 
+
 def test_create_BST():
     bst = BST()
     assert bst.size() == 0
     assert bst.is_empty()
 
+
 def test_tree_size():
     bst = make_tree()
     assert bst.size() == 57
 
+
 def test_tree_height():
     bst = make_tree()
     assert bst.height() == 11
+
 
 def test_find_empty():
     with pytest.raises(ValueError):
         bst = BST()
         item = bst.find(Pair('A'))
 
+
 def test_remove_root():
     bst = make_tree()
     bst.remove(Pair('C'))
     pre = bst.preorder()
     assert pre[0] == Pair('D')
+
 
 def test_remove_internal():
     bst = make_tree()
@@ -69,29 +75,35 @@ def test_remove_internal():
     pre = bst.preorder()
     assert pre[i] == Pair('f')
 
+
 def test_remove_leaf():
     bst = make_tree()
     bst.remove(Pair('z'))
     pre = bst.preorder()
     assert pre[-1] == Pair('w')
 
+
 def test_preorder():
     bst = make_tree()
-    assert bst.preorder()[27] == Pair('R',20)
+    assert bst.preorder()[27] == Pair('R', 20)
+
 
 def test_inorder():
     bst = make_tree()
-    assert bst.inorder()[27] == Pair('T',34)
+    assert bst.inorder()[27] == Pair('T', 34)
+
 
 def test_postorder():
     bst = make_tree()
-    assert bst.postorder()[27] == Pair('W',13)
+    assert bst.postorder()[27] == Pair('W', 13)
+
 
 def test_rebalance():
     bst = make_tree()
     original_height = bst.height()
     tree_data = bst.rebalance()
     assert not original_height == bst.height()
+
 
 def test_code_style():
     from pylint.lint import Run

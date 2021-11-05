@@ -15,11 +15,17 @@ class Node:
 class BST:
     """BST Class"""
 
-    def __init__(self):
+    def __init__(self, lyst=None):
         """Initializes BST"""
         self.root = None  # Holds a Node
-        self.height = 0
         self.syze = 0
+
+        if lyst is not None:
+            self.build_tree(lyst)
+
+    def build_tree(self, lyst):
+        for letter in lyst:
+            self.add(Pair(letter))
 
     def is_empty(self):
         """Return True if empty, False otherwise. """
@@ -27,14 +33,31 @@ class BST:
             return True
         return False
 
+    def clear(self):
+        self.root = None
+        self.syze = 0
+
     def size(self):
         """Return the number of items in the tree. """
         return self.syze
 
-    def height(self):
+    def height(self, root=""):
         """Return the height of the tree, which is the length of the path from the root to 
         its deepest leaf. """
-        pass
+        if root is "":
+            root = self.root
+
+        if root is None:
+            return 0
+
+        else:
+            left_height = self.height(root.left)
+            right_height = self.height(root.right)
+
+            if (left_height > right_height):
+                return left_height+1
+            else:
+                return right_height+1
 
     def add(self, item, root=None):
         """Add item to its proper place in the tree. Return the modified tree. """
@@ -75,33 +98,40 @@ class BST:
         else:
             raise error
 
-    def remove(self, item, root=None):
+    def remove(self, item, root=""):
         """Remove item from the tree. Return the modified tree. """
-        if root is None and self.root is not None:
-            root = self.root
-        else:
-            return root
+        lyst = self.inorder()
+        lyst.remove(item.letter)
+        self.clear()
+        self.build_tree(lyst)
+        # if root is "":
+        #     root = self.root
 
-        if item.letter > root.right.pair.letter:
-            root.right = self.remove(item, self.right)
+        #     if root is None:
+        #         return root
 
-        elif item.letter < root.left.pair.letter:
-            root.left = self.remove(item, self.left)
+        # print(root.pair.letter)
 
-        else:
-            if root.left is None:
-                temp = root.right
-                root = None
-                return temp
+        # if root.right and item.letter > root.right.pair.letter:
+        #     root.right = self.remove(item, self.right)
 
-            elif root.right is None:
-                temp = root.left
-                root = None
-                return temp
+        # elif root.left and item.letter < root.left.pair.letter:
+        #     root.left = self.remove(item, self.left)
 
-            temp = self.minimum(root.right)
-            root.pair = temp.pair
-            root.right = self.remove(root.right, temp)
+        # else:
+        #     if root.left is None:
+        #         temp = root.right
+        #         root = None
+        #         return temp
+
+        #     elif root.right is None:
+        #         temp = root.left
+        #         root = None
+        #         return temp
+
+        #     temp = self.minimum(root.right)
+        #     root.pair = temp.pair
+        #     root.right = self.remove(root.right, temp)
 
     def minimum(self, root):
         while(root.left is not None):

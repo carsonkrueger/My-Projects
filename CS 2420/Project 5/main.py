@@ -14,20 +14,20 @@ from string import whitespace, punctuation
 import string
 
 
-
 class Pair:
     ''' Encapsulate letter,count pair as a single entity.
-    
+
     Realtional methods make this object comparable
     using built-in operators. 
     '''
-    def __init__(self, letter, count = 1):
+
+    def __init__(self, letter, count=1):
         self.letter = letter
         self.count = count
-    
+
     def __eq__(self, other):
         return self.letter == other.letter
-    
+
     def __hash__(self):
         return hash(self.letter)
 
@@ -48,9 +48,10 @@ class Pair:
 
     def __repr__(self):
         return f'({self.letter}, {self.count})'
-    
+
     def __str__(self):
         return f'({self.letter}, {self.count})'
+
 
 def make_tree():
     from bst import BST
@@ -63,13 +64,17 @@ def make_tree():
         for letter in line:
             #print(letter.lower(), end="")
             bst.add(Pair(letter))
-    
+
     return bst
+
 
 def main():
     ''' Program kicks off here.'''
-    tree = make_tree()
-    print(tree.inorder())
-    
+    bst = make_tree()
+    print(bst.inorder())
+    bst.remove(Pair('C'))
+    print(bst.inorder())
+
+
 if __name__ == "__main__":
     main()
