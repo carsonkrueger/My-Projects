@@ -1,23 +1,26 @@
 from os import error
 from main import Pair
 
+
 class Node:
     """Node Class"""
-    def __init__(self, pair = ""):
+
+    def __init__(self, pair=""):
         """Initializes Node"""
-        self.pair = pair # Holds a Pair()
-        self.left = None # Holds next Node()
-        self.right = None # Holds next Node()
-        
+        self.pair = pair  # Holds a Pair()
+        self.left = None  # Holds next Node()
+        self.right = None  # Holds next Node()
+
 
 class BST:
     """BST Class"""
+
     def __init__(self):
         """Initializes BST"""
-        self.root = None # Holds a Node
+        self.root = None  # Holds a Node
         self.height = 0
         self.syze = 0
-    
+
     def is_empty(self):
         """Return True if empty, False otherwise. """
         if self.root == None:
@@ -33,26 +36,27 @@ class BST:
         its deepest leaf. """
         pass
 
-    def add(self, item, root = None):
+    def add(self, item, root=None):
         """Add item to its proper place in the tree. Return the modified tree. """
         if root is None:
             root = self.root
 
         #print("TEST", root.pair.letter)
         #item.letter = item.letter.lower()
-        
+
         if not item.letter.isalpha() and not item.letter.isnumeric():
             return
 
         elif self.is_empty():
             self.root = Node(item)
+            self.syze += 1
             #print("\nRoot empty, added:", item)
 
         elif root.right == None and item.letter > root.pair.letter:
             self.syze += 1
             root.right = Node(item)
             #print(item, ", Added Node right of:", root.pair.letter)
-        
+
         elif root.left == None and item.letter < root.pair.letter:
             self.syze += 1
             root.left = Node(item)
@@ -71,20 +75,49 @@ class BST:
         else:
             raise error
 
-
-    def remove(self, item):
+    def remove(self, item, root=None):
         """Remove item from the tree. Return the modified tree. """
-        
+        if root is None and self.root is not None:
+            root = self.root
+        else:
+            return root
 
-    def find(self, item, root = None):
+        if item.letter > root.right.pair.letter:
+            root.right = self.remove(item, self.right)
+
+        elif item.letter < root.left.pair.letter:
+            root.left = self.remove(item, self.left)
+
+        else:
+            if root.left is None:
+                temp = root.right
+                root = None
+                return temp
+
+            elif root.right is None:
+                temp = root.left
+                root = None
+                return temp
+
+            temp = self.minimum(root.right)
+            root.pair = temp.pair
+            root.right = self.remove(root.right, temp)
+
+    def minimum(self, root):
+        while(root.left is not None):
+            root = root.left
+
+        return root
+
+    def find(self, item, root=None):
         """Return the matched item. If item is not in the tree, raise a ValueError. """
         if root is None:
             root = self.root
-                
+
         if not item.letter.isalpha() or self.is_empty():
             # print("DID NOT FIND:", item)
             raise ValueError
-            
+
         if item.letter > root.pair.letter:
             if root.right == None:
                 raise ValueError
@@ -103,7 +136,6 @@ class BST:
             # print("DID NOT FIND:", item)
             raise ValueError
 
-
     def inorder(self):
         """Return a list with the data items in order of inorder traversal. """
         root = self.root
@@ -118,8 +150,7 @@ class BST:
 
         printInorder(root)
         return lyst
-        
-    
+
     def preorder(self):
         """Return a list with the data items in order of preorder traversal. """
         root = self.root
@@ -141,7 +172,7 @@ class BST:
         lyst = []
 
         def printPostorder(root):
- 
+
             if root:
                 printPostorder(root.left)
                 printPostorder(root.right)
