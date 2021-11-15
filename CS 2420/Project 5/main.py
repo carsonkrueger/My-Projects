@@ -71,9 +71,11 @@ def make_tree():
 def main():
     ''' Program kicks off here.'''
     bst = make_tree()
-    print(bst.inorder())
-    bst.remove(Pair('C'))
-    print(bst.inorder())
+    # print(bst.inorder())
+    # bst.remove(Pair('h'))
+    # print(bst.inorder())
+    # bst.rebalance()
+    # print(bst.inorder())
 
 
 if __name__ == "__main__":

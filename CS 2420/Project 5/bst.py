@@ -1,3 +1,4 @@
+"""Binary Search Tree"""
 from os import error
 from main import Pair
 
@@ -24,12 +25,12 @@ class BST:
             self.build_tree(lyst)
 
     def build_tree(self, lyst):
-        for letter in lyst:
-            self.add(Pair(letter))
+        for pair in lyst:
+            self.add(pair)
 
     def is_empty(self):
         """Return True if empty, False otherwise. """
-        if self.root == None:
+        if self.root is None:
             return True
         return False
 
@@ -42,9 +43,9 @@ class BST:
         return self.syze
 
     def height(self, root=""):
-        """Return the height of the tree, which is the length of the path from the root to 
-        its deepest leaf. """
-        if root is "":
+        """Return the height of the tree, which is the length of the path from the root to
+        its deepest leaf."""
+        if root == "":
             root = self.root
 
         if root is None:
@@ -54,7 +55,7 @@ class BST:
             left_height = self.height(root.left)
             right_height = self.height(root.right)
 
-            if (left_height > right_height):
+            if left_height > right_height:
                 return left_height+1
             else:
                 return right_height+1
@@ -75,12 +76,12 @@ class BST:
             self.syze += 1
             #print("\nRoot empty, added:", item)
 
-        elif root.right == None and item.letter > root.pair.letter:
+        elif root.right is None and item.letter > root.pair.letter:
             self.syze += 1
             root.right = Node(item)
             #print(item, ", Added Node right of:", root.pair.letter)
 
-        elif root.left == None and item.letter < root.pair.letter:
+        elif root.left is None and item.letter < root.pair.letter:
             self.syze += 1
             root.left = Node(item)
             #print(item, ", Added Node left of:", root.pair.letter)
@@ -100,44 +101,43 @@ class BST:
 
     def remove(self, item, root=""):
         """Remove item from the tree. Return the modified tree. """
-        lyst = self.inorder()
-        lyst.remove(item.letter)
+        lyst = self.preorder()
+        lyst.remove(item)
         self.clear()
         self.build_tree(lyst)
-        # if root is "":
-        #     root = self.root
+    #     if root == "":
+    #         root = self.root
 
-        #     if root is None:
-        #         return root
+    #     if root is None:
+    #         return root
 
-        # print(root.pair.letter)
+    #     #print(root.pair.letter)
+    #     if root.right and item.letter > root.right.pair.letter:
+    #         root.right = self.remove(item, root.right)
 
-        # if root.right and item.letter > root.right.pair.letter:
-        #     root.right = self.remove(item, self.right)
+    #     elif root.left and item.letter < root.left.pair.letter:
+    #         root.left = self.remove(item, root.left)
 
-        # elif root.left and item.letter < root.left.pair.letter:
-        #     root.left = self.remove(item, self.left)
+    #     else:
+    #         if root.left is None:
+    #             temp = root.right
+    #             root = None
+    #             return temp
 
-        # else:
-        #     if root.left is None:
-        #         temp = root.right
-        #         root = None
-        #         return temp
+    #         elif root.right is None:
+    #             temp = root.left
+    #             root = None
+    #             return temp
 
-        #     elif root.right is None:
-        #         temp = root.left
-        #         root = None
-        #         return temp
+    #     temp = self.minimum(root.right)
+    #     root.pair = temp.pair
+    #     root.right = self.remove(temp.pair, root.right)
 
-        #     temp = self.minimum(root.right)
-        #     root.pair = temp.pair
-        #     root.right = self.remove(root.right, temp)
+    # def minimum(self, root):
+    #     while(root and root.left):
+    #         root = root.left
 
-    def minimum(self, root):
-        while(root.left is not None):
-            root = root.left
-
-        return root
+    #     return root
 
     def find(self, item, root=None):
         """Return the matched item. If item is not in the tree, raise a ValueError. """
@@ -149,12 +149,12 @@ class BST:
             raise ValueError
 
         if item.letter > root.pair.letter:
-            if root.right == None:
+            if root.right is None:
                 raise ValueError
             self.find(item, root.right)
 
         elif item.letter < root.pair.letter:
-            if root.left == None:
+            if root.left is None:
                 raise ValueError
             self.find(item, root.left)
 
@@ -175,7 +175,7 @@ class BST:
 
             if root:
                 printInorder(root.left)
-                lyst.append(root.pair.letter)
+                lyst.append(root.pair)
                 printInorder(root.right)
 
         printInorder(root)
@@ -189,7 +189,7 @@ class BST:
         def printPreorder(root):
 
             if root:
-                lyst.append(root.pair.letter),
+                lyst.append(root.pair),
                 printPreorder(root.left)
                 printPreorder(root.right)
 
@@ -206,10 +206,30 @@ class BST:
             if root:
                 printPostorder(root.left)
                 printPostorder(root.right)
-                lyst.append(root.pair.letter)
+                lyst.append(root.pair)
 
         printPostorder(root)
         return lyst
 
-    def rebalance():
-        """rebalance the tree. Return the modified tree. """
+    def rebalance(self, lo="", hi="", root=""):
+        """balances the tree"""
+        if lo == "" and hi == "":
+            lyst = self.inorder()
+            lo = lyst[:len(lyst)//2]
+            hi = lyst[len(lyst)//2:]
+            self.clear()
+            self.root = Node(hi[0])
+            hi.remove(hi[0])
+
+        if len(lo) > 1:
+            lo_midpoint = len(lo)//2
+            print(lo[lo_midpoint])
+            self.add(lo[lo_midpoint])
+            lo.remove(lo[lo_midpoint])
+            self.rebalance(lo[:lo_midpoint], lo[lo_midpoint:])
+
+        if len(hi) > 1:
+            hi_midpoint = len(hi)//2
+            self.add(hi[hi_midpoint])
+            hi.remove(hi[hi_midpoint])
+            self.rebalance(hi[:hi_midpoint], hi[hi_midpoint:])
