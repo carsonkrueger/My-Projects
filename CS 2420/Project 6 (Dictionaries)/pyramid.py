@@ -2,7 +2,7 @@ import sys
 import time
 
 time.perf_counter()
-
+cache = tuple()
 
 def weight_on(r, c):
     global functionHits
