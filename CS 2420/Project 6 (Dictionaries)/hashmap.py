@@ -1,87 +1,105 @@
+"""This Module contains the HashMap class"""
+
 class HashMap:
     """HashMap class"""
-    def __init__(self, cap=7, syze=0, dict=None) -> None:
+    def __init__(self) -> None:
         """init function"""
         self.cap = 7
         self.syze = 0
-        self.dict = dict
+        self.dict = [None] * self.cap
 
-        if dict is None:
-            self.dict = [None] * self.cap
 
     def get(self, key):
         """Return the value for key if key is in the dictionary. If key is not in the
         dictionary, raise a KeyError."""
-        if key not in self.dict:
-            raise KeyError
+        # for x in range(self.syze-1):
+        #     if self.dict[x][0] == key:
+        #         break
+        #     elif x == self.size()-1:
+        #         raise KeyError
 
-        hash = self.find(key)
-        return self.dict[hash][1]
+        hach = self.find(key)
+        return self.dict[hach][1]
 
     def set(self, key, value):
-        """add the (key,value) pair to the hashMap. After adding, if the load-
-        factor >= 80%, rehash the map into a map double its current capacity. For this project
-        rehash when the load factor is >= 80%. new k = 2k-1.  """
-        if key in self.dict:
-            return
-        
-        # add key to dictionary
-        hash = self.findEmpty(key)
-        self.dict[hash] = (key,value)
-        self.syze += 1
+        """add the (key,value) pair to the hachMap. After adding, if the load-
+        factor >= 80%, rehach the map into a map double its current capacity. For this project
+        rehach when the load factor is >= 80%. new k = 2k-1.  """
+        try:
+            # modify key's value
+            hach = self.find(key)
+            self.dict[hach] = (key, value)
 
-        if self.syze >= (.8 * self.cap):
-            self.rehash()
+        except KeyError:
+            # add key to dictionary
+            hach = self.find_empty(key)
+            self.dict[hach] = (key,value)
+            self.syze += 1
 
-    def findEmpty(self, key):
-        hash = key % self.cap
-        i = 2
+            if self.syze >= (.8 * self.cap):
+                self.rehach()
 
-        while self.dict[hash] is not None:
-            # Finds empty location in hashmap
-            hash += i
-            i = i ** 2
+    def find_empty(self, key):
+        """Finds and returns the first empty bucket hach value"""
+        #hach = key % self.cap
+        hach = (key[0] + key[1]) % self.cap
+        i = 1
 
-            while hash >= self.cap:
-                # If variable 'hash' goes out of bounds
+        while self.dict[hach] is not None:
+            # Finds empty location in hachmap
+            hach += i ** 2
+            i += 1
+
+            while hach >= self.cap:
+                # If variable 'hach' goes out of bounds
                 # take remainder and move it to beginning, as an index
-                hash -= self.cap
+                hach -= self.cap
 
-        return hash
+        return hach
 
     def find(self, key):
-        hash = key % self.cap
-        i = 2
+        """Finds and returns the hach value of the given key"""
+        hach = (key[0] + key[1]) % self.cap
+        i = 1
 
-        while self.dict[hash][0] != key:
-            hash += i
-            i = i ** 2
+        while self.dict[hach] is not None:
+            if self.dict[hach][0] == key:
+                return hach
 
-            if hash >= self.cap:
-                hash -= self.cap
+            hach += i ** 2
+            i += 1
 
-        return hash
+            while hach >= self.cap:
+                hach -= self.cap
 
-    def rehash(self):
-        """Rebuild the hashmap after load facter exceeds 80%"""
+            if i >= 100000:
+                raise KeyError
+        raise KeyError # self.dict[hach] == None
+
+    def rehach(self):
+        """Rebuild the hachmap after load facter exceeds 80%"""
         #print("CAP/SIZE:", self.cap, self.syze)
         temp = self.dict
-        self.cap *= 2
+        self.cap = (self.cap * 2) - 1
         self.syze = 0
         self.dict = [None] * self.cap
 
-        for tuple in temp:
-            if tuple is not None:
-                self.set(tuple[0], tuple[1])
+        for tupl in temp:
+            if tupl is not None:
+                self.set(tupl[0], tupl[1])
 
     def remove(self, key):
         """Remove the key and its associated value from the map. If the key
-        does not exist, nothing happens. Do not rehash the table after deleting keys. """
-        if key not in self.dict:
-            return
+        does not exist, nothing happens. Do not rehach the table after deleting keys. """
+        # for x in range(self.syze-1):
+        #     if self.dict[x][0] == key:
+        #         break
+        #     elif x == self.size()-1:
+        #         return
 
-        hash = self.find(key)
-        self.dict[hash] = None
+        hach = self.find(key)
+        # del self.dict[hach]
+        self.dict[hach] = None
         self.syze -= 1
 
     def clear(self):
@@ -102,23 +120,30 @@ class HashMap:
         """Return a list of keys. """
         keys = []
 
-        for x in self.dict:
-            if x is not None:
-                keys.append(x[0])
+        for i in self.dict:
+            if i is not None:
+                keys.append(i[0])
 
         return keys
 
-def main():
-    hm = HashMap()
-    hm.set(2,265)
-    hm.set(2,350)
-    hm.set(2,201)
-    hm.set(2, 69)
-    hm.set(2,5)
-    hm.set(3,419)
-    print(hm.dict)
-    print("capacity:", hm.cap)
-    #print("keys:", hm.keys())
+# def main():
+#     hm = HashMap()
+#     #hm.get((0,0))
 
-if __name__ == "__main__":
-    main()
+#     keys = [(r,r) for r in (range(10))]
+#     values = list(range(1, 11))
+
+#     for k,v in zip(keys,values):
+#         hm.set(k,v)
+
+#     hm.get((5,5))
+#     hm.get((9,9))
+#     hm.set((2,2), 409)
+#     hm.get((2,2))
+
+#     print(hm.dict)
+#     print("capacity:", hm.cap)
+#     #print("keys:", hm.keys())
+
+# if __name__ == "__main__":
+#     main()
