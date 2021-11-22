@@ -1,8 +1,10 @@
 import sys
 import time
+from hashmap import HashMap
 
 time.perf_counter()
-
+#cache = HashMap()
+cache = tuple()
 
 def weight_on(r, c):
     global functionHits
@@ -56,6 +58,8 @@ def weight_on(r, c):
 
     cache[tuple((r, c))] = thisWeightOn
     # print(pyramidWeights.get((r,c)))
+    #if cache.isIn((r,c)):
+
     weight_on(r, c+1)
 
 
