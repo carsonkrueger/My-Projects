@@ -2,23 +2,25 @@ import math
 import statistics as s
 import numpy as np
 import matplotlib.pyplot as plt
+from scipy import stats
+
 
 
 def main():
-    diam = [4.2, 4.4, 4.6, 4.8, 5, 5.2, 5.4, 5.6, 5.8, 6]
-    strength = [51, 54, 69, 81, 75, 79, 89, 101, 98, 102]
-    p = plt.scatter(diam, strength)
+    # diam = [4.2, 4.4, 4.6, 4.8, 5, 5.2, 5.4, 5.6, 5.8, 6]
+    # strength = [51, 54, 69, 81, 75, 79, 89, 101, 98, 102]
+    temp = [26.6, 26, 27.4, 21.7, 14.9, 11.3, 15, 8.7, 8.2]
+    corrosion = [1.58, 1.45, 1.13, .96, .99, 1.05, .82, .68, .56]
+    p = plt.scatter(temp, corrosion)
     plt.show()
 
-    calcCoefficient(diam, strength)
+    calcCoefficient(temp, corrosion)
+
 
 
 def calcCoefficient(x, y):
-    # temp = [110, 110, 111, 111, 112, 112, 114, 114,
-    #         117, 117, 122, 122, 130, 130, 143, 143]
-    # x = [30, 32, 34, 36, 38, 40, 42, 44, 46, 48, 50, 52, 54, 56, 58, 60]
-    # y = [70.27, 72.29, 72.57, 74.69, 76.09, 73.14, 75.61, 69.56,
-    #      74.41, 73.49, 79.18, 75.44, 81.71, 83.03, 76.98, 80.99]
+    slope, intercept, r_value, p_value, std_err = stats.linregress(x,y)
+    print("Linear Regression:", slope, "+", intercept)
 
     xStdev = s.stdev(x)
     yStdev = s.stdev(y)
@@ -33,12 +35,20 @@ def calcCoefficient(x, y):
 
     print("Correlation Coefficient:", output)
 
+    calc_Fitted_and_Risidual(slope, intercept, x, y)
+
 
 def calc_Fitted_and_Risidual(m, b, x, y):
     fitted_vals = []
-    for i in x:
-        fit = i * x + b
+    risid_vals = []
+
+    for i in range(len(x)):
+        fit = m * x[i] + b
         fitted_vals.append(fit)
+        risid_vals.append(y[i] - fit)
+
+    print(fitted_vals)
+    print(risid_vals)
 
 
 if __name__ == "__main__":

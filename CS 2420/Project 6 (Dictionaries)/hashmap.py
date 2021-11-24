@@ -1,4 +1,5 @@
 """This Module contains the HashMap class"""
+import typing
 
 class HashMap:
     """HashMap class"""
@@ -85,7 +86,7 @@ class HashMap:
         self.dict = [None] * self.cap
 
         for tupl in temp:
-            if tupl is not None:
+            if tupl is not None and isinstance(tupl, tuple):
                 self.set(tupl[0], tupl[1])
 
     def remove(self, key):
@@ -121,7 +122,7 @@ class HashMap:
         keys = []
 
         for i in self.dict:
-            if i is not None:
+            if i is not None and isinstance(i, tuple):
                 keys.append(i[0])
 
         return keys
