@@ -20,7 +20,7 @@ class Graph:
 
     def add_edge(self, src, dest, w):
         """add an edge from vertex src to vertex dest with weight w. Return the graph. validate src, dest, and w: raise ValueError if not valid.""" 
-        if not isinstance(src, str) or not isinstance(dest, str) or not isinstance(w, float) or len(src) + len(dest) != 2:
+        if not isinstance(src, str) or not isinstance(dest, str) or not (isinstance(w, int) or isinstance(w, float)) or not len(src) + len(dest) == 2:
             raise ValueError
 
         if (src, dest, w) not in self.edges:
@@ -30,7 +30,7 @@ class Graph:
 
     def get_weight(self, src, dest) -> float:
         """Return the weight on edge src-dest (math.inf if no path exists, raise ValueError if src or dest not added to graph)."""
-        
+        pass
 
     def dfs(self, starting_vertex):
         """Return a generator for traversing the graph in depth-first order starting from the specified vertex. 
@@ -79,37 +79,50 @@ class Graph:
     def dsp_all(self, src) -> dict:
         """Return a dictionary of the shortest weighted path between src and all other vertices using Dijkstra's Shortest Path algorithm. 
         In the dictionary, the key is the the destination vertex label, the value is a list of vertices on the path from src to dest inclusive."""
-        pass
+        dictionary = self.dijkstra(src)
+        total_dist = 0
+        path = [src]
+
+        src = dictionary.get(src)[0]
+        path.insert(0, src)
+
+        while src:
+            src = dictionary.get(src)[0]
+            total_dist += dictionary.get(src)[1]
+            path.insert(0, src)
+
+        return {total_dist, path}
+
+    def dijkstra(self, src) -> dict:
+        to_visit = []
+        visited = []
+        dist = {}
+
+        for vert in self.vertices:
+            dist[vert] = [None, sys.maxsize]
+
+        dist[src] = [src, 0]
+
+        while(True):            
+            for edge in self.edges:
+                
+                if edge[0] == src and edge not in visited:
+                    to_visit.append(edge[1])
+                    visited.append(edge)
+                    distance = dist.get(src)[1] + edge[2]
+
+                    if distance < dist.get(edge[1])[1]:
+                        dist[edge[1]] = (src, distance)
+
+            try:
+                src = to_visit.pop(0)
+            except IndexError:
+                return dist
 
     def __str__(self):
         """Produce a string representation of the graph that can be used with print(). The format of the graph should be in GraphViz dot notation,"""
         pass
 
-    def dijkstra(self, src, dest):
-        """dijkstra algorithm"""
-        dist = {vert:sys.maxsize for vert in self.vertices}
-        dist[src] = 0
-        print(dist)
-        # sptSet = [False] * self.vertices
-
-        
-
-        #self.printSolution(dist)
-
-    def minDistance(self, dist, sptSet):
-        """Finds mininium distance"""
-        # Initialize minimum distance for next node
-        min = sys.maxsize
-
-        # Search not nearest vertex not in the
-        # shortest path tree
-        for v in range(self.vertices):
-            if dist[v] < min and sptSet[v] == False:
-                min = dist[v]
-                min_index = v
-
-        return min_index
-    
 def main():
     g = Graph()
     g.add_vertex("A")
@@ -119,22 +132,23 @@ def main():
     g.add_vertex("E")
     g.add_vertex("F")
 
-    g.add_edge("A", "B", 1.0)
-    g.add_edge("A", "C", 1.0)
+    g.add_edge("A", "B", 2)
+    g.add_edge("A", "F", 9)
 
-    g.add_edge("B", "D", 1.0)
+    g.add_edge("B", "F", 6)
+    g.add_edge("B", "D", 15)
+    g.add_edge("B", "C", 8)
 
-    g.add_edge("C", "E", 1.0)
+    g.add_edge("C", "D", 1)
 
-    g.add_edge("E", "F", 1.0)
+    g.add_edge("E", "C", 7)
+    g.add_edge("E", "D", 3)
 
-    gen = g.dfs("A")
-    data = [x for x in gen]
-    print(data)
+    g.add_edge("F", "B", 6)
+    g.add_edge("F", "E", 3)
 
-    gen = g.dfs("C")
-    data = [x for x in gen]
-    print(data)
+    paths = g.dsp_all("A")
+    print(paths)
     
 if __name__ == "__main__":
     main()
