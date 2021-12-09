@@ -2,11 +2,11 @@ import sys
 import math
 
 class Graph:
-    def __init__(self, vertices = [], edges = []) -> None:
+    def __init__(self) -> None:
         """Initializes the class"""
         self.weight = 0
-        self.vertices = vertices
-        self.edges = edges
+        self.vertices = []
+        self.edges = []
 
     def add_vertex(self, label):
         """add a vertex with the specified label. Return the graph. label must be a string or raise ValueError"""
@@ -74,42 +74,78 @@ class Graph:
         
     def dsp(self, src, dest) -> list:
         """Return a tuple (path length , the list of vertices on the path from dest back to src). If no path exists, return the tuple (math.inf,  empty list.)"""
-        pass
+        dictionary = self.dijkstra(src)
+        total_dist = dictionary.get(dest)[1]
+        path = [dest]
+
+        #print("YO", src, dest)
+        #print(path, dest)
+
+        dest = dictionary.get(dest)[0]
+        path.insert(0, dest)
+
+        #print(path, dest)
+
+        while dest != src:
+            dest = dictionary.get(dest)[0]
+            #total_dist += dictionary.get(dest)[1]
+            path.insert(0, dest)
+
+        if total_dist == sys.maxsize:
+            return (math.inf, [])
+        return (int(total_dist), path)
 
     def dsp_all(self, src) -> dict:
         """Return a dictionary of the shortest weighted path between src and all other vertices using Dijkstra's Shortest Path algorithm. 
         In the dictionary, the key is the the destination vertex label, the value is a list of vertices on the path from src to dest inclusive."""
-        dictionary = self.dijkstra(src)
-        total_dist = 0
-        path = [src]
+        #print("EDGES", self.edges)
+        dictionary = self.dijkstra('A')
+        all_paths = {}
+        absolute_src = src
+        
+        #print("src", src)
+        print("DICTIONARY", dictionary)
 
-        src = dictionary.get(src)[0]
-        path.insert(0, src)
+        for vert in self.vertices:
+            src = vert
+            print(src)
+            path = []
 
-        while src:
-            src = dictionary.get(src)[0]
-            total_dist += dictionary.get(src)[1]
-            path.insert(0, src)
+            while(True):
+                path.insert(0, src)
+                #print(src)
+                
+                if src == absolute_src:
+                    all_paths[vert] = path
+                    break
 
-        return {total_dist, path}
+                elif src == None:
+                    all_paths[vert] = []
+                    break
+
+                src = dictionary.get(src)[0]
+                #print("-------A:", dictionary.get(src)[0])     
+        
+        return all_paths
 
     def dijkstra(self, src) -> dict:
+        """Computes dijkstras shortest path algorithm"""
         to_visit = []
         visited = []
         dist = {}
 
         for vert in self.vertices:
-            dist[vert] = [None, sys.maxsize]
+            dist[vert] = [src, sys.maxsize]
 
-        dist[src] = [src, 0]
+        dist[src] = [None, 0]
 
-        while(True):            
+        while(True):
             for edge in self.edges:
                 
                 if edge[0] == src and edge not in visited:
                     to_visit.append(edge[1])
                     visited.append(edge)
-                    distance = dist.get(src)[1] + edge[2]
+                    distance = int(dist.get(src)[1] + edge[2])
 
                     if distance < dist.get(edge[1])[1]:
                         dist[edge[1]] = (src, distance)
@@ -120,35 +156,20 @@ class Graph:
                 return dist
 
     def __str__(self):
-        """Produce a string representation of the graph that can be used with print(). The format of the graph should be in GraphViz dot notation,"""
-        pass
+        """Produce a string representation of the graph that can be used with print(). 
+        The format of the graph should be in GraphViz dot notation,"""
+        string = "digraph G {\n"
+
+        for edge in self.edges:
+            string += "   " + edge[0] + " -> " + edge[1] + " [label=" + "\"" + str(float(edge[2])) + "\"" + ",weight=" + "\"" + str(float(edge[2])) + "\"];"
+            string += "\n"
+
+        return string + "}\n"
 
 def main():
-    g = Graph()
-    g.add_vertex("A")
-    g.add_vertex("B")
-    g.add_vertex("C")
-    g.add_vertex("D")
-    g.add_vertex("E")
-    g.add_vertex("F")
-
-    g.add_edge("A", "B", 2)
-    g.add_edge("A", "F", 9)
-
-    g.add_edge("B", "F", 6)
-    g.add_edge("B", "D", 15)
-    g.add_edge("B", "C", 8)
-
-    g.add_edge("C", "D", 1)
-
-    g.add_edge("E", "C", 7)
-    g.add_edge("E", "D", 3)
-
-    g.add_edge("F", "B", 6)
-    g.add_edge("F", "E", 3)
-
-    paths = g.dsp_all("A")
-    print(paths)
+    """driver function"""
+    pass
     
 if __name__ == "__main__":
+    """calls main"""
     main()
