@@ -127,24 +127,29 @@ class HashMap:
 
         return keys
 
-# def main():
-#     hm = HashMap()
-#     #hm.get((0,0))
+def main():
+           #4    1   2   0   3
+    lyst = [24, 33, 51, 44, 52, 50]
+    for i in lyst:
+        print(i, ":", i % 5)
 
-#     keys = [(r,r) for r in (range(10))]
-#     values = list(range(1, 11))
+    #hm = HashMap()
+    #hm.get((0,0))
 
-#     for k,v in zip(keys,values):
-#         hm.set(k,v)
+    # keys = [(r,r) for r in (range(10))]
+    # values = list(range(1, 11))
 
-#     hm.get((5,5))
-#     hm.get((9,9))
-#     hm.set((2,2), 409)
-#     hm.get((2,2))
+    # for k,v in zip(keys,values):
+    #     hm.set(k,v)
 
-#     print(hm.dict)
-#     print("capacity:", hm.cap)
-#     #print("keys:", hm.keys())
+    # hm.get((5,5))
+    # hm.get((9,9))
+    # hm.set((2,2), 409)
+    # hm.get((2,2))
 
-# if __name__ == "__main__":
-#     main()
+    # print(hm.dict)
+    # print("capacity:", hm.cap)
+    # #print("keys:", hm.keys())
+
+if __name__ == "__main__":
+    main()

@@ -7,10 +7,8 @@ from scipy import stats
 
 
 def main():
-    x = [184, 206, 193]
-    y= [185, 203, 200]
-    # p = plt.scatter(temp, corrosion)
-    # plt.show()
+    x = [26.6, 26, 27.4, 21.4]
+    y= [1.58, 1.45, 1.13, .96]
 
     calcCoefficient(x, y)
 

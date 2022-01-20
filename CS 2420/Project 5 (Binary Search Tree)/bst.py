@@ -105,39 +105,6 @@ class BST:
         lyst.remove(item)
         self.clear()
         self.build_tree(lyst)
-    #     if root == "":
-    #         root = self.root
-
-    #     if root is None:
-    #         return root
-
-    #     #print(root.pair.letter)
-    #     if root.right and item.letter > root.right.pair.letter:
-    #         root.right = self.remove(item, root.right)
-
-    #     elif root.left and item.letter < root.left.pair.letter:
-    #         root.left = self.remove(item, root.left)
-
-    #     else:
-    #         if root.left is None:
-    #             temp = root.right
-    #             root = None
-    #             return temp
-
-    #         elif root.right is None:
-    #             temp = root.left
-    #             root = None
-    #             return temp
-
-    #     temp = self.minimum(root.right)
-    #     root.pair = temp.pair
-    #     root.right = self.remove(temp.pair, root.right)
-
-    # def minimum(self, root):
-    #     while(root and root.left):
-    #         root = root.left
-
-    #     return root
 
     def find(self, item, root=None):
         """Return the matched item. If item is not in the tree, raise a ValueError. """

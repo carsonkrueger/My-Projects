@@ -1,0 +1,31 @@
+.board {
+  margin-top: 10%;
+  margin-left: 37%;
+  /* outline: 2px solid rgb(134, 154, 189); */
+  display: inline-block;
+}
+
+.row {
+  height: 50px;
+}
+
+.cell {
+  width: 50px;
+  height: 50px;
+  outline: 1px solid rgb(134, 154, 189);
+  display: inline-block;
+}
+
+.snake_cell {
+  width: 50px;
+  height: 50px;
+  background-color: seagreen;
+  display: inline-block;
+}
+
+.apple_cell {
+  width: 50px;
+  height: 50px;
+  background-color: rgb(214, 86, 71);
+  display: inline-block;
+}

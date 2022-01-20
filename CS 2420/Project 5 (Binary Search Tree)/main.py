@@ -71,6 +71,7 @@ def make_tree():
 def main():
     ''' Program kicks off here.'''
     bst = make_tree()
+    
     # print(bst.inorder())
     # bst.remove(Pair('h'))
     # print(bst.inorder())

@@ -9,7 +9,8 @@ class Graph:
         self.edges = []
 
     def add_vertex(self, label):
-        """add a vertex with the specified label. Return the graph. label must be a string or raise ValueError"""
+        """add a vertex with the specified label. Return the graph.
+        label must be a string or raise ValueError"""
         if not isinstance(label, str):
             raise ValueError
 
@@ -19,8 +20,10 @@ class Graph:
         return self
 
     def add_edge(self, src, dest, w):
-        """add an edge from vertex src to vertex dest with weight w. Return the graph. validate src, dest, and w: raise ValueError if not valid.""" 
-        if not isinstance(src, str) or not isinstance(dest, str) or not (isinstance(w, int) or isinstance(w, float)) or not len(src) + len(dest) == 2:
+        """add an edge from vertex src to vertex dest with weight w. Return the graph.
+        validate src, dest, and w: raise ValueError if not valid."""
+        if not isinstance(src, str) or not isinstance(dest, str) or not (isinstance(w, int)
+        or isinstance(w, float)) or not len(src) + len(dest) == 2:
             raise ValueError
 
         if (src, dest, w) not in self.edges:
@@ -29,41 +32,48 @@ class Graph:
         return self
 
     def get_weight(self, src, dest) -> float:
-        """Return the weight on edge src-dest (math.inf if no path exists, raise ValueError if src or dest not added to graph)."""
-        pass
+        """Return the weight on edge src-dest (math.inf if no path exists,
+        raise ValueError if src or dest not added to graph)."""
+        try:
+            path = self.dsp(src, dest)
+        except TypeError:
+            raise ValueError
+
+        return float(path[0])
 
     def dfs(self, starting_vertex):
-        """Return a generator for traversing the graph in depth-first order starting from the specified vertex. 
-        Raise a ValueError if the vertex does not exist."""
-        
+        """Return a generator for traversing the graph in depth-first order starting from
+        the specified vertex. Raise a ValueError if the vertex does not exist."""
+
         visited = []
 
         stack = []
         stack.append(starting_vertex)
- 
+
         while len(stack):
             s = stack.pop()
- 
+
             if s not in visited:
                 yield s
                 visited.append(s)
 
             for node in self.edges:
                 if node[0] == s and node[1] not in visited:
-                    stack.append(node[1])      
+                    stack.append(node[1])
 
     def bfs(self, starting_vertex):
-        """Return a generator for traversing the graph in breadth-first order starting from the specified vertex. Raise a ValueError if the vertex does not exist."""
+        """Return a generator for traversing the graph in breadth-first order
+        starting from the specified vertex. Raise a ValueError if the vertex does not exist."""
         visited = []
         queue = []
-        
+
         if starting_vertex not in self.vertices:
             raise ValueError
-        
+
         visited.append(starting_vertex)
         queue.append(starting_vertex)
         yield starting_vertex
-        
+
         while queue:
             s = queue.pop(0)
             for x in self.edges:
@@ -71,7 +81,7 @@ class Graph:
                     visited.append(x[1])
                     queue.append(x[1])
                     yield x[1]
-        
+
     def dsp(self, src, dest) -> list:
         """Return a tuple (path length , the list of vertices on the path from dest back to src). If no path exists, return the tuple (math.inf,  empty list.)"""
         dictionary = self.dijkstra(src)
@@ -96,13 +106,14 @@ class Graph:
         return (int(total_dist), path)
 
     def dsp_all(self, src) -> dict:
-        """Return a dictionary of the shortest weighted path between src and all other vertices using Dijkstra's Shortest Path algorithm. 
-        In the dictionary, the key is the the destination vertex label, the value is a list of vertices on the path from src to dest inclusive."""
+        """Return a dictionary of the shortest weighted path between src and all other vertices
+        using Dijkstra's Shortest Path algorithm. In the dictionary, the key is the the destination
+        vertex label, the value is a list of vertices on the path from src to dest inclusive."""
         #print("EDGES", self.edges)
         dictionary = self.dijkstra('A')
         all_paths = {}
         absolute_src = src
-        
+
         #print("src", src)
         print("DICTIONARY", dictionary)
 
@@ -114,7 +125,7 @@ class Graph:
             while(True):
                 path.insert(0, src)
                 #print(src)
-                
+
                 if src == absolute_src:
                     all_paths[vert] = path
                     break
@@ -124,8 +135,8 @@ class Graph:
                     break
 
                 src = dictionary.get(src)[0]
-                #print("-------A:", dictionary.get(src)[0])     
-        
+                #print("-------A:", dictionary.get(src)[0])
+
         return all_paths
 
     def dijkstra(self, src) -> dict:
@@ -141,7 +152,7 @@ class Graph:
 
         while(True):
             for edge in self.edges:
-                
+
                 if edge[0] == src and edge not in visited:
                     to_visit.append(edge[1])
                     visited.append(edge)
@@ -156,7 +167,7 @@ class Graph:
                 return dist
 
     def __str__(self):
-        """Produce a string representation of the graph that can be used with print(). 
+        """Produce a string representation of the graph that can be used with print().
         The format of the graph should be in GraphViz dot notation,"""
         string = "digraph G {\n"
 
@@ -168,8 +179,25 @@ class Graph:
 
 def main():
     """driver function"""
-    pass
-    
+    g = Graph()
+    g.add_vertex("A")
+    g.add_vertex("B")
+    g.add_vertex("C")
+    g.add_vertex("D")
+    g.add_vertex("E")
+    g.add_vertex("F")
+
+    g.add_edge("A", "B", 1.0)
+    g.add_edge("A", "C", 1.0)
+
+    g.add_edge("B", "D", 1.0)
+
+    g.add_edge("C", "E", 1.0)
+
+    g.add_edge("E", "F", 1.0)
+
+    g.get_weight('A', 'Z')
+
 if __name__ == "__main__":
     """calls main"""
     main()
