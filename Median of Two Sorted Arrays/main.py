@@ -7,10 +7,10 @@ class Solution:
         nums3.sort()
         nums3Len = len(nums3)
 
-        if (nums3Len % 2 == 1):
-            return float(nums3[nums3Len//2])
+        if nums3Len % 2 == 1:
+            return float(nums3[nums3Len // 2])
         else:
-            return (nums3[int(nums3Len/2 - 1)] + nums3[int(nums3Len/2)]) / 2
+            return (nums3[int(nums3Len / 2 - 1)] + nums3[int(nums3Len / 2)]) / 2
 
 
 def main():

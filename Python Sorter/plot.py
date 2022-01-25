@@ -27,7 +27,7 @@ class VisualSorters:
         self.ax.cla()
         self.ax.bar(self.x_axis, self.data)
         # self.ax.update(self.data)
-        mat.pyplot.pause(.01)
+        mat.pyplot.pause(0.01)
         mat.pyplot.draw()
 
     # ----------------------AMIMATE------------------------------------------------------------------
@@ -72,7 +72,7 @@ class VisualSorters:
         if len(array) > 1:
 
             # Finding the mid of the arrayay
-            mid = len(array)//2
+            mid = len(array) // 2
 
             # Dividing the arrayay elements
             left = array[:mid]

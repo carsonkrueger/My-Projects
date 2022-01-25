@@ -2,6 +2,7 @@
 from time import time
 import math
 
+
 def linear_search(lyst, target) -> bool:
     """linear_search will find the 'target' parameter inside the list from 'lyst'
     parameter. Searches the list from index 0 to the end linearly."""
@@ -13,7 +14,7 @@ def linear_search(lyst, target) -> bool:
 
 def binary_search(lyst, target) -> bool:
     """binary_search will find the target through binary searching from 'lyst'"""
-    higher = len(lyst)-1
+    higher = len(lyst) - 1
     lower = 0
 
     while True:
@@ -24,7 +25,7 @@ def binary_search(lyst, target) -> bool:
                 return True
 
             elif lyst[halfpoint] > target:
-                higher = halfpoint-1
+                higher = halfpoint - 1
 
             else:
                 lower = halfpoint + 1
@@ -39,7 +40,7 @@ def jump_search(lyst, target) -> bool:
     jump = math.sqrt(n)
 
     point = 0
-    while lyst[int(min(jump, n)-1)] < target:
+    while lyst[int(min(jump, n) - 1)] < target:
         point = jump
         jump += math.sqrt(n)
         if point >= n:

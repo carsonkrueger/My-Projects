@@ -1,4 +1,4 @@
-'''
+"""
 Project: pytest BST for Phileas Fogg Project
 Author: George Rudolph
 Course:  CS 2420 Fall 2020
@@ -31,7 +31,7 @@ input file all in same directory.
 
 Open a terminal window in that directory, type 'pytest' as the command and press
 enter.
-'''
+"""
 import pytest
 from random import seed, sample
 from bst import BST
@@ -57,45 +57,45 @@ def test_tree_height():
 def test_find_empty():
     with pytest.raises(ValueError):
         bst = BST()
-        item = bst.find(Pair('A'))
+        item = bst.find(Pair("A"))
 
 
 def test_remove_root():
     bst = make_tree()
-    bst.remove(Pair('C'))
+    bst.remove(Pair("C"))
     pre = bst.preorder()
-    assert pre[0] == Pair('D')
+    assert pre[0] == Pair("D")
 
 
 def test_remove_internal():
     bst = make_tree()
     pre = bst.preorder()
-    i = pre.index(Pair('g'))
-    bst.remove(Pair('g'))
+    i = pre.index(Pair("g"))
+    bst.remove(Pair("g"))
     pre = bst.preorder()
-    assert pre[i] == Pair('f')
+    assert pre[i] == Pair("f")
 
 
 def test_remove_leaf():
     bst = make_tree()
-    bst.remove(Pair('z'))
+    bst.remove(Pair("z"))
     pre = bst.preorder()
-    assert pre[-1] == Pair('w')
+    assert pre[-1] == Pair("w")
 
 
 def test_preorder():
     bst = make_tree()
-    assert bst.preorder()[27] == Pair('R', 20)
+    assert bst.preorder()[27] == Pair("R", 20)
 
 
 def test_inorder():
     bst = make_tree()
-    assert bst.inorder()[27] == Pair('T', 34)
+    assert bst.inorder()[27] == Pair("T", 34)
 
 
 def test_postorder():
     bst = make_tree()
-    assert bst.postorder()[27] == Pair('W', 13)
+    assert bst.postorder()[27] == Pair("W", 13)
 
 
 def test_rebalance():
@@ -108,7 +108,7 @@ def test_rebalance():
 def test_code_style():
     from pylint.lint import Run
 
-    results = Run(['bst.py'], exit=False)
+    results = Run(["bst.py"], exit=False)
     expected = 8.5
-    actual = results.linter.stats['global_note']
+    actual = results.linter.stats["global_note"]
     assert actual >= expected

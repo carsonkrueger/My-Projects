@@ -5,7 +5,7 @@ class Solution:
 
         step = numRows + (numRows - 2)
         sts = step
-        res = ''
+        res = ""
         jump = 0
         start = 0
         for i in range(numRows, 0, -1):
@@ -20,7 +20,7 @@ class Solution:
                 c = start + step
                 while c < len(s):
                     res += s[c]
-                    if c+jump < len(s):
+                    if c + jump < len(s):
                         res += s[c + jump]
                     c = c + jump + step
                 jump += 2

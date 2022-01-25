@@ -4,6 +4,7 @@ from graph import Graph, main
 import io
 import math
 
+
 def test_vertex_edge_weight():
     g = Graph()
     with pytest.raises(ValueError):
@@ -19,6 +20,7 @@ def test_vertex_edge_weight():
     assert g.get_weight("A", "B") == 10
     assert g.get_weight("B", "A") == math.inf
     assert isinstance(x, Graph)
+
 
 def test_bfs():
     g = Graph()
@@ -47,6 +49,7 @@ def test_bfs():
     data = [x for x in gen]
     assert len(data) == 3
 
+
 def test_dfs():
     g = Graph()
     g.add_vertex("A")
@@ -74,6 +77,7 @@ def test_dfs():
     data = [x for x in gen]
     assert len(data) == 3
 
+
 def test_print():
     g = Graph()
     g.add_vertex("A")
@@ -92,17 +96,17 @@ def test_print():
 
     g.add_edge("E", "F", 1.0)
 
-
-    expected ='''digraph G {
+    expected = """digraph G {
    A -> B [label="1.0",weight="1.0"];
    A -> C [label="1.0",weight="1.0"];
    B -> D [label="1.0",weight="1.0"];
    C -> E [label="1.0",weight="1.0"];
    E -> F [label="1.0",weight="1.0"];
 }
-'''
+"""
     output = str(g)
     assert output == expected
+
 
 def test_dsp():
     g = Graph()
@@ -129,15 +133,16 @@ def test_dsp():
     g.add_edge("F", "E", 3)
 
     path = g.dsp("A", "B")
-    assert path == (2, ['A', 'B'])
+    assert path == (2, ["A", "B"])
     path = g.dsp("A", "C")
-    assert path == (10, ['A', 'B', 'C'])
+    assert path == (10, ["A", "B", "C"])
     path = g.dsp("A", "D")
-    assert path == (11, ['A', 'B', 'C', 'D'])
+    assert path == (11, ["A", "B", "C", "D"])
     path = g.dsp("A", "F")
-    assert path == (8, ['A', 'B', 'F'])
-    path = g.dsp("D","A")
+    assert path == (8, ["A", "B", "F"])
+    path = g.dsp("D", "A")
     assert path == (math.inf, [])
+
 
 def test_dsp_all():
     g = Graph()
@@ -165,20 +170,29 @@ def test_dsp_all():
 
     paths = g.dsp_all("A")
     assert isinstance(paths, dict)
-    assert paths == {'A':['A'], 'B':['A', 'B'], 'C':['A', 'B', 'C'], 'D':['A', 'B', 'C', 'D'], 'E':['A', 'B', 'F', 'E'], 'F':['A', 'B', 'F']}
+    assert paths == {
+        "A": ["A"],
+        "B": ["A", "B"],
+        "C": ["A", "B", "C"],
+        "D": ["A", "B", "C", "D"],
+        "E": ["A", "B", "F", "E"],
+        "F": ["A", "B", "F"],
+    }
 
     paths = g.dsp_all("D")
     assert isinstance(paths, dict)
-    assert paths == {'A': [], 'B':[], 'C':[], 'D':['D'], 'E':[], 'F':[]}
+    assert paths == {"A": [], "B": [], "C": [], "D": ["D"], "E": [], "F": []}
+
 
 def test_for_main():
-    ''' we just test for existence '''
+    """we just test for existence"""
     assert inspect.isfunction(main)
+
 
 def test_code_quality():
     from pylint.lint import Run
-    
-    results = Run(['graph.py'], exit=False)
+
+    results = Run(["graph.py"], exit=False)
     expected = 8.5
-    actual = results.linter.stats['global_note']
+    actual = results.linter.stats["global_note"]
     assert actual >= expected

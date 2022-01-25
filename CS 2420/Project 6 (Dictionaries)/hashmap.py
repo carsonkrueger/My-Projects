@@ -1,14 +1,15 @@
 """This Module contains the HashMap class"""
 import typing
 
+
 class HashMap:
     """HashMap class"""
+
     def __init__(self) -> None:
         """init function"""
         self.cap = 7
         self.syze = 0
         self.dict = [None] * self.cap
-
 
     def get(self, key):
         """Return the value for key if key is in the dictionary. If key is not in the
@@ -25,7 +26,7 @@ class HashMap:
     def set(self, key, value):
         """add the (key,value) pair to the hachMap. After adding, if the load-
         factor >= 80%, rehach the map into a map double its current capacity. For this project
-        rehach when the load factor is >= 80%. new k = 2k-1.  """
+        rehach when the load factor is >= 80%. new k = 2k-1."""
         try:
             # modify key's value
             hach = self.find(key)
@@ -34,15 +35,15 @@ class HashMap:
         except KeyError:
             # add key to dictionary
             hach = self.find_empty(key)
-            self.dict[hach] = (key,value)
+            self.dict[hach] = (key, value)
             self.syze += 1
 
-            if self.syze >= (.8 * self.cap):
+            if self.syze >= (0.8 * self.cap):
                 self.rehach()
 
     def find_empty(self, key):
         """Finds and returns the first empty bucket hach value"""
-        #hach = key % self.cap
+        # hach = key % self.cap
         hach = (key[0] + key[1]) % self.cap
         i = 1
 
@@ -75,11 +76,11 @@ class HashMap:
 
             if i >= 100000:
                 raise KeyError
-        raise KeyError # self.dict[hach] == None
+        raise KeyError  # self.dict[hach] == None
 
     def rehach(self):
         """Rebuild the hachmap after load facter exceeds 80%"""
-        #print("CAP/SIZE:", self.cap, self.syze)
+        # print("CAP/SIZE:", self.cap, self.syze)
         temp = self.dict
         self.cap = (self.cap * 2) - 1
         self.syze = 0
@@ -91,7 +92,7 @@ class HashMap:
 
     def remove(self, key):
         """Remove the key and its associated value from the map. If the key
-        does not exist, nothing happens. Do not rehach the table after deleting keys. """
+        does not exist, nothing happens. Do not rehach the table after deleting keys."""
         # for x in range(self.syze-1):
         #     if self.dict[x][0] == key:
         #         break
@@ -104,21 +105,21 @@ class HashMap:
         self.syze -= 1
 
     def clear(self):
-        """empty the HashMap """
+        """empty the HashMap"""
         self.cap = 7
         self.dict = [None] * self.cap
         self.syze = 0
 
     def capacity(self):
-        """Return the current capacity--number of buckets--in the map. """
+        """Return the current capacity--number of buckets--in the map."""
         return self.cap
 
     def size(self):
-        """Return the number of key-value pairs in the map. """
+        """Return the number of key-value pairs in the map."""
         return self.syze
 
     def keys(self):
-        """Return a list of keys. """
+        """Return a list of keys."""
         keys = []
 
         for i in self.dict:
@@ -127,14 +128,15 @@ class HashMap:
 
         return keys
 
+
 def main():
-           #4    1   2   0   3
+    # 4    1   2   0   3
     lyst = [24, 33, 51, 44, 52, 50]
     for i in lyst:
         print(i, ":", i % 5)
 
-    #hm = HashMap()
-    #hm.get((0,0))
+    # hm = HashMap()
+    # hm.get((0,0))
 
     # keys = [(r,r) for r in (range(10))]
     # values = list(range(1, 11))
@@ -150,6 +152,7 @@ def main():
     # print(hm.dict)
     # print("capacity:", hm.cap)
     # #print("keys:", hm.keys())
+
 
 if __name__ == "__main__":
     main()

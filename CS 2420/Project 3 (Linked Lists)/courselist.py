@@ -1,15 +1,17 @@
 """builds the linked list"""
 
+
 class CourseList:
     """Course list class builds the linked list"""
-    def __init__(self, Course = None):
+
+    def __init__(self, Course=None):
         """to initialize all needed data for an empty list"""
         self.head = Course
 
     def insert(self, Course):
         """insert the specified Course in Course Number ascending order"""
         cur = self.head
-        #print(cur.course.course_num)
+        # print(cur.course.course_num)
 
         if self.head is None:
             Course.next = None
@@ -18,7 +20,7 @@ class CourseList:
         elif self.head.course_num >= Course.course_num:
             Course.next = self.head
             self.head = Course
-            #print("assigned", cur.course_num, "before", cur.next.course_num)
+            # print("assigned", cur.course_num, "before", cur.next.course_num)
 
         else:
             while cur.next is not None and cur.next.course_num < Course.course_num:
@@ -117,7 +119,7 @@ class CourseList:
         return True
 
     def __str__(self):
-        """returns a string with each Course’s data on a separate line 
+        """returns a string with each Course’s data on a separate line
         (as shown in the Program Output)"""
         cur = self.head
         my_str = ""

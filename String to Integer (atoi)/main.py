@@ -1,7 +1,7 @@
 class Solution:
     def myAtoi(self, s: str) -> int:
         n = 1
-        if '-' in s:
+        if "-" in s:
             n = -1
 
         # num_filter = filter(str.isdigit, s)

@@ -1,10 +1,12 @@
 """Sort.py is a program composed of 4 different sorting algorithms"""
 
+
 def quicksort(lyst):
     """calls the quicksort algorithm"""
     start = 0
     lystlen = len(lyst)
     return doQuicksort(lyst, start, lystlen - 1)
+
 
 def doQuicksort(lyst, start, end):
     """implement quicksort, return the sorted list"""
@@ -27,7 +29,7 @@ def doQuicksort(lyst, start, end):
         lyst[end], lyst[pivot_index] = lyst[pivot_index], lyst[end]
         return end
 
-    if (start < end):
+    if start < end:
         p = partition(lyst, start, end)
         doQuicksort(lyst, start, p - 1)
         doQuicksort(lyst, p + 1, end)
@@ -39,7 +41,7 @@ def mergesort(lyst):
     """implement mergesort, return the sorted list"""
     if len(lyst) > 1:
 
-        mid = len(lyst)//2
+        mid = len(lyst) // 2
         left = lyst[:mid]
         right = lyst[mid:]
 
@@ -76,7 +78,7 @@ def selection_sort(lyst):
     for i in range(len(lyst)):
         min = i
 
-        for j in range(i+1, len(lyst)):
+        for j in range(i + 1, len(lyst)):
             if lyst[min] > lyst[j]:
                 min = j
 
@@ -89,7 +91,7 @@ def insertion_sort(lyst):
     """implement insertion sort, return the sorted list"""
     for i in range(1, len(lyst)):
         pos = lyst[i]
-        j = i-1
+        j = i - 1
 
         while j >= 0 and pos < lyst[j]:
             lyst[j + 1] = lyst[j]
@@ -97,24 +99,27 @@ def insertion_sort(lyst):
         lyst[j + 1] = pos
     return lyst
 
+
 def is_sorted(lyst):
     """implment is_sorted function, return bool whether lyst is sorted"""
     prev = lyst[0]
-    #print("INITIAL: ", prev)
+    # print("INITIAL: ", prev)
 
     for i in lyst:
-        #print(prev, i)
+        # print(prev, i)
         if prev > i or not isinstance(i, int) or not isinstance(lyst, list):
-            #if prev is greater than next, or if i is not an int, or if lyst is not a list
+            # if prev is greater than next, or if i is not an int, or if lyst is not a list
             return False
         prev = i
     return True
 
+
 def main():
     """main function"""
-    lyst = [53, 60, 80, 90, 23, 12, 56 ,67, 32, 80]
+    lyst = [53, 60, 80, 90, 23, 12, 56, 67, 32, 80]
     insertion_sort(lyst)
     pass
+
 
 if __name__ == "__main__":
     """calls main function"""

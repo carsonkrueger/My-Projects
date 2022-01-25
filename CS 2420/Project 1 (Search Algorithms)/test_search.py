@@ -7,12 +7,14 @@ import time
 
 DATA_SIZE = 1000000
 
+
 def make_data():
     seed(0)
     data = sample(range(DATA_SIZE * 3), k=DATA_SIZE)
     data.sort()
     while True:
         yield data
+
 
 def test_search_at_end():
     gen = make_data()
@@ -35,6 +37,7 @@ def test_search_at_end():
     assert result
     assert fastest * 10000 < slowest * 10000
 
+
 def test_search_at_beginning():
     gen = make_data()
     data = next(gen)
@@ -47,6 +50,7 @@ def test_search_at_beginning():
 
     result = jump_search(data, data[0])
     assert result
+
 
 def test_search_at_middle():
     gen = make_data()
@@ -61,6 +65,7 @@ def test_search_at_middle():
     result = jump_search(data, data[(DATA_SIZE // 2) - 1])
     assert result
 
+
 def test_search_not_found():
     gen = make_data()
     data = next(gen)
@@ -74,10 +79,11 @@ def test_search_not_found():
     result = jump_search(data, DATA_SIZE * 4)
     assert not result
 
+
 def test_code_style():
     from pylint.lint import Run
 
-    results = Run(['search.py'], exit=False)
+    results = Run(["search.py"], exit=False)
     expected = 8.5
-    actual = results.linter.stats['global_note']
+    actual = results.linter.stats["global_note"]
     assert actual >= expected

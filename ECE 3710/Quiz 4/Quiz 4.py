@@ -6,8 +6,8 @@ import matplotlib.pyplot as plt
 
 def main():
     x = [0, 1, 3, 4, 5]
-    y = [.1, .2, .2, .4, .1]
-    y2 = [.1, .3, .5, .9, 1]
+    y = [0.1, 0.2, 0.2, 0.4, 0.1]
+    y2 = [0.1, 0.3, 0.5, 0.9, 1]
     fig = plt.figure()
     plt.bar(x, y2)
     plt.show()

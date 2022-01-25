@@ -4,11 +4,11 @@ class Solution:
         if not s:
             return 0
         else:
-            temp = ''
+            temp = ""
             for char in s:
                 if char in temp:
                     longest = max(longest, len(temp))
-                    temp = temp[temp.index(char)+1:]
+                    temp = temp[temp.index(char) + 1 :]
                 temp += char
                 if len(temp) == len(s):
                     longest = len(temp)

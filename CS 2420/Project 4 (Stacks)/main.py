@@ -3,21 +3,23 @@ Also evals postfix for answer."""
 
 from stack import Stack
 
+
 def main():
     """Main function"""
     f = open("data.txt", "r")
 
     for line in f:
-        
+
         # print(line.replace(" ", ""))
         # print("infix:", line)
         line = line.replace(" ", "").strip()
         print(eval_postfix(in2post(line)))
 
+
 def eval_postfix(expr):
     """Evaluates postfix expression and returns answer"""
     stak = Stack()
-    
+
     if expr == "" or expr == " " or expr == None:
         raise ValueError
 
@@ -39,6 +41,7 @@ def eval_postfix(expr):
 
     return float(stak.pop())
 
+
 def in2post(expr):
     """Converst infix expression to postfix"""
     if not isinstance(expr, str):
@@ -51,15 +54,15 @@ def in2post(expr):
     for i in expr:
         if stak.is_operand(i):
             stak.output.append(i)
-            
-        elif i  == '(':
+
+        elif i == "(":
             stak.push(i)
 
-        elif i == ')':
-            while (not stak.is_empty()) and stak.top() != '(':
+        elif i == ")":
+            while (not stak.is_empty()) and stak.top() != "(":
                 a = stak.pop()
                 stak.output.append(a)
-            if not stak.is_empty() and stak.top() != '(':
+            if not stak.is_empty() and stak.top() != "(":
                 return -1
             else:
                 try:
@@ -69,7 +72,7 @@ def in2post(expr):
 
         # An operator is encountered
         else:
-            while(not stak.is_empty() and stak.top() != "(" and stak.check_prec(i)):
+            while not stak.is_empty() and stak.top() != "(" and stak.check_prec(i):
                 stak.output.append(stak.pop())
             stak.push(i)
 
@@ -79,6 +82,7 @@ def in2post(expr):
 
     print("".join(stak.output))
     return "".join(stak.output)
+
 
 if __name__ == "__main__":
     """Calls main function"""

@@ -15,7 +15,7 @@ def main():
         course = Course(int(line[0]), line[1], float(line[2]), float(line[3]))
 
         if LinkedList.head == None:
-            LinkedList.head = course   # inserts head
+            LinkedList.head = course  # inserts head
         else:
             LinkedList.insert(course)  # inserts middle elements
 

@@ -14,11 +14,11 @@ class Solution:
 
         concatVal1 = concatVal2 = ""
 
-        while(l1):
+        while l1:
             concatVal1 = str(l1.val) + concatVal1
             l1 = l1.next
 
-        while(l2):
+        while l2:
             concatVal2 = str(l2.val) + concatVal2
             l2 = l2.next
 
@@ -35,7 +35,7 @@ class Solution:
             cur.next = ListNode(int(i))
             cur = cur.next
 
-        return(initial.next)
+        return initial.next
 
 
 def main():

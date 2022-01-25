@@ -1,6 +1,7 @@
 import sys
 import math
 
+
 class Graph:
     def __init__(self) -> None:
         """Initializes the class"""
@@ -22,8 +23,12 @@ class Graph:
     def add_edge(self, src, dest, w):
         """add an edge from vertex src to vertex dest with weight w. Return the graph.
         validate src, dest, and w: raise ValueError if not valid."""
-        if not isinstance(src, str) or not isinstance(dest, str) or not (isinstance(w, int)
-        or isinstance(w, float)) or not len(src) + len(dest) == 2:
+        if (
+            not isinstance(src, str)
+            or not isinstance(dest, str)
+            or not (isinstance(w, int) or isinstance(w, float))
+            or not len(src) + len(dest) == 2
+        ):
             raise ValueError
 
         if (src, dest, w) not in self.edges:
@@ -88,17 +93,17 @@ class Graph:
         total_dist = dictionary.get(dest)[1]
         path = [dest]
 
-        #print("YO", src, dest)
-        #print(path, dest)
+        # print("YO", src, dest)
+        # print(path, dest)
 
         dest = dictionary.get(dest)[0]
         path.insert(0, dest)
 
-        #print(path, dest)
+        # print(path, dest)
 
         while dest != src:
             dest = dictionary.get(dest)[0]
-            #total_dist += dictionary.get(dest)[1]
+            # total_dist += dictionary.get(dest)[1]
             path.insert(0, dest)
 
         if total_dist == sys.maxsize:
@@ -109,12 +114,12 @@ class Graph:
         """Return a dictionary of the shortest weighted path between src and all other vertices
         using Dijkstra's Shortest Path algorithm. In the dictionary, the key is the the destination
         vertex label, the value is a list of vertices on the path from src to dest inclusive."""
-        #print("EDGES", self.edges)
-        dictionary = self.dijkstra('A')
+        # print("EDGES", self.edges)
+        dictionary = self.dijkstra("A")
         all_paths = {}
         absolute_src = src
 
-        #print("src", src)
+        # print("src", src)
         print("DICTIONARY", dictionary)
 
         for vert in self.vertices:
@@ -122,9 +127,9 @@ class Graph:
             print(src)
             path = []
 
-            while(True):
+            while True:
                 path.insert(0, src)
-                #print(src)
+                # print(src)
 
                 if src == absolute_src:
                     all_paths[vert] = path
@@ -135,7 +140,7 @@ class Graph:
                     break
 
                 src = dictionary.get(src)[0]
-                #print("-------A:", dictionary.get(src)[0])
+                # print("-------A:", dictionary.get(src)[0])
 
         return all_paths
 
@@ -150,7 +155,7 @@ class Graph:
 
         dist[src] = [None, 0]
 
-        while(True):
+        while True:
             for edge in self.edges:
 
                 if edge[0] == src and edge not in visited:
@@ -172,10 +177,24 @@ class Graph:
         string = "digraph G {\n"
 
         for edge in self.edges:
-            string += "   " + edge[0] + " -> " + edge[1] + " [label=" + "\"" + str(float(edge[2])) + "\"" + ",weight=" + "\"" + str(float(edge[2])) + "\"];"
+            string += (
+                "   "
+                + edge[0]
+                + " -> "
+                + edge[1]
+                + " [label="
+                + '"'
+                + str(float(edge[2]))
+                + '"'
+                + ",weight="
+                + '"'
+                + str(float(edge[2]))
+                + '"];'
+            )
             string += "\n"
 
         return string + "}\n"
+
 
 def main():
     """driver function"""
@@ -196,7 +215,8 @@ def main():
 
     g.add_edge("E", "F", 1.0)
 
-    g.get_weight('A', 'Z')
+    g.get_weight("A", "Z")
+
 
 if __name__ == "__main__":
     """calls main"""

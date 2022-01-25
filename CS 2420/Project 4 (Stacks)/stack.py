@@ -1,13 +1,15 @@
 """Creates stack objects"""
 
+
 class Stack:
     """Class creates stack objects"""
+
     def __init__(self):
         # Initializes the stack object
         self.shape = 0
         self.array = []
         self.output = []
-        self.precedence = ['-', '+', '/', '*']
+        self.precedence = ["-", "+", "/", "*"]
 
     def is_empty(self):
         """Returns True if stack is empty"""
@@ -23,15 +25,15 @@ class Stack:
         """Returns the top or last element in stack"""
         if self.is_empty():
             raise IndexError
-        return self.array[self.shape-1]
+        return self.array[self.shape - 1]
 
     def pop(self):
         """Pops and returns top element"""
         if self.is_empty():
             raise IndexError
-            
+
         self.shape = self.shape - 1
-        #return self.array.pop()
+        # return self.array.pop()
         last = self.array.pop()
         try:
             return float(last)

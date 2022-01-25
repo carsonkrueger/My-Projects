@@ -1,5 +1,6 @@
 """Builds the Course objects"""
 
+
 class Course:
     """must have default values for all parameters and must validate all parameters."""
 

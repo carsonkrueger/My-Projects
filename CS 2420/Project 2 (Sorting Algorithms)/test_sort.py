@@ -1,4 +1,4 @@
-'''
+"""
 Project Name: Project 2: Sort Test Code
 Author: George Rudolph
 Date: 3 Jul 2020
@@ -18,11 +18,12 @@ in their copy of search.py. They should not modify this file test_search.py.
 
 To run test_search from command line:
 python -m pytest test_sort.py
-'''
+"""
 
 from sort import selection_sort, insertion_sort, mergesort, quicksort, is_sorted
 from random import seed, sample
 from time import perf_counter
+
 
 def test_sort_times():
     data_size = 1000
@@ -67,6 +68,7 @@ def test_sort_times():
     assert quick_elapsed_time < selection_elapsed_time
     assert tim_elapsed_time < merge_elapsed_time
 
+
 def test_sorted_list():
     data_size = 1000
     seed(42)
@@ -82,17 +84,18 @@ def test_sorted_list():
     test_data = quicksort(orig_data.copy())
     assert is_sorted(test_data)
 
+
 def test_code_quality():
     from pylint.lint import Run
 
-    results = Run(['sort.py'], exit=False)
+    results = Run(["sort.py"], exit=False)
     expected = 8.5
-    actual = results.linter.stats['global_note']
+    actual = results.linter.stats["global_note"]
     assert actual >= expected
 
 
 if __name__ == "__main__":
-    ''' this code only executes if run as a standalone program.'''
+    """this code only executes if run as a standalone program."""
     test_sort_times()
     test_sorted_list()
     test_code_quality()

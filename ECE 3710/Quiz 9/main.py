@@ -4,8 +4,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 import scipy.stats as sc
 
+
 def main():
-    x=[0,0,0.1,0.5,0.9,0.2,0.1]
+    x = [0, 0, 0.1, 0.5, 0.9, 0.2, 0.1]
     mean = s.mean(x)
     variance = s.variance(x)
     print("X's Mean:", mean, "StdDev:", variance)
@@ -16,8 +17,7 @@ def main():
     plt.plot(x_values, y_values.pdf(x_values))
     plt.show()
 
-
-    gamma_values = sc.gamma(.6, 2.35)
+    gamma_values = sc.gamma(0.6, 2.35)
     plt.plot(x_values, gamma_values.pdf(x_values))
     plt.show()
 

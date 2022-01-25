@@ -5,29 +5,27 @@ import matplotlib.pyplot as plt
 from scipy import stats
 
 
-
 def main():
     x = [26.6, 26, 27.4, 21.4]
-    y= [1.58, 1.45, 1.13, .96]
+    y = [1.58, 1.45, 1.13, 0.96]
 
     calcCoefficient(x, y)
 
 
-
 def calcCoefficient(x, y):
-    slope, intercept, r_value, p_value, std_err = stats.linregress(x,y)
+    slope, intercept, r_value, p_value, std_err = stats.linregress(x, y)
     print("Linear Regression:", slope, "+", intercept)
 
     xStdev = s.stdev(x)
     yStdev = s.stdev(y)
     xMean = s.mean(x)
     yMean = s.mean(y)
-    #print("xMean:", xStdev)
+    # print("xMean:", xStdev)
 
     output = 0
     for i in range(len(x)):
-        output += ((x[i] - xMean)/xStdev) * ((y[i] - yMean)/yStdev)
-    output *= 1/(len(x)-1)
+        output += ((x[i] - xMean) / xStdev) * ((y[i] - yMean) / yStdev)
+    output *= 1 / (len(x) - 1)
 
     print("Correlation Coefficient:", output)
 
