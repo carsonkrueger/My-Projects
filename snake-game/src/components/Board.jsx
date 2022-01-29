@@ -1,11 +1,15 @@
-import React, { Component } from "react";
+import React, { Component, useState } from "react";
 import "./boardStyles.css";
 
 const Board = () => {
   const BOARD_SIZE = 10;
-  let board = new Array(BOARD_SIZE)
-    .fill(0)
-    .map((row) => new Array(BOARD_SIZE).fill(0));
+  let board = useState(CreateBoard(BOARD_SIZE));
+
+  return board;
+};
+
+const CreateBoard = (size) => {
+  const board = new Array(size).fill(0).map((row) => new Array(size).fill(0));
 
   return (
     <div className="board">
@@ -20,7 +24,7 @@ const Board = () => {
   );
 };
 
-class SnakeLinkedList {
+class LinkedList {
   constructor(value) {
     const node = LinkedListNode(value);
     this.head = node;
