@@ -1,6 +1,0 @@
-Property of Carson Krueger
-
-The Program is implemented to concatonate all numbers of a given linked list and concatonate
-another linked list seperately with the addTwoNumbers() function. The sum is then found between 
-the lists. The sum is returned as a new linked list with each digit being an element in the 
-list. The e# and p# in Main() can be modified to test the inputed lists.
