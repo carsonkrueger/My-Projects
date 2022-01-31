@@ -3,36 +3,33 @@ from math import ceil
 
 class Solution:
     def longestPalindrome(self, s: str) -> str:
-        if not s:
-            return ""
-
-        longest = ""
-        longLen = 0
+        palindrome = ""
+        pal_len = 0
 
         for i in range(len(s)):
-            left, right = i, i
 
-            while left >= 0 and right < len(s) and s[left] == s[right]:
-                if (right - left + 1) > longLen:
-                    longest = s[left : right + 1]
-                    longLen = right - left + 1
-                left -= 1
-                right += 1
+            l, r = i, i
+            while(l >= 0 and r < len(s) and s[l] == s[r]):
+                if(r - l + 1) > pal_len:
+                    palindrome = s[l:r+1]
+                    pal_len = r - l + 1
+                r += 1
+                l -= 1
 
-            left, right = i, i + 1
-            while left >= 0 and right < len(s) and s[left] == s[right]:
-                if (right - left + 1) > longLen:
-                    longest = s[left : right + 1]
-                    longLen = right - left + 1
-                left -= 1
-                right += 1
-
-        return longest
+            l, r = i, i+1
+            while(l >= 0 and r < len(s) and s[l] == s[r]):
+                if(r - l + 1) > pal_len:
+                    palindrome = s[l:r+1]
+                    pal_len = r - l + 1
+                r += 1
+                l -= 1
+        
+        return palindrome
 
 
 def main():
     sol = Solution()
-    palindromeInput = "abba"  # CHANGE ME TO TEST
+    palindromeInput = "babad"  # CHANGE ME TO TEST
     print("returned", sol.longestPalindrome(palindromeInput))
     # palindromeInput = "oabba"  # CHANGE ME TO TEST
     # print("returned", sol.longestPalindrome(palindromeInput))
