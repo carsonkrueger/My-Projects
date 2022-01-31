@@ -8,6 +8,7 @@ class Solution:
 
         for i in range(len(s)):
 
+            # odd palindrome
             l, r = i, i
             while(l >= 0 and r < len(s) and s[l] == s[r]):
                 if(r - l + 1) > pal_len:
@@ -16,6 +17,7 @@ class Solution:
                 r += 1
                 l -= 1
 
+            # Even palindrome
             l, r = i, i+1
             while(l >= 0 and r < len(s) and s[l] == s[r]):
                 if(r - l + 1) > pal_len:
