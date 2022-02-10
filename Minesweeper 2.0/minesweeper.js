@@ -41,7 +41,7 @@ function doJsonServerThing() {
     let obj = JSON.parse(resp).randomString;
     obj.forEach((el) => {
       theString += el.txt + " ";
-    })
+    });
     parsedData.innerHTML = theString;
     //console.log(resp);
   };
@@ -56,7 +56,6 @@ clearButton.addEventListener("click", (ev) => {
 });
 
 function shuffle() {
-  //<----------------------------------------------------------MAKE SURE TO UNCOMMENT
   shuffledBoard.sort(() => Math.random() - 0.5);
   gameBoard = [];
   //console.log(shuffledBoard);
@@ -67,7 +66,7 @@ function buildGrid() {
   uncoverScore = 0;
 
   gameoverDiv.style.display = "none";
-  shuffle(); //<----------------------------------------------------------MAKE SURE TO UNCOMMENT
+  shuffle();
   button.innerHTML = "RESET";
   theGrid.style = "border: grey solid 4px;";
   grid.innerHTML = ""; //deconstructs for resetting
