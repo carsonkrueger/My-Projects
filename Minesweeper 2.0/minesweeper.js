@@ -6,9 +6,9 @@ const rules = document.getElementById("rules");
 const grid = document.getElementById("theGrid");
 const button = document.getElementById("start");
 const body = document.getElementById("theBody");
-const storageParagraph = document.getElementById("storage");
-const clearButton = document.getElementById("clearButton");
-const parsedData = document.getElementById("parsedData");
+// const storageParagraph = document.getElementById("storage");
+// const clearButton = document.getElementById("clearButton");
+// const parsedData = document.getElementById("parsedData");
 
 let gameBoard = [];
 const width = 20;
@@ -24,36 +24,36 @@ let shuffledBoard = emptyBoard.concat(bombBoard);
 
 localStorage.setItem("time", Date());
 let timestamp = localStorage.getItem("time");
-storageParagraph.innerHTML = "Current Date: " + timestamp;
+// storageParagraph.innerHTML = "Current Date: " + timestamp;
 
 doJsonServerThing();
 buildGrid();
 
 rules.style.display = "flex";
-clearButton.style.display = "flex";
+// clearButton.style.display = "flex";
 
-function doJsonServerThing() {
-  let req = new XMLHttpRequest();
+// function doJsonServerThing() {
+//   let req = new XMLHttpRequest();
 
-  req.onreadystatechange = function () {
-    let resp = this.responseText;
-    let theString = "";
-    let obj = JSON.parse(resp).randomString;
-    obj.forEach((el) => {
-      theString += el.txt + " ";
-    });
-    parsedData.innerHTML = theString;
-    //console.log(resp);
-  };
+//   req.onreadystatechange = function () {
+//     let resp = this.responseText;
+//     let theString = "";
+//     let obj = JSON.parse(resp).randomString;
+//     obj.forEach((el) => {
+//       theString += el.txt + " ";
+//     });
+//     parsedData.innerHTML = theString;
+//     //console.log(resp);
+//   };
 
-  req.open("GET", (url = "gameBoardy.json"), false);
-  req.send();
-}
+//   req.open("GET", (url = "gameBoardy.json"), false);
+//   req.send();
+// }
 
-clearButton.addEventListener("click", (ev) => {
-  localStorage.clear();
-  storageParagraph.innerHTML = "";
-});
+// clearButton.addEventListener("click", (ev) => {
+//   localStorage.clear();
+//   storageParagraph.innerHTML = "";
+// });
 
 function shuffle() {
   shuffledBoard.sort(() => Math.random() - 0.5);
@@ -106,7 +106,7 @@ function uncover(sqr) {
   let isBomb = shuffledBoard[id] === "b" ? true : false;
 
   if (isBomb) {
-    sqr.src = "bomb.png"; // <-------------------- GAMEOVER
+    sqr.src = "bomb.png"; // GAMEOVER
     Gameover();
   } else {
     // IF sqr IS NOT A BOMB
@@ -114,12 +114,13 @@ function uncover(sqr) {
       Win();
       return;
     }
-    calcBombsNearRecursively(sqr);
+    calcBombsNearRecursively(sqr); // Clear tiles and calc bombs near tile
   }
 }
 
 function calcBombsNearRecursively(sqr) {
-  //WILL FIND NUMBER OF BOMBS NEAR A SQUARE AND PRINT IT ON SQUARE OR CLEAR TILES IF NO BOMBS ARE NEAR
+  /* WILL FIND NUMBER OF BOMBS NEAR A SQUARE AND PRINT IT ON SQUARE OR CLEAR 
+  TILES IF NO BOMBS ARE NEAR */
   let id = Number(sqr.id);
   let bombsNear = 0;
   bombsNear = findBombs(id); // calcs bombs near sqr
@@ -138,10 +139,10 @@ function calcBombsNearRecursively(sqr) {
 function clearTilesNear(oldId) {
   //RECURSIVE
   const indexes = [-1, -20, +20, +1];
-  const topIndexes = [-19, -21];
-  const rightIndexes = [-19, 21];
-  const bottomIndexes = [19, 21];
-  const leftIndexes = [19, -21];
+  // const topIndexes = [-19, -21];
+  // const rightIndexes = [-19, 21];
+  // const bottomIndexes = [19, 21];
+  // const leftIndexes = [19, -21];
 
   indexes.forEach((el) => {
     if (oldId % 20 === 0 && el === -1) {
@@ -151,6 +152,7 @@ function clearTilesNear(oldId) {
       // if on edge
       return;
     }
+
     let newSqr = 0;
     let newId = 0;
 
@@ -163,12 +165,13 @@ function clearTilesNear(oldId) {
     }
 
     uncoverScore += 1;
-    //console.log(uncoverScore);
-    if (findBombs(newId) === 0) {
+    numBombsNearTile = findBombs(newId);
+
+    if (numBombsNearTile === 0) {
       newSqr.parentNode.innerHTML = "";
       clearTilesNear(newId);
     } else {
-      newSqr.parentNode.innerHTML = findBombs(newId);
+      newSqr.parentNode.innerHTML = numBombsNearTile;
     }
     // else if ((oldId - newId) === 1){
 
