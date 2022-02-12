@@ -22,14 +22,12 @@ const bombBoard = Array(bombAmount).fill("b");
 const emptyBoard = Array(emptyAmount).fill("e");
 let shuffledBoard = emptyBoard.concat(bombBoard);
 
-localStorage.setItem("time", Date());
-let timestamp = localStorage.getItem("time");
+// localStorage.setItem("time", Date());
+// let timestamp = localStorage.getItem("time");
 // storageParagraph.innerHTML = "Current Date: " + timestamp;
 
-doJsonServerThing();
-buildGrid();
+// doJsonServerThing();
 
-rules.style.display = "flex";
 // clearButton.style.display = "flex";
 
 // function doJsonServerThing() {
@@ -54,6 +52,9 @@ rules.style.display = "flex";
 //   localStorage.clear();
 //   storageParagraph.innerHTML = "";
 // });
+
+buildGrid();
+rules.style.display = "flex";
 
 function shuffle() {
   shuffledBoard.sort(() => Math.random() - 0.5);
@@ -137,7 +138,7 @@ function calcBombsNearRecursively(sqr) {
 }
 
 function clearTilesNear(oldId) {
-  //RECURSIVE
+  // RECURSIVE
   const indexes = [-1, -20, +20, +1];
   // const topIndexes = [-19, -21];
   // const rightIndexes = [-19, 21];
