@@ -1,8 +1,11 @@
+#root {
+  display: flex;
+  justify-content: center;
+}
+
 .board {
-  margin-top: 10%;
-  margin-left: 37%;
-  /* outline: 2px solid rgb(134, 154, 189); */
-  display: inline-block;
+  outline: 2px solid rgb(134, 154, 189);
+  display: block;
 }
 
 .row {
