@@ -3,7 +3,8 @@ import "./boardStyles.css";
 
 const Board = () => {
   const BOARD_SIZE = 10;
-  let board = useState(CreateBoard(BOARD_SIZE));
+  let [board, setBoard] = useState(CreateBoard(BOARD_SIZE));
+  //let [snake, setSnake] = useState(Snake());
 
   return board;
 };
@@ -37,5 +38,11 @@ class LinkedListNode {
     this.next = null;
   }
 }
+
+// const Snake = () => {
+//   let defaultSnakeIndex = Math.floor(Board.BOARD_SIZE / 2);
+
+//   console.log(Board.board[defaultSnakeIndex][defaultSnakeIndex]);
+// };
 
 export default Board;
