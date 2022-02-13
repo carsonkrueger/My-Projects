@@ -19,14 +19,14 @@
   display: inline-block;
 }
 
-.snake_cell {
+.cell-snake {
   width: 50px;
   height: 50px;
   background-color: seagreen;
   display: inline-block;
 }
 
-.apple_cell {
+.cell-apple {
   width: 50px;
   height: 50px;
   background-color: rgb(214, 86, 71);
