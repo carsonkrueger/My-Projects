@@ -1,10 +1,15 @@
 import React, { Component, useState } from "react";
+import Math from "react";
 import "./boardStyles.css";
 
 const Board = () => {
   const BOARD_SIZE = 10;
-  let [board, setBoard] = useState(CreateBoard(BOARD_SIZE));
-  //let [snake, setSnake] = useState(Snake());
+  const initSnakeIdx = Math.floor(BOARD_SIZE / 2);
+
+  const [board, setBoard] = useState(CreateBoard(BOARD_SIZE));
+  const [snake, setSnake] = useState(
+    LinkedList({ initSnakeIdx: initSnakeIdx })
+  );
 
   return board;
 };
@@ -17,7 +22,12 @@ const CreateBoard = (size) => {
       {board.map((row, rowIdx) => (
         <div key={rowIdx} className="row">
           {row.map((cell, cellIdx) => (
-            <div key={cellIdx} className="cell"></div>
+            <div
+              key={cellIdx}
+              className={`cell${
+                Board.snake.node.has({ rowIdx, cellIdx }) ? "-snake" : ""
+              }`}
+            ></div>
           ))}
         </div>
       ))}
@@ -30,6 +40,17 @@ class LinkedList {
     const node = LinkedListNode(value);
     this.head = node;
   }
+
+  has = (rowIdx, cellIdx) => {
+    let tempNode = this.node;
+    while (tempNode.next !== null) {
+      if (tempNode.value === { rowIdx, cellIdx }) {
+        return true;
+      }
+      tempNode = this.node.next;
+    }
+    return false;
+  };
 }
 
 class LinkedListNode {
@@ -38,11 +59,5 @@ class LinkedListNode {
     this.next = null;
   }
 }
-
-// const Snake = () => {
-//   let defaultSnakeIndex = Math.floor(Board.BOARD_SIZE / 2);
-
-//   console.log(Board.board[defaultSnakeIndex][defaultSnakeIndex]);
-// };
 
 export default Board;
