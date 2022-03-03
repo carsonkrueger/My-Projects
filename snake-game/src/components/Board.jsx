@@ -1,20 +1,80 @@
 import React, { Component, useState } from "react";
-import Math from "react";
+// import { Math } from "react";
 import "./boardStyles.css";
+
+class LinkedList {
+  constructor(rowIdx, cellIdx) {
+    this.node = new LinkedListNode(rowIdx, cellIdx);
+    this.head = this.node;
+  }
+
+  has = (rowIdx, cellIdx) => {
+    let tempNode = this.node;
+    while (tempNode !== null) {
+      if (tempNode.value.row === rowIdx && tempNode.value.col === cellIdx) {
+        //console.log("FOUND", rowIdx, cellIdx);
+        return true;
+      }
+      //console.log(tempNode.value);
+      tempNode = tempNode.next;
+    }
+    //console.log("Null node, loop terminated");
+    return false;
+  };
+
+  getNextHeadPos = (key) => {
+    let pos = this.head.value;
+
+    switch (key) {
+      case "w":
+        pos.row += 1;
+        break;
+      case "a":
+        pos.col -= 1;
+        break;
+      case "s":
+        pos.row -= 1;
+        break;
+      case "d":
+        pos.col += 1;
+        break;
+      default:
+        break;
+    }
+
+    return pos;
+  };
+
+  move = (key) => {
+    this.head = getNextHeadPos(key);
+  };
+}
+
+class LinkedListNode {
+  constructor(rowIdx, cellIdx) {
+    //console.log("init", rowIdx, cellIdx);
+    this.value = { row: rowIdx, col: cellIdx };
+    this.next = null;
+  }
+}
 
 const Board = () => {
   const BOARD_SIZE = 10;
   const initSnakeIdx = Math.floor(BOARD_SIZE / 2);
 
-  const [board, setBoard] = useState(CreateBoard(BOARD_SIZE));
   const [snake, setSnake] = useState(
-    LinkedList({ initSnakeIdx: initSnakeIdx })
+    new LinkedList(initSnakeIdx, initSnakeIdx)
   );
+  const [board, setBoard] = useState(CreateBoard(BOARD_SIZE, snake));
 
+  document.addEventListener("keydown", (e) => {
+    // call move function in snake to move
+    snake.move(e.key);
+  });
   return board;
 };
 
-const CreateBoard = (size) => {
+const CreateBoard = (size, snake) => {
   const board = new Array(size).fill(0).map((row) => new Array(size).fill(0));
 
   return (
@@ -24,9 +84,7 @@ const CreateBoard = (size) => {
           {row.map((cell, cellIdx) => (
             <div
               key={cellIdx}
-              className={`cell${
-                Board.snake.node.has({ rowIdx, cellIdx }) ? "-snake" : ""
-              }`}
+              className={`cell${snake.has(rowIdx, cellIdx) ? "-snake" : ""}`}
             ></div>
           ))}
         </div>
@@ -34,30 +92,5 @@ const CreateBoard = (size) => {
     </div>
   );
 };
-
-class LinkedList {
-  constructor(value) {
-    const node = LinkedListNode(value);
-    this.head = node;
-  }
-
-  has = (rowIdx, cellIdx) => {
-    let tempNode = this.node;
-    while (tempNode.next !== null) {
-      if (tempNode.value === { rowIdx, cellIdx }) {
-        return true;
-      }
-      tempNode = this.node.next;
-    }
-    return false;
-  };
-}
-
-class LinkedListNode {
-  constructor(value) {
-    this.value = value;
-    this.next = null;
-  }
-}
 
 export default Board;
