@@ -1,81 +1,55 @@
-import React, { Component, useState } from "react";
+import React, { Component, useState, useEffect } from "react";
 // import { Math } from "react";
 import "./boardStyles.css";
-
-class LinkedList {
-  constructor(rowIdx, cellIdx) {
-    this.node = new LinkedListNode(rowIdx, cellIdx);
-    this.head = this.node;
-  }
-
-  has = (rowIdx, cellIdx) => {
-    let tempNode = this.node;
-    while (tempNode !== null) {
-      if (tempNode.value.row === rowIdx && tempNode.value.col === cellIdx) {
-        //console.log("FOUND", rowIdx, cellIdx);
-        return true;
-      }
-      //console.log(tempNode.value);
-      tempNode = tempNode.next;
-    }
-    //console.log("Null node, loop terminated");
-    return false;
-  };
-
-  getNextHeadPos = (key) => {
-    let pos = this.head.value;
-
-    switch (key) {
-      case "w":
-        pos.row += 1;
-        break;
-      case "a":
-        pos.col -= 1;
-        break;
-      case "s":
-        pos.row -= 1;
-        break;
-      case "d":
-        pos.col += 1;
-        break;
-      default:
-        break;
-    }
-
-    return pos;
-  };
-
-  move = (key) => {
-    this.head = getNextHeadPos(key);
-  };
-}
-
-class LinkedListNode {
-  constructor(rowIdx, cellIdx) {
-    //console.log("init", rowIdx, cellIdx);
-    this.value = { row: rowIdx, col: cellIdx };
-    this.next = null;
-  }
-}
 
 const Board = () => {
   const BOARD_SIZE = 10;
   const initSnakeIdx = Math.floor(BOARD_SIZE / 2);
+  console.log(initSnakeIdx);
 
-  const [snake, setSnake] = useState(
-    new LinkedList(initSnakeIdx, initSnakeIdx)
-  );
-  const [board, setBoard] = useState(CreateBoard(BOARD_SIZE, snake));
+  const [snake, setSnake] = useState([[initSnakeIdx, initSnakeIdx]]);
+  const [board, setBoard] = useState(CreateBoard(BOARD_SIZE));
 
-  document.addEventListener("keydown", (e) => {
-    // call move function in snake to move
-    snake.move(e.key);
-  });
-  return board;
-};
+  useEffect(() => {
+    window.addEventListener("keydown", (e) => {
+      // call move function in snake to move
+      move(e.key);
+      //console.log("Moved", e.key);
+    });
 
-const CreateBoard = (size, snake) => {
-  const board = new Array(size).fill(0).map((row) => new Array(size).fill(0));
+    return () => {
+      window.removeEventListener("keydown");
+    };
+  }),
+    [snake]; // NEED TO ADD REMOVE EVENT LISTENER
+
+  const move = (dir) => {
+    let newSnake = [];
+    switch (dir) {
+      case "w": // UP
+        newSnake.push([snake[0][0] - 1, snake[0][1]]);
+    }
+    newSnake.concat(snake);
+    //newSnake.pop() // remove tail to simulate movement
+    setSnake(newSnake);
+  };
+
+  const snakeIncludes = (rowIdx, colIdx) => {
+    for (let snkIdx = 0; snkIdx < snake.length; snkIdx++) {
+      const snakePiece = snake[snkIdx];
+
+      if ((5, 7) === (5, 6)) {
+        console.log("YO");
+      }
+
+      if (snakePiece[0] === rowIdx && snakePiece[1] === colIdx) {
+        console.log("FOUND SNAKE PIECE", snakePiece);
+        return true;
+      }
+      //console.log(snakePiece)
+      return false;
+    }
+  };
 
   return (
     <div className="board">
@@ -84,13 +58,20 @@ const CreateBoard = (size, snake) => {
           {row.map((cell, cellIdx) => (
             <div
               key={cellIdx}
-              className={`cell${snake.has(rowIdx, cellIdx) ? "-snake" : ""}`}
+              className={`cell${
+                snakeIncludes(rowIdx, cellIdx) ? "-snake" : ""
+              }`}
             ></div>
           ))}
         </div>
       ))}
     </div>
   );
+};
+
+const CreateBoard = (size) => {
+  const board = new Array(size).fill("").map((row) => new Array(size).fill(""));
+  return board;
 };
 
 export default Board;
