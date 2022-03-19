@@ -4,27 +4,36 @@ import "./boardStyles.css";
 
 const Board = () => {
   const BOARD_SIZE = 10;
-  const initSnakeIdx = Math.floor(BOARD_SIZE / 2);
-  console.log(initSnakeIdx);
+  const initSnakeIdx = Math.floor(BOARD_SIZE / 2) + 1;
+  //console.log(initSnakeIdx);
 
   const [snake, setSnake] = useState([[initSnakeIdx, initSnakeIdx]]); // front of array is head, back of array is tail
   const [board, setBoard] = useState(CreateBoard(BOARD_SIZE));
-  console.log(snake);
+  const [apple, setApple] = useState([5, 2]);
+  const [direction, setDirection] = useState(
+    new KeyboardEvent("keydown", { key: "w" })
+  );
 
   useEffect(() => {
-    window.addEventListener("keydown", move);
+    window.addEventListener("keydown", setDirection);
+
+    const intervalId = window.setInterval(() => {
+      move();
+    }, 400);
 
     return () => {
-      window.removeEventListener("keydown", move);
+      clearInterval(intervalId);
+      window.removeEventListener("keydown", setDirection);
     };
   }, [snake]);
 
-  const move = (e) => {
-    // console.log("Move method", e);
+  const move = () => {
+    //console.log("Move method", direction.key);
     let newHead = [];
     let newSnake = [...snake];
+    //console.log(newSnake);
 
-    switch (e.key) {
+    switch (direction.key) {
       case "w": // UP
         newHead = [snake[0][0] - 1, snake[0][1]]; // Next head position
         // console.log("moved UP");
@@ -41,12 +50,27 @@ const Board = () => {
         newHead = [snake[0][0], snake[0][1] + 1]; // Next head position
         // console.log("moved RIGHT");
         break;
+      default:
+        return;
     }
 
     newSnake.unshift(newHead); // Insert new head into snake
-    newSnake.pop(); // remove tail to simulate movement
+
+    if (snake.length >= 3) {
+      // dont remove tail at beginning to grow snake to 3 squares
+      newSnake.pop(); // remove tail to simulate movement
+    }
     setSnake(newSnake);
-    // console.log(snake);
+    //console.log(snake);
+  };
+
+  const isInBounds = (row, col) => {
+    if (row < 0 || row >= BOARD_SIZE) {
+      return false;
+    } else if (col < 0 || col >= BOARD_SIZE) {
+      return false;
+    }
+    return true;
   };
 
   const isSnake = (rowIdx, colIdx) => {
@@ -57,9 +81,23 @@ const Board = () => {
         // console.log("FOUND SNAKE PIECE", snakePiece);
         return true;
       }
-      //console.log(snakePiece)
-      return false;
     }
+    return false;
+  };
+
+  const isApple = (row, col) => {
+    if (apple[0] === row && apple[1] == col) {
+      return true;
+    }
+    return false;
+  };
+
+  const createApple = () => {
+    let row = Math.floor(Math.random() * BOARD_SIZE);
+    let col = Math.floor(Math.random() * BOARD_SIZE);
+
+    if (isSnake(row, col)) createApple();
+    return [row, col];
   };
 
   return (
@@ -69,7 +107,13 @@ const Board = () => {
           {row.map((cell, cellIdx) => (
             <div
               key={cellIdx}
-              className={`cell${isSnake(rowIdx, cellIdx) ? "-snake" : ""}`}
+              className={`cell${
+                isSnake(rowIdx, cellIdx)
+                  ? "-snake"
+                  : isApple(rowIdx, cellIdx)
+                  ? "-apple"
+                  : ""
+              }`}
             ></div>
           ))}
         </div>
