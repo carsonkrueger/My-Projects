@@ -3,13 +3,15 @@ import React, { useState, useEffect } from "react";
 import "./boardStyles.css";
 
 const Board = () => {
+  "use strict";
+
   const BOARD_SIZE = 10;
   const initSnakeIdx = Math.floor(BOARD_SIZE / 2) + 1;
   //console.log(initSnakeIdx);
 
   const [snake, setSnake] = useState([[initSnakeIdx, initSnakeIdx]]); // front of array is head, back of array is tail
   const [board, setBoard] = useState(CreateBoard(BOARD_SIZE));
-  const [apple, setApple] = useState([5, 2]);
+  const [apple, setApple] = useState(createApple());
   const [direction, setDirection] = useState(
     new KeyboardEvent("keydown", { key: "w" })
   );
@@ -73,7 +75,7 @@ const Board = () => {
     return true;
   };
 
-  const isSnake = (rowIdx, colIdx) => {
+  function isSnake(rowIdx, colIdx) {
     for (let snkIdx = 0; snkIdx < snake.length; snkIdx++) {
       const snakePiece = snake[snkIdx];
 
@@ -83,21 +85,22 @@ const Board = () => {
       }
     }
     return false;
-  };
+  }
+
+  function createApple() {
+    let row = Math.floor(Math.random() * BOARD_SIZE);
+    let col = Math.floor(Math.random() * BOARD_SIZE);
+
+    if (isSnake(row, col)) return createApple(); // Create different apple if (row, col) is a snake tile
+
+    return [row, col];
+  }
 
   const isApple = (row, col) => {
     if (apple[0] === row && apple[1] == col) {
       return true;
     }
     return false;
-  };
-
-  const createApple = () => {
-    let row = Math.floor(Math.random() * BOARD_SIZE);
-    let col = Math.floor(Math.random() * BOARD_SIZE);
-
-    if (isSnake(row, col)) createApple();
-    return [row, col];
   };
 
   return (
