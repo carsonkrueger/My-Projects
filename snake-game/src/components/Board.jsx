@@ -3,8 +3,6 @@ import React, { useState, useEffect } from "react";
 import "./boardStyles.css";
 
 const Board = () => {
-  "use strict";
-
   const BOARD_SIZE = 10;
   const initSnakeIdx = Math.floor(BOARD_SIZE / 2) + 1;
   //console.log(initSnakeIdx);
@@ -17,17 +15,59 @@ const Board = () => {
   );
 
   useEffect(() => {
-    window.addEventListener("keydown", setDirection);
+    window.addEventListener("keydown", checkAndSetDirection);
 
     const intervalId = window.setInterval(() => {
       move();
     }, 400);
 
+    let inBounds = isInBounds(snake[0][0], snake[0][1]);
+    let isCollision = isColliding(snake[0][0], snake[0][1]);
+
+    if (!inBounds || isCollision) {
+      //alert("GAME OVER");
+      clearInterval(intervalId);
+      window.removeEventListener("keydown", checkAndSetDirection);
+      //alert("GAME OVER");
+      return;
+    }
+
     return () => {
       clearInterval(intervalId);
-      window.removeEventListener("keydown", setDirection);
+      window.removeEventListener("keydown", checkAndSetDirection);
     };
   }, [snake]);
+
+  const checkAndSetDirection = (dir) => {
+    switch (dir.key) {
+      case "w":
+        if (direction.key === "s") {
+          return;
+        }
+        setDirection(dir);
+        break;
+      case "a":
+        if (direction.key === "d") {
+          return;
+        }
+        setDirection(dir);
+        break;
+      case "s":
+        if (direction.key === "w") {
+          return;
+        }
+        setDirection(dir);
+        break;
+      case "d":
+        if (direction.key === "a") {
+          return;
+        }
+        setDirection(dir);
+        break;
+      default:
+        break;
+    }
+  };
 
   const move = () => {
     //console.log("Move method", direction.key);
@@ -56,9 +96,12 @@ const Board = () => {
         return;
     }
 
-    newSnake.unshift(newHead); // Insert new head into snake
+    newSnake.unshift(newHead); // Insert new head into snake, at front
 
-    if (snake.length >= 3) {
+    if (isApple(newHead[0], newHead[1])) {
+      eatApple(); // creates new apple head
+      //will not remove tail to simulate growth
+    } else if (snake.length >= 3) {
       // dont remove tail at beginning to grow snake to 3 squares
       newSnake.pop(); // remove tail to simulate movement
     }
@@ -73,6 +116,28 @@ const Board = () => {
       return false;
     }
     return true;
+  };
+
+  const isColliding = (headRow, headCol) => {
+    //return new Promise(() => {
+    for (let i = 1; i < snake.length; i++) {
+      if (snake[i][0] == headRow && snake[i][1] == headCol) {
+        return true;
+      }
+    }
+    return false;
+    //});
+  };
+
+  const isApple = (row, col) => {
+    if (apple[0] === row && apple[1] == col) {
+      return true;
+    }
+    return false;
+  };
+
+  const eatApple = () => {
+    setApple(createApple());
   };
 
   function isSnake(rowIdx, colIdx) {
@@ -95,13 +160,6 @@ const Board = () => {
 
     return [row, col];
   }
-
-  const isApple = (row, col) => {
-    if (apple[0] === row && apple[1] == col) {
-      return true;
-    }
-    return false;
-  };
 
   return (
     <div className="board">
