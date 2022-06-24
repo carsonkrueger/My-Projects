@@ -1,5 +1,6 @@
-import { Component, React } from "react";
+import { Component, Fragment, React } from "react";
 import Board from "./Board";
+import "../styles/boardController.css";
 
 class BoardController extends Component {
   state = {
@@ -23,15 +24,17 @@ class BoardController extends Component {
 
   render() {
     return (
-      <>
+      <div id="controller">
+        <button id="start-btn" onClick={this.startBtn}>
+          {this.state.buttonName}
+        </button>
+
         {this.state.showBoard ? (
           <Board />
         ) : this.state.resetBoard ? (
           this.setState({ showBoard: true })
         ) : null}
-
-        <button onClick={this.startBtn}>{this.state.buttonName}</button>
-      </>
+      </div>
     );
   }
 }

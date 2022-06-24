@@ -1,11 +1,11 @@
-#root {
+/* #board-holder {
   display: flex;
   justify-content: center;
-}
+} */
 
-.board {
+#board {
   outline: 2px solid rgb(134, 154, 189);
-  display: block;
+  display: inline-block;
 }
 
 .row {

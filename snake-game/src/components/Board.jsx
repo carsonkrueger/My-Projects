@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 // import { Math } from "react";
-import "./boardStyles.css";
+import "../styles/boardStyles.css";
 
 const Board = () => {
   const BOARD_SIZE = 10;
@@ -121,7 +121,7 @@ const Board = () => {
   const isColliding = (headRow, headCol) => {
     //return new Promise(() => {
     for (let i = 1; i < snake.length; i++) {
-      if (snake[i][0] == headRow && snake[i][1] == headCol) {
+      if (snake[i][0] === headRow && snake[i][1] === headCol) {
         return true;
       }
     }
@@ -130,7 +130,7 @@ const Board = () => {
   };
 
   const isApple = (row, col) => {
-    if (apple[0] === row && apple[1] == col) {
+    if (apple[0] === row && apple[1] === col) {
       return true;
     }
     return false;
@@ -162,23 +162,25 @@ const Board = () => {
   }
 
   return (
-    <div className="board">
-      {board.map((row, rowIdx) => (
-        <div key={rowIdx} className="row">
-          {row.map((cell, cellIdx) => (
-            <div
-              key={cellIdx}
-              className={`cell${
-                isSnake(rowIdx, cellIdx)
-                  ? "-snake"
-                  : isApple(rowIdx, cellIdx)
-                  ? "-apple"
-                  : ""
-              }`}
-            ></div>
-          ))}
-        </div>
-      ))}
+    <div id="board-holder">
+      <div id="board">
+        {board.map((row, rowIdx) => (
+          <div key={rowIdx} className="row">
+            {row.map((cell, cellIdx) => (
+              <div
+                key={cellIdx}
+                className={`cell${
+                  isSnake(rowIdx, cellIdx)
+                    ? "-snake"
+                    : isApple(rowIdx, cellIdx)
+                    ? "-apple"
+                    : ""
+                }`}
+              ></div>
+            ))}
+          </div>
+        ))}
+      </div>
     </div>
   );
 };
