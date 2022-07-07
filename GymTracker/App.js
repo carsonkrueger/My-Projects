@@ -1,16 +1,27 @@
-import React from "react";
+import React, { useState } from "react";
+import {
+  SafeAreaView,
+  Text,
+  StyleSheet,
+  StatusBar,
+  TouchableOpacity,
+} from "react-native";
 
-import { StatusBar } from "expo-status-bar";
-import { SafeAreaView, StyleSheet, Text, View } from "react-native";
-
-import Row from "./components/Row.jsx";
+import Workout from "./components/Workout";
 
 export default function App() {
+  const [view, setView] = useState(0);
+
+  const ChangeView = (viewPage) => {
+    setView(viewPage);
+  };
+
   return (
     <SafeAreaView style={styles.container}>
-      <Text>BIG POG!</Text>
       <StatusBar style="auto" />
-      <Row></Row>
+      <TouchableOpacity onPress={() => ChangeView(1)}>
+        <Text>Create Workout</Text>
+      </TouchableOpacity>
     </SafeAreaView>
   );
 }
