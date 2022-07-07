@@ -1,36 +1,9 @@
-import React, { useState } from "react";
-import {
-  SafeAreaView,
-  Text,
-  StyleSheet,
-  StatusBar,
-  TouchableOpacity,
-} from "react-native";
+import React from "react";
+import { SafeAreaView, Text, StyleSheet, StatusBar } from "react-native";
+import { View } from "react-native-web";
 
-import Workout from "./components/Workout";
+import RootStack from "./navigators/RootStack";
 
 export default function App() {
-  const [view, setView] = useState(0);
-
-  const ChangeView = (viewPage) => {
-    setView(viewPage);
-  };
-
-  return (
-    <SafeAreaView style={styles.container}>
-      <StatusBar style="auto" />
-      <TouchableOpacity onPress={() => ChangeView(1)}>
-        <Text>Create Workout</Text>
-      </TouchableOpacity>
-    </SafeAreaView>
-  );
+  return <RootStack />;
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-});
