@@ -3,8 +3,8 @@ import React from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
-import Home from "../screens/Home";
-import Workout from "../screens/Workout";
+import HomeScreen from "../screens/HomeScreen";
+import WorkoutScreen from "../screens/WorkoutScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -21,8 +21,8 @@ const RootStack = () => {
           headerTitle: "",
         }}
       >
-        <Stack.Screen name="Home" component={Home} />
-        <Stack.Screen name="Workout" component={Workout} />
+        <Stack.Screen name="HomeScreen" component={HomeScreen} />
+        <Stack.Screen name="WorkoutScreen" component={WorkoutScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

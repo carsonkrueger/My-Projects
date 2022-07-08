@@ -13,7 +13,7 @@ const Home = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <TouchableOpacity onPress={() => navigation.navigate("Workout")}>
+      <TouchableOpacity onPress={() => navigation.navigate("WorkoutScreen")}>
         <Text>Create Workout</Text>
       </TouchableOpacity>
     </SafeAreaView>
