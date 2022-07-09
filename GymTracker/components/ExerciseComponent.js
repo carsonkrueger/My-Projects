@@ -6,10 +6,13 @@ import {
   StyleSheet,
   TextInput,
 } from "react-native";
+import { AntDesign } from "@expo/vector-icons";
+
+import SetComponent from "./SetComponent";
 
 const ExerciseComponent = (props) => {
   return (
-    <View>
+    <View style={styles.container}>
       <TextInput
         style={styles.title}
         placeholder="Enter Exercise Here"
@@ -23,31 +26,27 @@ const ExerciseComponent = (props) => {
         <Text style={styles.whiteText}>REPS</Text>
       </View>
 
-      <View>
-        <TextInput></TextInput>
-        <TextInput></TextInput>
-        <TextInput></TextInput>
-        <TextInput></TextInput>
-      </View>
+      <SetComponent />
     </View>
   );
 };
 
 const styles = StyleSheet.create({
+  container: {
+    backgroundColor: "orange",
+    width: "100%",
+  },
   title: {
     fontSize: 20,
     color: "white",
     paddingLeft: 10,
-    marginTop: 20,
-    backgroundColor: "#5e9acc",
+    marginTop: 50,
   },
   headers: {
     flexDirection: "row",
-    justifyContent: "space-evenly",
     color: "white",
     padding: 5,
     width: "100%",
-    backgroundColor: "#5e9acc",
   },
   whiteText: {
     color: "white",

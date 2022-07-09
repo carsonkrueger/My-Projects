@@ -22,7 +22,7 @@ const Workout = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView>
+      <ScrollView contentContainerStyle={styles.scrollStyle}>
         <View style={styles.screenHeader}>
           <TextInput
             style={styles.screenHeaderText}
@@ -35,7 +35,7 @@ const Workout = () => {
         })}
 
         <TouchableOpacity style={styles.addButton} onPress={AddExercise}>
-          <Text style={styles.addButtonText}>Add Exercise</Text>
+          <Text style={styles.addButtonText}>ADD EXERCISE</Text>
         </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>
@@ -43,32 +43,31 @@ const Workout = () => {
 };
 
 const styles = StyleSheet.create({
-  screenHeader: {
-    paddingTop: 60,
-    height: "15%",
-    width: "100%",
+  container: {
+    flex: 1,
+    backgroundColor: "#525252",
     alignItems: "center",
-    backgroundColor: "#5e9acc",
+    width: "100%",
+  },
+  scrollStyle: {
+    margin: 0,
+  },
+  screenHeader: {
+    marginTop: "16%",
+    alignItems: "center",
   },
   screenHeaderText: {
     fontSize: 25,
   },
-  container: {
-    flex: 1,
-    backgroundColor: "fff",
-    justifyContent: "center",
-  },
   addButton: {
-    width: "30%",
+    width: "35%",
     height: 25,
     alignItems: "center",
     justifyContent: "center",
-    borderRadius: 10,
-    backgroundColor: "#5e9acc",
   },
   addButtonText: {
+    fontSize: 16,
     color: "white",
-    alignContent: "center",
   },
 });
 

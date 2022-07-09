@@ -13,12 +13,8 @@ const RootStack = () => {
     <NavigationContainer>
       <Stack.Navigator
         screenOptions={{
-          // These styles hide the navigation bar at the top of the screen
-          headerStyled: {
-            backgroundColor: "transparent",
-          },
-          headerTransparent: true,
-          headerTitle: "",
+          // This style hides the navigation bar at the top of the screen
+          headerShown: false,
         }}
       >
         <Stack.Screen name="HomeScreen" component={HomeScreen} />
