@@ -6,7 +6,7 @@ import {
   StyleSheet,
   TextInput,
 } from "react-native";
-import { AntDesign } from "@expo/vector-icons";
+import { AntDesign, Feather } from "@expo/vector-icons";
 
 import SetComponent from "./SetComponent";
 
@@ -20,10 +20,19 @@ const ExerciseComponent = (props) => {
       ></TextInput>
 
       <View style={styles.headers}>
-        <Text style={styles.whiteText}>SET</Text>
-        <Text style={styles.whiteText}>PREV</Text>
-        <Text style={styles.whiteText}>WEIGHT</Text>
-        <Text style={styles.whiteText}>REPS</Text>
+        <View style={styles.setHead}>
+          <Text style={styles.whiteText}>SET</Text>
+        </View>
+        <View style={styles.prevHead}>
+          <Text style={styles.whiteText}>PREV</Text>
+        </View>
+        <View style={styles.weightHead}>
+          <Text style={styles.whiteText}>WEIGHT</Text>
+        </View>
+        <View style={styles.repHead}>
+          <Text style={styles.whiteText}>REPS</Text>
+        </View>
+        <View style={styles.emptyHead}>{/* Empty header */}</View>
       </View>
 
       <SetComponent />
@@ -33,7 +42,6 @@ const ExerciseComponent = (props) => {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "orange",
     width: "100%",
   },
   title: {
@@ -47,6 +55,25 @@ const styles = StyleSheet.create({
     color: "white",
     padding: 5,
     width: "100%",
+  },
+  setHead: {
+    flex: 0.6,
+    alignItems: "center",
+  },
+  prevHead: {
+    flex: 1,
+    alignItems: "center",
+  },
+  weightHead: {
+    flex: 1,
+    alignItems: "center",
+  },
+  repHead: {
+    flex: 0.8,
+    alignItems: "center",
+  },
+  emptyHead: {
+    flex: 0.7,
   },
   whiteText: {
     color: "white",

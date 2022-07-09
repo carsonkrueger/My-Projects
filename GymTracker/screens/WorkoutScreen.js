@@ -22,7 +22,10 @@ const Workout = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView contentContainerStyle={styles.scrollStyle}>
+      <ScrollView
+        style={styles.scroll}
+        contentContainerStyle={styles.scrollContent}
+      >
         <View style={styles.screenHeader}>
           <TextInput
             style={styles.screenHeaderText}
@@ -34,9 +37,11 @@ const Workout = () => {
           return <ExerciseComponent key={i} name={exercise[0]} />;
         })}
 
-        <TouchableOpacity style={styles.addButton} onPress={AddExercise}>
-          <Text style={styles.addButtonText}>ADD EXERCISE</Text>
-        </TouchableOpacity>
+        <View style={styles.addButton}>
+          <TouchableOpacity onPress={AddExercise}>
+            <Text style={styles.addButtonText}>ADD EXERCISE</Text>
+          </TouchableOpacity>
+        </View>
       </ScrollView>
     </SafeAreaView>
   );
@@ -44,14 +49,12 @@ const Workout = () => {
 
 const styles = StyleSheet.create({
   container: {
+    // Adding justifyContent or alignItems here will cause a bug with scrollView
     flex: 1,
     backgroundColor: "#525252",
-    alignItems: "center",
-    width: "100%",
   },
-  scrollStyle: {
-    margin: 0,
-  },
+  scrollContent: {},
+  scroll: {},
   screenHeader: {
     marginTop: "16%",
     alignItems: "center",
@@ -60,6 +63,7 @@ const styles = StyleSheet.create({
     fontSize: 25,
   },
   addButton: {
+    flex: 1,
     width: "35%",
     height: 25,
     alignItems: "center",
