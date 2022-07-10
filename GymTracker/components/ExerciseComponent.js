@@ -11,13 +11,20 @@ import { AntDesign, Feather } from "@expo/vector-icons";
 import SetComponent from "./SetComponent";
 
 const ExerciseComponent = (props) => {
+  const [setsArr, setSetsArr] = useState([["", 1]]);
+
+  const AddSet = () => {
+    setSetsArr([...setsArr, ["", setsArr.length + 1]]);
+    //exercisesArr.push("");
+  };
+
   return (
     <View style={styles.container}>
       <TextInput
         style={styles.title}
         placeholder="Enter Exercise Here"
         defaultValue={props.name}
-      ></TextInput>
+      ></TextInput> 
 
       <View style={styles.headers}>
         <View style={styles.setHead}>
@@ -35,7 +42,15 @@ const ExerciseComponent = (props) => {
         <View style={styles.emptyHead}>{/* Empty header */}</View>
       </View>
 
-      <SetComponent />
+      {setsArr.map((set, i) => {
+          return <SetComponent key={i} num={set[1]} />;
+        })}
+
+      <View style={styles.addSetContainer}>
+          <TouchableOpacity onPress={AddSet}>
+            <Text style={styles.addSet}>ADD SET</Text>
+          </TouchableOpacity>
+        </View>
     </View>
   );
 };
@@ -46,14 +61,13 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 20,
-    color: "white",
+    color: "#2494f0",
     paddingLeft: 10,
     marginTop: 50,
   },
   headers: {
     flexDirection: "row",
     color: "white",
-    padding: 5,
     width: "100%",
   },
   setHead: {
@@ -77,6 +91,14 @@ const styles = StyleSheet.create({
   },
   whiteText: {
     color: "white",
+  },
+  addSetContainer: {
+    alignItems:"center",
+  },
+  addSet: {
+    paddingTop: 7,
+    color: "#2494f0",
+    fontSize: 16,
   },
 });
 

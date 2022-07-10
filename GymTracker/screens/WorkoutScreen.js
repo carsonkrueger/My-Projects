@@ -37,9 +37,9 @@ const Workout = () => {
           return <ExerciseComponent key={i} name={exercise[0]} />;
         })}
 
-        <View style={styles.addButton}>
+        <View style={styles.addExerciseContainer}>
           <TouchableOpacity onPress={AddExercise}>
-            <Text style={styles.addButtonText}>ADD EXERCISE</Text>
+            <Text style={styles.addExerciseText}>ADD EXERCISE</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
@@ -62,16 +62,15 @@ const styles = StyleSheet.create({
   screenHeaderText: {
     fontSize: 25,
   },
-  addButton: {
+  addExerciseContainer: {
+    paddingTop: "10%",
     flex: 1,
-    width: "35%",
-    height: 25,
     alignItems: "center",
     justifyContent: "center",
   },
-  addButtonText: {
+  addExerciseText: {
     fontSize: 16,
-    color: "white",
+    color: "#2494f0",
   },
 });
 

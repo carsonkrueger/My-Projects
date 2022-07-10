@@ -8,14 +8,14 @@ import {
 } from "react-native";
 import { AntDesign, Feather } from "@expo/vector-icons";
 
-const SetComponent = () => {
+const SetComponent = (props) => {
   const [numSets, setNumSets] = useState(1);
 
   return (
     <View style={styles.container}>
       {/*SET*/}
       <View style={styles.setContainer}>
-        <Text style={styles.setText}>1</Text>
+        <Text style={styles.setText}>{props.num}</Text>
       </View>
       {/*PREV*/}
       <View style={styles.prevContainer}>
@@ -31,7 +31,7 @@ const SetComponent = () => {
       </View>
       {/*CHECK*/}
       <View style={styles.checkContainer}>
-        <Feather name="check-square" />
+        <Feather name="check-square" size={25} color={"#2494f0"}/>
       </View>
     </View>
   );
@@ -41,6 +41,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     flexDirection: "row",
+    paddingTop: 10,
   },
   setContainer: {
     flex: 0.6,
@@ -66,22 +67,25 @@ const styles = StyleSheet.create({
     fontSize: 16,
     backgroundColor: "#7a7a7a",
     borderRadius: 5,
+    width: "50%",
+    textAlign: "center",
   },
   repContainer: {
     flex: 0.8,
     alignItems: "center",
     fontSize: 16,
-    backgroundColor: "#7a7a7a",
-    borderRadius: 5,
   },
   repText: {
     fontSize: 16,
     backgroundColor: "#7a7a7a",
     borderRadius: 5,
+    width: "40%",
+    textAlign: "center",
   },
   checkContainer: {
     flex: 0.7,
     alignItems: "center",
+    justifyContent: "center",
   },
 });
 
