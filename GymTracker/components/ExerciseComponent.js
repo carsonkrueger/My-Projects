@@ -6,6 +6,7 @@ import {
   StyleSheet,
   TextInput,
 } from "react-native";
+import { useFonts, Bebas_Neue } from "@expo-google-fonts/inter";
 import { AntDesign, Feather } from "@expo/vector-icons";
 
 import SetComponent from "./SetComponent";
@@ -13,18 +14,36 @@ import SetComponent from "./SetComponent";
 const ExerciseComponent = (props) => {
   const [setsArr, setSetsArr] = useState([["", 1]]);
 
+  let [fontsLoad] = useFonts({
+    Bebas_Neue,
+  });
+
   const AddSet = () => {
     setSetsArr([...setsArr, ["", setsArr.length + 1]]);
-    //exercisesArr.push("");
+  };
+
+  const DeleteSet = () => {
+    var tempArr = [...setsArr];
+    tempArr.pop();
+    setSetsArr(tempArr);
   };
 
   return (
     <View style={styles.container}>
-      <TextInput
-        style={styles.title}
-        placeholder="Enter Exercise Here"
-        defaultValue={props.name}
-      ></TextInput> 
+      <View style={styles.titleContainer}>
+        <TextInput
+          style={styles.titleText}
+          placeholder="Enter Exercise Here"
+          defaultValue={props.name}
+          placeholderTextColor="#2494f0"
+        ></TextInput>
+
+        <View style={styles.trashContainer}>
+          <TouchableOpacity>
+            <Feather name="trash-2" color="#de3e3e" size={18} />
+          </TouchableOpacity>
+        </View>
+      </View>
 
       <View style={styles.headers}>
         <View style={styles.setHead}>
@@ -43,31 +62,46 @@ const ExerciseComponent = (props) => {
       </View>
 
       {setsArr.map((set, i) => {
-          return <SetComponent key={i} num={set[1]} />;
-        })}
+        return <SetComponent key={i} num={set[1]} />;
+      })}
 
       <View style={styles.addSetContainer}>
-          <TouchableOpacity onPress={AddSet}>
-            <Text style={styles.addSet}>ADD SET</Text>
-          </TouchableOpacity>
-        </View>
+        <TouchableOpacity onPress={DeleteSet}>
+          <Feather name="minus" color="#2494f0" size={22} />
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress={AddSet}>
+          <Feather name="plus" color="#2494f0" size={22} />
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
+    paddingTop: "20%",
     width: "100%",
   },
-  title: {
-    fontSize: 20,
+  titleContainer: {
+    flexDirection: "row",
+  },
+  titleText: {
+    flex: 22,
+    fontSize: 22,
+    fontFamily: "Bebas Neue",
     color: "#2494f0",
-    paddingLeft: 10,
-    marginTop: 50,
+    paddingLeft: 14,
+  },
+  trashContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+    flex: 5,
   },
   headers: {
     flexDirection: "row",
     color: "white",
+    padding: 3,
     width: "100%",
   },
   setHead: {
@@ -83,7 +117,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   repHead: {
-    flex: 0.8,
+    flex: 1,
     alignItems: "center",
   },
   emptyHead: {
@@ -93,12 +127,14 @@ const styles = StyleSheet.create({
     color: "white",
   },
   addSetContainer: {
-    alignItems:"center",
+    flexDirection: "row",
+    padding: 8,
+    alignItems: "center",
+    justifyContent: "space-evenly",
   },
   addSet: {
-    paddingTop: 7,
     color: "#2494f0",
-    fontSize: 16,
+    fontSize: 14,
   },
 });
 

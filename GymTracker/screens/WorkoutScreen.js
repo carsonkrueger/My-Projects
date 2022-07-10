@@ -22,14 +22,12 @@ const Workout = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView
-        style={styles.scroll}
-        contentContainerStyle={styles.scrollContent}
-      >
+      <ScrollView>
         <View style={styles.screenHeader}>
           <TextInput
             style={styles.screenHeaderText}
             placeholder="Enter Workout Name"
+            placeholderTextColor="#2494f0"
           ></TextInput>
         </View>
 
@@ -53,20 +51,23 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#525252",
   },
-  scrollContent: {},
-  scroll: {},
   screenHeader: {
-    marginTop: "16%",
-    alignItems: "center",
+    paddingLeft: 14,
+    paddingTop: "16%",
+    paddingBottom: "12%",
+    alignItems: "flex-start",
   },
   screenHeaderText: {
-    fontSize: 25,
+    fontSize: 22,
+    color: "#2494f0",
+    textAlign: "center",
   },
   addExerciseContainer: {
-    paddingTop: "10%",
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
+    paddingTop: 30,
+    paddingBottom: 300,
   },
   addExerciseText: {
     fontSize: 16,
