@@ -5,27 +5,36 @@ import {
   Text,
   StyleSheet,
   TextInput,
+  Vibration,
 } from "react-native";
-import { useFonts, Bebas_Neue } from "@expo-google-fonts/inter";
+// import { useFonts, Bebas_Neue } from "@expo-google-fonts/inter";
 import { AntDesign, Feather } from "@expo/vector-icons";
 
 import SetComponent from "./SetComponent";
 
 const ExerciseComponent = (props) => {
-  const [setsArr, setSetsArr] = useState([["", 1]]);
+  const {name, idx, delExercise, weights, setWeights, reps, setReps} = props;
 
-  let [fontsLoad] = useFonts({
-    Bebas_Neue,
-  });
+  const TENTH_SECOND_MS = 100;
 
   const AddSet = () => {
-    setSetsArr([...setsArr, ["", setsArr.length + 1]]);
+    setReps([...reps, ""]);
+    setWeights([...weights, ""]);
+    Vibration.vibrate(TENTH_SECOND_MS);
   };
 
   const DeleteSet = () => {
-    var tempArr = [...setsArr];
+    //Weights
+    tempArr = [...weights];
     tempArr.pop();
-    setSetsArr(tempArr);
+    setWeights(tempArr);
+
+    //Reps
+    var tempArr = [...reps];
+    tempArr.pop();
+    setReps(tempArr);
+
+    Vibration.vibrate(TENTH_SECOND_MS);
   };
 
   return (
@@ -33,14 +42,14 @@ const ExerciseComponent = (props) => {
       <View style={styles.titleContainer}>
         <TextInput
           style={styles.titleText}
-          placeholder="Enter Exercise Here"
-          defaultValue={props.name}
+          placeholder="Exercise Name"
+          defaultValue={name}
           placeholderTextColor="#2494f0"
-        ></TextInput>
+        />
 
         <View style={styles.trashContainer}>
-          <TouchableOpacity>
-            <Feather name="trash-2" color="#de3e3e" size={18} />
+          <TouchableOpacity onPress={() => {delExercise(name, idx)}}>
+            <Feather name="trash" color="#de3e3e" size={18} />
           </TouchableOpacity>
         </View>
       </View>
@@ -61,8 +70,8 @@ const ExerciseComponent = (props) => {
         <View style={styles.emptyHead}>{/* Empty header */}</View>
       </View>
 
-      {setsArr.map((set, i) => {
-        return <SetComponent key={i} num={set[1]} />;
+      {weights.map((weight, i) => {
+        return <SetComponent key={i} num={i} weight={weight} reps={reps} />;
       })}
 
       <View style={styles.addSetContainer}>
@@ -85,11 +94,12 @@ const styles = StyleSheet.create({
   },
   titleContainer: {
     flexDirection: "row",
+    paddingBottom: 10,
   },
   titleText: {
     flex: 22,
     fontSize: 22,
-    fontFamily: "Bebas Neue",
+    // fontFamily: "Bebas Neue",
     color: "#2494f0",
     paddingLeft: 14,
   },
@@ -124,7 +134,7 @@ const styles = StyleSheet.create({
     flex: 0.7,
   },
   whiteText: {
-    color: "white",
+    color: "black",
   },
   addSetContainer: {
     flexDirection: "row",

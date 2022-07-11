@@ -8,16 +8,54 @@ import {
   TextInput,
   SafeAreaView,
   ScrollView,
+  Vibration,
 } from "react-native";
 
 import ExerciseComponent from "../components/ExerciseComponent";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const Workout = () => {
-  const [exercisesArr, setExercisesArr] = useState([["", 1]]);
+const WorkoutScreen = () => {
+  const [workoutName, setWorkoutName] = useState("Workout Name");
+  const [exercisesArr, setExercisesArr] = useState([["Exercise Name", 0]]);
+  const [weights, setWeights] = useState([]);
+  const [reps, setReps] = useState([]);
+
+  const TENTH_SECOND_MS = 100;
 
   const AddExercise = () => {
-    setExercisesArr([...exercisesArr, ["", exercisesArr.length + 1]]);
-    //exercisesArr.push("");
+    let idx = exercisesArr.length == null ? 0 : exercisesArr.length + 1;
+    setExercisesArr([...exercisesArr, ["Exercise Name", idx]]);
+    Vibration.vibrate(TENTH_SECOND_MS);
+  };
+
+  const DeleteExercise = (name, i) => {
+    
+    let tempArr = [...exercisesArr];
+    let idx = tempArr.findIndex((pName,pI) => {if ([pName,pI] === [name, i]) return true;})
+    tempArr.splice(idx, 1);
+    setExercisesArr(tempArr);
+  }
+
+  const storeWorkoutData = async () => {
+    try {
+      await AsyncStorage.multiSet(
+        ["Workout", workoutName], ["Exercises", exercisesArr]
+      )
+    } catch (error) {
+      // Error saving data
+    }
+  };
+
+  const retrieveExerciseData = async () => {
+    try {
+      const value = await AsyncStorage.getItem();
+      if (value !== null) {
+        // We have data!!
+        console.log(value);
+      }
+    } catch (error) {
+      // Error retrieving data
+    }
   };
 
   return (
@@ -26,13 +64,19 @@ const Workout = () => {
         <View style={styles.screenHeader}>
           <TextInput
             style={styles.screenHeaderText}
-            placeholder="Enter Workout Name"
+            placeholder="Workout Name"
             placeholderTextColor="#2494f0"
+            onChangeText={newText => setWorkoutName(newText)}
           ></TextInput>
         </View>
 
+        <View style={styles.notesContainer}>
+          <Text style={styles.notesTitle} multiline={true}>NOTES</Text>
+          <TextInput style={styles.notesText}></TextInput>
+        </View>
+
         {exercisesArr.map((exercise, i) => {
-          return <ExerciseComponent key={i} name={exercise[0]} />;
+          return <ExerciseComponent key={i} name={exercise[0]} idx={i} del={DeleteExercise} weights={weights[i]} setWeights={setWeights} reps={reps[i]} setReps={setReps}/>;
         })}
 
         <View style={styles.addExerciseContainer}>
@@ -49,7 +93,7 @@ const styles = StyleSheet.create({
   container: {
     // Adding justifyContent or alignItems here will cause a bug with scrollView
     flex: 1,
-    backgroundColor: "#525252",
+    backgroundColor: "white", //"#525252",
   },
   screenHeader: {
     paddingLeft: 14,
@@ -60,7 +104,22 @@ const styles = StyleSheet.create({
   screenHeaderText: {
     fontSize: 22,
     color: "#2494f0",
-    textAlign: "center",
+  },
+  notesContainer: {
+    flexDirection: "row",
+    paddingRight: 10,
+    paddingLeft:10,
+    alignItems: "center",
+  },
+  notesTitle: {
+    flex: 1,
+  },
+  notesText: {
+    flex: 5,
+    borderRadius: 5,
+    backgroundColor: "#dedede",
+    paddingLeft: 3,
+    paddingRight: 5,
   },
   addExerciseContainer: {
     flex: 1,
@@ -75,4 +134,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Workout;
+export default WorkoutScreen;

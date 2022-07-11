@@ -5,30 +5,35 @@ import {
   Text,
   StyleSheet,
   TextInput,
+  Vibration,
 } from "react-native";
 import { AntDesign, Feather } from "@expo/vector-icons";
 
 const SetComponent = (props) => {
-  const [numSets, setNumSets] = useState(1);
+  const []
   const [isDone, setIsDone] = useState(false);
+
+  const TENTH_SECOND_MS = 100;
 
   const styles = StyleSheet.create({
     container: {
       flex: 1,
       flexDirection: "row",
-      paddingTop: 5,
-      paddingBottom: 5,
+      paddingTop: 2,
+      paddingBottom: 2,
       marginTop: 3,
       marginLeft: 3,
       marginRight: 3,
       borderRadius: 9,
+      backgroundColor: isDone ? "#99ffb3" : null,
+
     },
     setContainer: {
       flex: 0.6,
       alignItems: "center",
     },
     setText: {
-      color: isDone ? "#149c36" : "#2494f0",
+      color: /*isDone ? null :*/ "#2494f0",
       fontSize: 17,
     },
     prevContainer: {
@@ -36,7 +41,7 @@ const SetComponent = (props) => {
       alignItems: "center",
     },
     prevText: {
-      color: isDone ? "#149c36" : "#2494f0",
+      color: /*isDone ? null :*/ "#2494f0",
       fontSize: 16,
     },
     weightContainer: {
@@ -45,11 +50,11 @@ const SetComponent = (props) => {
     },
     weightText: {
       fontSize: 16,
-      backgroundColor: isDone ? "#149c36" : "#7a7a7a",
+      backgroundColor: isDone ? null : "#dedede",//"#7a7a7a",
       borderRadius: 5,
       width: "80%",
       textAlign: "center",
-      color: "white",
+      color: "black",
     },
     repContainer: {
       flex: 1,
@@ -58,11 +63,11 @@ const SetComponent = (props) => {
     },
     repText: {
       fontSize: 16,
-      backgroundColor: isDone ? "#149c36" : "#7a7a7a",
+      backgroundColor: isDone ? null : "#dedede",//"#7a7a7a",
       borderRadius: 5,
       width: "80%",
       textAlign: "center",
-      color: "white",
+      color: "black",
     },
     checkContainer: {
       flex: 0.7,
@@ -77,32 +82,38 @@ const SetComponent = (props) => {
       <View style={styles.setContainer}>
         <Text style={styles.setText}>{props.num}</Text>
       </View>
+
       {/*PREV*/}
       <View style={styles.prevContainer}>
         <Text style={styles.prevText}></Text>
       </View>
+
       {/*WEIGHT*/}
       <View style={styles.weightContainer}>
         <TextInput
           style={styles.weightText}
           keyboardType="number-pad"
+          // editable={() => isDone ? false : true}
         ></TextInput>
       </View>
+
       {/*REPS*/}
       <View style={styles.repContainer}>
-        <TextInput style={styles.repText} keyboardType="number-pad"></TextInput>
+        <TextInput style={styles.repText} keyboardType="number-pad" /*editable={() => isDone ? false : true}*/></TextInput>
       </View>
+      
       {/*CHECK*/}
       <View style={styles.checkContainer}>
         <TouchableOpacity
           onPress={() => {
             setIsDone(!isDone);
+            Vibration.vibrate(TENTH_SECOND_MS);
           }}
         >
           <Feather
             name="check-square"
             size={25}
-            color={isDone ? "#149c36" : "#2494f0"}
+            color={"#2494f0"}
           />
         </TouchableOpacity>
       </View>
