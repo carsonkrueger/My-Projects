@@ -10,7 +10,7 @@ import {
 import { AntDesign, Feather } from "@expo/vector-icons";
 
 const SetComponent = (props) => {
-  const []
+  const { num, weight, setWeights, rep, setReps } = props;
   const [isDone, setIsDone] = useState(false);
 
   const TENTH_SECOND_MS = 100;
@@ -26,7 +26,6 @@ const SetComponent = (props) => {
       marginRight: 3,
       borderRadius: 9,
       backgroundColor: isDone ? "#99ffb3" : null,
-
     },
     setContainer: {
       flex: 0.6,
@@ -50,7 +49,7 @@ const SetComponent = (props) => {
     },
     weightText: {
       fontSize: 16,
-      backgroundColor: isDone ? null : "#dedede",//"#7a7a7a",
+      backgroundColor: isDone ? null : "#dedede", //"#7a7a7a",
       borderRadius: 5,
       width: "80%",
       textAlign: "center",
@@ -63,7 +62,7 @@ const SetComponent = (props) => {
     },
     repText: {
       fontSize: 16,
-      backgroundColor: isDone ? null : "#dedede",//"#7a7a7a",
+      backgroundColor: isDone ? null : "#dedede", //"#7a7a7a",
       borderRadius: 5,
       width: "80%",
       textAlign: "center",
@@ -99,9 +98,12 @@ const SetComponent = (props) => {
 
       {/*REPS*/}
       <View style={styles.repContainer}>
-        <TextInput style={styles.repText} keyboardType="number-pad" /*editable={() => isDone ? false : true}*/></TextInput>
+        <TextInput
+          style={styles.repText}
+          keyboardType="number-pad" /*editable={() => isDone ? false : true}*/
+        ></TextInput>
       </View>
-      
+
       {/*CHECK*/}
       <View style={styles.checkContainer}>
         <TouchableOpacity
@@ -110,11 +112,7 @@ const SetComponent = (props) => {
             Vibration.vibrate(TENTH_SECOND_MS);
           }}
         >
-          <Feather
-            name="check-square"
-            size={25}
-            color={"#2494f0"}
-          />
+          <Feather name="check-square" size={25} color={"#2494f0"} />
         </TouchableOpacity>
       </View>
     </View>

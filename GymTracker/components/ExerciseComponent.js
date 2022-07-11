@@ -13,26 +13,32 @@ import { AntDesign, Feather } from "@expo/vector-icons";
 import SetComponent from "./SetComponent";
 
 const ExerciseComponent = (props) => {
-  const {name, idx, delExercise, weights, setWeights, reps, setReps} = props;
+  const { name, numExercise, delExercise, weights, setWeights, reps, setReps } =
+    props;
 
   const TENTH_SECOND_MS = 100;
 
   const AddSet = () => {
-    setReps([...reps, ""]);
-    setWeights([...weights, ""]);
+    let tempReps = [...reps];
+    tempReps[numExercise].push(null);
+    setReps(tempReps);
+
+    let tempWeights = [...weights];
+    tempWeights[numExercise].push(null);
+    setWeights(tempWeights);
+
     Vibration.vibrate(TENTH_SECOND_MS);
   };
 
   const DeleteSet = () => {
     //Weights
-    tempArr = [...weights];
-    tempArr.pop();
-    setWeights(tempArr);
+    let tempReps = [...reps];
+    tempReps[numExercise].pop();
+    setReps(tempReps);
 
-    //Reps
-    var tempArr = [...reps];
-    tempArr.pop();
-    setReps(tempArr);
+    let tempWeights = [...weights];
+    tempWeights[numExercise].pop();
+    setWeights(tempWeights);
 
     Vibration.vibrate(TENTH_SECOND_MS);
   };
@@ -48,7 +54,11 @@ const ExerciseComponent = (props) => {
         />
 
         <View style={styles.trashContainer}>
-          <TouchableOpacity onPress={() => {delExercise(name, idx)}}>
+          <TouchableOpacity
+            onPress={() => {
+              delExercise(name, numExercise);
+            }}
+          >
             <Feather name="trash" color="#de3e3e" size={18} />
           </TouchableOpacity>
         </View>
@@ -69,9 +79,18 @@ const ExerciseComponent = (props) => {
         </View>
         <View style={styles.emptyHead}>{/* Empty header */}</View>
       </View>
-
+      {/* {console.log(weights[0])} */}
       {weights.map((weight, i) => {
-        return <SetComponent key={i} num={i} weight={weight} reps={reps} />;
+        return (
+          <SetComponent
+            key={i}
+            num={i}
+            weight={weights}
+            setWeights={setWeights}
+            rep={reps}
+            setReps={setReps}
+          />
+        );
       })}
 
       <View style={styles.addSetContainer}>

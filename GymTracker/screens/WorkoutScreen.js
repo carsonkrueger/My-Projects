@@ -17,8 +17,8 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 const WorkoutScreen = () => {
   const [workoutName, setWorkoutName] = useState("Workout Name");
   const [exercisesArr, setExercisesArr] = useState([["Exercise Name", 0]]);
-  const [weights, setWeights] = useState([]);
-  const [reps, setReps] = useState([]);
+  const [weights, setWeights] = useState([[null]]);
+  const [reps, setReps] = useState([[null]]);
 
   const TENTH_SECOND_MS = 100;
 
@@ -29,18 +29,20 @@ const WorkoutScreen = () => {
   };
 
   const DeleteExercise = (name, i) => {
-    
     let tempArr = [...exercisesArr];
-    let idx = tempArr.findIndex((pName,pI) => {if ([pName,pI] === [name, i]) return true;})
+    let idx = tempArr.findIndex((pName, pI) => {
+      if ([pName, pI] === [name, i]) return true;
+    });
     tempArr.splice(idx, 1);
     setExercisesArr(tempArr);
-  }
+  };
 
   const storeWorkoutData = async () => {
     try {
       await AsyncStorage.multiSet(
-        ["Workout", workoutName], ["Exercises", exercisesArr]
-      )
+        ["Workout", workoutName],
+        ["Exercises", exercisesArr]
+      );
     } catch (error) {
       // Error saving data
     }
@@ -66,17 +68,30 @@ const WorkoutScreen = () => {
             style={styles.screenHeaderText}
             placeholder="Workout Name"
             placeholderTextColor="#2494f0"
-            onChangeText={newText => setWorkoutName(newText)}
+            onChangeText={(newText) => setWorkoutName(newText)}
           ></TextInput>
         </View>
 
         <View style={styles.notesContainer}>
-          <Text style={styles.notesTitle} multiline={true}>NOTES</Text>
+          <Text style={styles.notesTitle} multiline={true}>
+            NOTES
+          </Text>
           <TextInput style={styles.notesText}></TextInput>
         </View>
 
         {exercisesArr.map((exercise, i) => {
-          return <ExerciseComponent key={i} name={exercise[0]} idx={i} del={DeleteExercise} weights={weights[i]} setWeights={setWeights} reps={reps[i]} setReps={setReps}/>;
+          return (
+            <ExerciseComponent
+              key={i}
+              name={exercise[0]}
+              numExercise={i}
+              delExercise={DeleteExercise}
+              weights={weights}
+              setWeights={setWeights}
+              reps={reps}
+              setReps={setReps}
+            />
+          );
         })}
 
         <View style={styles.addExerciseContainer}>
@@ -108,7 +123,7 @@ const styles = StyleSheet.create({
   notesContainer: {
     flexDirection: "row",
     paddingRight: 10,
-    paddingLeft:10,
+    paddingLeft: 10,
     alignItems: "center",
   },
   notesTitle: {
