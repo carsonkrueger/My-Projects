@@ -23,8 +23,12 @@ const WorkoutScreen = () => {
   const TENTH_SECOND_MS = 100;
 
   const AddExercise = () => {
-    let idx = exercisesArr.length == null ? 0 : exercisesArr.length + 1;
-    setExercisesArr([...exercisesArr, ["Exercise Name", idx]]);
+    let exerciseIdx = exercisesArr.length == null ? 0 : exercisesArr.length + 1;
+    setExercisesArr([...exercisesArr, ["Exercise Name", exerciseIdx]]);
+
+    setWeights([...weights].push([null]));
+    setReps([...weights].push([null]));
+
     Vibration.vibrate(TENTH_SECOND_MS);
   };
 
