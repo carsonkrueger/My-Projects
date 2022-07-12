@@ -17,17 +17,22 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 const WorkoutScreen = () => {
   const [workoutName, setWorkoutName] = useState("Workout Name");
   const [exercisesArr, setExercisesArr] = useState([["Exercise Name", 0]]);
+  // Each array inside the arrays (weights & reps), represents an exercise's sets. 
   const [weights, setWeights] = useState([[null]]);
   const [reps, setReps] = useState([[null]]);
 
-  const TENTH_SECOND_MS = 100;
+  const TENTH_SECOND_MS = 50;
 
   const AddExercise = () => {
-    let exerciseIdx = exercisesArr.length == null ? 0 : exercisesArr.length + 1;
-    setExercisesArr([...exercisesArr, ["Exercise Name", exerciseIdx]]);
+    let tempWeights = [...weights];
+    setWeights(tempWeights.push([null]));
+    let tempReps = [...reps];
+    setReps(tempReps.push([null]));
 
-    setWeights([...weights].push([null]));
-    setReps([...weights].push([null]));
+    // let exerciseIdx = exercisesArr.length == null ? 0 : exercisesArr.length;
+    let tempExercise = [...exercisesArr];
+    setExercisesArr(tempExercise.push(["Exercise Nam", exercisesArr.length]));
+    // console.log(exercisesArr);
 
     Vibration.vibrate(TENTH_SECOND_MS);
   };
@@ -82,13 +87,14 @@ const WorkoutScreen = () => {
           </Text>
           <TextInput style={styles.notesText}></TextInput>
         </View>
-
+        {/* {console.log(exercisesArr)} */}
         {exercisesArr.map((exercise, i) => {
+          console.log(exercisesArr, "\n\n", i, "-->", exercise)
           return (
             <ExerciseComponent
-              key={i}
+              key={exercise[1]}
               name={exercise[0]}
-              numExercise={i}
+              numExercise={exercise[1]}
               delExercise={DeleteExercise}
               weights={weights}
               setWeights={setWeights}

@@ -12,33 +12,33 @@ import { AntDesign, Feather } from "@expo/vector-icons";
 
 import SetComponent from "./SetComponent";
 
-const ExerciseComponent = (props) => {
+const ExerciseComponent = ({ name, numExercise, delExercise, weights, setWeights, reps, setReps }) => {
   // const { name, numExercise, delExercise, weights, setWeights, reps, setReps } =
   //   props;
 
-  const TENTH_SECOND_MS = 100;
+  const TENTH_SECOND_MS = 50;
 
   const AddSet = () => {
-    let tempReps = [...props.reps];
-    tempReps[props.numExercise].push(null);
-    props.setReps(tempReps);
+    let tempReps = [...reps];
+    tempReps[numExercise].push(null);
+    setReps(tempReps);
 
-    let tempWeights = [...props.weights];
-    tempWeights[props.numExercise].push(null);
-    props.setWeights(tempWeights);
-
+    let tempWeights = [...weights];
+    tempWeights[numExercise].push(null);
+    setWeights(tempWeights);
+    
     Vibration.vibrate(TENTH_SECOND_MS);
   };
 
   const DeleteSet = () => {
     //Weights
-    let tempReps = [...props.reps];
-    tempReps[props.numExercise].pop();
-    props.setReps(tempReps);
+    let tempReps = [...reps];
+    tempReps[numExercise].pop();
+    setReps(tempReps);
 
-    let tempWeights = [...props.weights];
-    tempWeights[props.numExercise].pop();
-    props.setWeights(tempWeights);
+    let tempWeights = [...weights];
+    tempWeights[numExercise].pop();
+    setWeights(tempWeights);
 
     Vibration.vibrate(TENTH_SECOND_MS);
   };
@@ -49,14 +49,14 @@ const ExerciseComponent = (props) => {
         <TextInput
           style={styles.titleText}
           placeholder="Exercise Name"
-          defaultValue={props.name}
+          defaultValue={name}
           placeholderTextColor="#2494f0"
         />
 
         <View style={styles.trashContainer}>
           <TouchableOpacity
             onPress={() => {
-              props.delExercise(props.name, props.numExercise);
+              delExercise(name, numExercise);
             }}
           >
             <Feather name="trash" color="#de3e3e" size={18} />
@@ -79,20 +79,22 @@ const ExerciseComponent = (props) => {
         </View>
         <View style={styles.emptyHead}>{/* Empty header */}</View>
       </View>
-      {console.log("weights", props.weights)}
-      {console.log("reps", props.reps)}
-      {useEffect(() => {
-        props.weights.map((weight, i) => (
+      {/* {console.log("weights", weights)}
+      {console.log("reps", reps)} */}
+      {/* {useEffect(() => {
+        console.log(weights) */}
+       { weights[numExercise].map((weight, i) => (
+
           <SetComponent
             key={i}
-            num={i}
-            weight={props.weights}
-            setWeights={props.setWeights}
-            rep={props.reps}
-            setReps={props.setReps}
+            numExercise={i}
+            weights={weights}
+            setWeights={setWeights}
+            reps={reps}
+            setReps={setReps}
           />
-        ));
-      }, [props.weights])}
+        ))
+      /* }, [weights])}*/}
 
       <View style={styles.addSetContainer}>
         <TouchableOpacity onPress={DeleteSet}>

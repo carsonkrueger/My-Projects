@@ -9,8 +9,7 @@ import {
 } from "react-native";
 import { AntDesign, Feather } from "@expo/vector-icons";
 
-const SetComponent = (props) => {
-  const { num, weight, setWeights, rep, setReps } = props;
+const SetComponent = ({ numExercise, weights, setWeights, rep, setReps }) => {
   const [isDone, setIsDone] = useState(false);
 
   const TENTH_SECOND_MS = 100;
@@ -79,7 +78,7 @@ const SetComponent = (props) => {
     <View style={styles.container}>
       {/*SET*/}
       <View style={styles.setContainer}>
-        <Text style={styles.setText}>{props.num}</Text>
+        <Text style={styles.setText}>{numExercise}</Text>
       </View>
 
       {/*PREV*/}
