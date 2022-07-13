@@ -12,13 +12,13 @@ import WorkoutComponent from "../components/WorkoutComponent";
 
 const Home = ({ navigation }) => {
   // [ [ NAME OF WORKOUT, NUM EXERCISES, LAST TIME DID WORKOUT ], ... ]
-  const [workoutList, setWorkoutList] = useState([]);
+  const [workoutList, setWorkoutList] = useState([["", 0, ""]]);
 
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.workoutContainer}>
         {workoutList.map((workout, i) => {
-          return <WorkoutComponent key={i} />;
+          return <WorkoutComponent key={i} navigation={navigation} />;
         })}
       </View>
 

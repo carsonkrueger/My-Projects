@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import {
   View,
@@ -14,7 +14,12 @@ import {
 import ExerciseComponent from "../components/ExerciseComponent";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const WorkoutScreen = () => {
+const WorkoutScreen = ({
+  navigation,
+  numWorkout,
+  workoutList,
+  setWorkoutList,
+}) => {
   const [workoutName, setWorkoutName] = useState("Workout Name");
   const [exercisesArr, setExercisesArr] = useState([["Exercise Name", 0]]);
   // Each array inside the arrays (weights & reps), represents an exercise's sets.
@@ -23,6 +28,12 @@ const WorkoutScreen = () => {
   const [isDoneArr, setIsDoneArr] = useState([[false]]);
 
   const TENTH_SECOND_MS = 50;
+
+  // useEffect(() => {
+  //   let tempWorkoutList = [...workoutList];
+  //   tempWorkoutList[numWorkout] = [workoutName, exercisesArr.length, ""];
+  //   setWorkoutList(tempWorkoutList);
+  // }, [workoutName, exercisesArr]);
 
   const AddExercise = () => {
     let tempWeights = [...weights];
@@ -167,7 +178,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    paddingTop: 30,
+    paddingTop: 70,
     paddingBottom: 300,
   },
   addExerciseText: {
