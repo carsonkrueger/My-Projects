@@ -27,6 +27,7 @@ const WorkoutScreen = ({
   const [weights, setWeights] = useState([[null]]);
   const [reps, setReps] = useState([[null]]);
   const [isDoneArr, setIsDoneArr] = useState([[false]]);
+  const [restTimers, setRestTimers] = useState([null]);
 
   const TWENTYTH_SECOND_MS = 50;
 
@@ -53,6 +54,10 @@ const WorkoutScreen = ({
     tempIsDone.push([false]);
     setIsDoneArr(tempIsDone);
 
+    let tempRestTimers = [...restTimers];
+    tempRestTimers.push(null);
+    setRestTimers(tempRestTimers);
+
     Vibration.vibrate(TWENTYTH_SECOND_MS);
   };
 
@@ -62,27 +67,28 @@ const WorkoutScreen = ({
       setWeights([[null]]);
       setReps([[null]]);
       setIsDoneArr([[false]]);
-    } 
-
-    else {
+      setRestTimers([null]);
+    } else {
       let tempExerciseArr = [...exercisesArr];
       let tempWeights = [...weights];
       let tempReps = [...reps];
       let tempIsDone = [...isDoneArr];
+      let tempRestTimers = [...restTimers];
 
       tempWeights.splice(numExercise, 1);
       tempReps.splice(numExercise, 1);
       tempExerciseArr.splice(numExercise, 1);
       tempIsDone.splice(numExercise, 1);
+      tempRestTimers.splice(numExercise, 1);
 
       setExercisesArr(tempExerciseArr);
       setWeights(tempWeights);
       setReps(tempReps);
       setIsDoneArr(tempIsDone);
+      setRestTimers(tempRestTimers);
     }
-    
 
-    Vibration.vibrate(TWENTYTH_SECOND_MS)
+    Vibration.vibrate(TWENTYTH_SECOND_MS);
   };
 
   const storeWorkoutData = async () => {
@@ -114,17 +120,16 @@ const WorkoutScreen = ({
         <View style={styles.screenHeader}>
           <View style={styles.screenTitleContainer}>
             <TextInput
-            style={styles.screenTitleText}
-            placeholder="WORKOUT NAME"
-            placeholderTextColor="#90c6f5"
-            onChangeText={(newText) => setWorkoutName(newText)}
-            autoCapitalize="characters"
-          ></TextInput>
+              style={styles.screenTitleText}
+              placeholder="WORKOUT NAME"
+              placeholderTextColor="#90c6f5"
+              onChangeText={(newText) => setWorkoutName(newText)}
+              autoCapitalize="characters"
+            ></TextInput>
           </View>
-          
 
           <View style={styles.backContainer}>
-            <BackComponent navigation={navigation}/>
+            <BackComponent navigation={navigation} />
           </View>
         </View>
 
@@ -142,6 +147,8 @@ const WorkoutScreen = ({
               key={i}
               name={exercise[0]}
               numExercise={i}
+              restTimers={restTimers}
+              setRestTimers={setRestTimers}
               delExercise={deleteExercise}
               exercisesArr={exercisesArr}
               setExercisesArr={setExercisesArr}
@@ -178,8 +185,7 @@ const styles = StyleSheet.create({
     paddingBottom: "12%",
     flexDirection: "row",
   },
-  screenTitleContainer: {
-  },
+  screenTitleContainer: {},
   screenTitleText: {
     fontSize: 18,
     color: "#2494f0",

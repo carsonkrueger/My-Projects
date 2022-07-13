@@ -15,6 +15,8 @@ import SetComponent from "./SetComponent";
 const ExerciseComponent = ({
   name,
   numExercise,
+  restTimers,
+  setRestTimers,
   delExercise,
   exercisesArr,
   setExercisesArr,
@@ -28,11 +30,24 @@ const ExerciseComponent = ({
   // const [isDoneArr, setIsDoneArr] = useState([false]);
   const TWENTYTH_SECOND_MS = 50;
 
+  const [doTimer, setDoTimer] = useState(false);
+
   const changeExerciseName = (name) => {
     let tempExerciseArr = [...exercisesArr];
     tempExerciseArr[numExercise][0] = name;
     setExercisesArr(tempExerciseArr);
-  }
+  };
+
+  const changeRestTime = (num) => {
+    let tempRestTimers = [...restTimers];
+    tempRestTimers[numExercise] = num;
+    setRestTimers(tempRestTimers);
+  };
+
+  const flipDoTimer = () => {
+    let tempDoTimer = !doTimer;
+    setDoTimer(tempDoTimer);
+  };
 
   const AddSet = () => {
     let tempReps = [...reps];
@@ -62,16 +77,92 @@ const ExerciseComponent = ({
     tempReps[numExercise].pop();
     setReps(tempReps);
 
-    console.log("BEFORE", isDoneArr);
-
     let tempIsDone = [...isDoneArr];
     tempIsDone[numExercise].pop();
     setIsDoneArr(tempIsDone);
 
-    console.log("AFTER", isDoneArr);
-
     Vibration.vibrate(TWENTYTH_SECOND_MS);
   };
+
+  const styles = StyleSheet.create({
+    container: {
+      paddingTop: "10%",
+      width: "100%",
+    },
+    titleContainer: {
+      flex: 1,
+      flexDirection: "row",
+      paddingBottom: 10,
+    },
+    titleText: {
+      flex: 22,
+      fontSize: 16,
+      // fontFamily: "Bebas Neue",
+      color: "#2494f0",
+      paddingLeft: 14,
+    },
+    timerContainer: {
+      flex: 10,
+      alignItems: "center",
+      justifyContent: "center",
+      flexDirection: "row",
+      backgroundColor: doTimer ? "#90c6f5" : null,
+      borderColor: doTimer ? "#90c6f5" : "black",
+      borderWidth: 1,
+      borderRadius: 15,
+    },
+    timerIconContainer: {},
+    timerTimeContainer: {},
+    timerText: {
+      color: doTimer ? "white" : "black",
+      width: 27,
+      fontSize: 16,
+      textAlign: "center",
+    },
+    trashContainer: {
+      flex: 6.5,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    headers: {
+      flexDirection: "row",
+      color: "white",
+      padding: 5,
+      width: "100%",
+    },
+    setHead: {
+      flex: 0.6,
+      alignItems: "center",
+    },
+    prevHead: {
+      flex: 1,
+      alignItems: "center",
+    },
+    weightHead: {
+      flex: 1,
+      alignItems: "center",
+    },
+    repHead: {
+      flex: 1,
+      alignItems: "center",
+    },
+    emptyHead: {
+      flex: 0.7,
+    },
+    whiteText: {
+      color: "black",
+    },
+    addDelSetContainer: {
+      flexDirection: "row",
+      padding: 8,
+      alignItems: "center",
+      justifyContent: "space-evenly",
+    },
+    addSet: {
+      color: "#2494f0",
+      fontSize: 14,
+    },
+  });
 
   return (
     <View style={styles.container}>
@@ -81,14 +172,42 @@ const ExerciseComponent = ({
           placeholder="EXERCISE NAME"
           placeholderTextColor="#90c6f5"
           value={exercisesArr[numExercise][0]}
+          maxLength={20}
           autoCapitalize="characters"
-          onChangeText={(newText) => {changeExerciseName(newText)}}
+          onChangeText={(newText) => {
+            changeExerciseName(newText);
+          }}
         />
 
-        <View style={styles.timerContainer}>
-          <MaterialIcons name="timer"/>
-          <TextInput placeholder="0:00"/>
-        </View>
+        <TouchableOpacity style={styles.timerContainer} onPress={flipDoTimer}>
+          {!doTimer && (
+            <View style={styles.timerIconContainer}>
+              <MaterialIcons
+                name="timer"
+                size={24}
+                color={doTimer ? "white" : "black"}
+              />
+            </View>
+          )}
+
+          <View style={styles.timerTimeContainer}>
+            {!doTimer && (
+              <TextInput
+                style={styles.timerText}
+                placeholder="0s"
+                value={restTimers[numExercise]}
+                maxLength={3}
+                keyboardType="numeric"
+                onChangeText={(newNum) => {
+                  changeRestTime(newNum);
+                }}
+              />
+            )}
+            {doTimer && (
+              <Text style={styles.timerText}>{restTimers[numExercise]}</Text>
+            )}
+          </View>
+        </TouchableOpacity>
 
         <View style={styles.trashContainer}>
           <TouchableOpacity
@@ -145,71 +264,5 @@ const ExerciseComponent = ({
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    paddingTop: "10%",
-    width: "100%",
-  },
-  titleContainer: {
-    flexDirection: "row",
-    paddingBottom: 10,
-  },
-  titleText: {
-    flex: 22,
-    fontSize: 16,
-    // fontFamily: "Bebas Neue",
-    color: "#2494f0",
-    paddingLeft: 14,
-  },
-  timerContainer:{
-    alignItems: "center",
-    justifyContent: "center",
-    flexDirection: "row",
-  },
-  trashContainer: {
-    alignItems: "center",
-    justifyContent: "center",
-    flex: 5,
-  },
-  headers: {
-    flexDirection: "row",
-    color: "white",
-    padding: 5,
-    width: "100%",
-  },
-  setHead: {
-    flex: 0.6,
-    alignItems: "center",
-  },
-  prevHead: {
-    flex: 1,
-    alignItems: "center",
-  },
-  weightHead: {
-    flex: 1,
-    alignItems: "center",
-  },
-  repHead: {
-    flex: 1,
-    alignItems: "center",
-  },
-  emptyHead: {
-    flex: 0.7,
-  },
-  whiteText: {
-    color: "black",
-  },
-  addDelSetContainer: {
-    flexDirection: "row",
-    padding: 8,
-    alignItems: "center",
-    justifyContent: "space-evenly",
-  },
-  addSet: {
-    color: "#2494f0",
-    fontSize: 14,
-  },
-});
 
 export default ExerciseComponent;
