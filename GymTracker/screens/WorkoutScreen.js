@@ -17,33 +17,48 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 const WorkoutScreen = () => {
   const [workoutName, setWorkoutName] = useState("Workout Name");
   const [exercisesArr, setExercisesArr] = useState([["Exercise Name", 0]]);
-  // Each array inside the arrays (weights & reps), represents an exercise's sets. 
+  // Each array inside the arrays (weights & reps), represents an exercise's sets.
   const [weights, setWeights] = useState([[null]]);
   const [reps, setReps] = useState([[null]]);
+  const [isDoneArr, setIsDoneArr] = useState([[false]]);
 
   const TENTH_SECOND_MS = 50;
 
   const AddExercise = () => {
     let tempWeights = [...weights];
-    setWeights(tempWeights.push([null]));
-    let tempReps = [...reps];
-    setReps(tempReps.push([null]));
+    tempWeights.push([null]);
+    setWeights(tempWeights);
 
-    // let exerciseIdx = exercisesArr.length == null ? 0 : exercisesArr.length;
+    let tempReps = [...reps];
+    tempReps.push([null]);
+    setReps(tempReps);
+
     let tempExercise = [...exercisesArr];
-    setExercisesArr(tempExercise.push(["Exercise Nam", exercisesArr.length]));
-    // console.log(exercisesArr);
+    tempExercise.push(["Exercise Name", exercisesArr.length]);
+    setExercisesArr(tempExercise);
+
+    let tempIsDone = [...isDoneArr];
+    tempIsDone.push([false]);
+    setIsDoneArr(tempIsDone);
 
     Vibration.vibrate(TENTH_SECOND_MS);
   };
 
-  const DeleteExercise = (name, i) => {
-    let tempArr = [...exercisesArr];
-    let idx = tempArr.findIndex((pName, pI) => {
-      if ([pName, pI] === [name, i]) return true;
-    });
-    tempArr.splice(idx, 1);
-    setExercisesArr(tempArr);
+  const DeleteExercise = (numExercise) => {
+    let tempExerciseArr = [...exercisesArr];
+    let tempWeights = [...weights];
+    let tempReps = [...reps];
+    let tempIsDone = [...isDoneArr];
+
+    tempWeights.splice(numExercise, 1);
+    tempReps.splice(numExercise, 1);
+    tempExerciseArr.splice(numExercise, 1);
+    tempIsDone.splice(numExercise, 1);
+
+    setExercisesArr(tempExerciseArr);
+    setWeights(tempWeights);
+    setReps(tempReps);
+    setIsDoneArr(tempIsDone);
   };
 
   const storeWorkoutData = async () => {
@@ -62,7 +77,7 @@ const WorkoutScreen = () => {
       const value = await AsyncStorage.getItem();
       if (value !== null) {
         // We have data!!
-        console.log(value);
+        // console.log(value);
       }
     } catch (error) {
       // Error retrieving data
@@ -89,17 +104,19 @@ const WorkoutScreen = () => {
         </View>
         {/* {console.log(exercisesArr)} */}
         {exercisesArr.map((exercise, i) => {
-          console.log(exercisesArr, "\n\n", i, "-->", exercise)
+          // console.log("\n\n", i, "-->", exercise);
           return (
             <ExerciseComponent
-              key={exercise[1]}
+              key={i}
               name={exercise[0]}
-              numExercise={exercise[1]}
+              numExercise={i}
               delExercise={DeleteExercise}
               weights={weights}
               setWeights={setWeights}
               reps={reps}
               setReps={setReps}
+              isDoneArr={isDoneArr}
+              setIsDoneArr={setIsDoneArr}
             />
           );
         })}

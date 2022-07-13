@@ -11,23 +11,22 @@ import {
 import WorkoutComponent from "../components/WorkoutComponent";
 
 const Home = ({ navigation }) => {
-  const [workoutList, setWorkoutList] = useState([""]);
+  // [ [ NAME OF WORKOUT, NUM EXERCISES, LAST TIME DID WORKOUT ], ... ]
+  const [workoutList, setWorkoutList] = useState([]);
 
   return (
     <SafeAreaView style={styles.container}>
-
       <View style={styles.workoutContainer}>
         {workoutList.map((workout, i) => {
-        return <WorkoutComponent key={i}/>;
-      })}
+          return <WorkoutComponent key={i} />;
+        })}
       </View>
-      
-      <View style={styles.createWorkoutContainer} >
+
+      <View style={styles.createWorkoutContainer}>
         <TouchableOpacity onPress={() => navigation.navigate("WorkoutScreen")}>
-        <Text>Create Workout</Text>
-      </TouchableOpacity>
+          <Text>Create Workout</Text>
+        </TouchableOpacity>
       </View>
-      
     </SafeAreaView>
   );
 };
@@ -44,7 +43,7 @@ const styles = StyleSheet.create({
   createWorkoutContainer: {
     flex: 1,
     alignItems: "center",
-  }
+  },
 });
 
 export default Home;

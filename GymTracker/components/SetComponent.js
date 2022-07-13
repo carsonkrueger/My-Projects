@@ -9,10 +9,29 @@ import {
 } from "react-native";
 import { AntDesign, Feather } from "@expo/vector-icons";
 
-const SetComponent = ({ numExercise, weights, setWeights, rep, setReps }) => {
-  const [isDone, setIsDone] = useState(false);
+const SetComponent = ({
+  numSet,
+  numExercise,
+  weights,
+  setWeights,
+  rep,
+  setReps,
+  isDoneArr,
+  setIsDoneArr,
+}) => {
+  const TWENTYTH_SECOND_MS = 100;
 
-  const TENTH_SECOND_MS = 100;
+  const changeOnIsDone = () => {
+    // console.log("BEFORE:", isDoneArr, " ");
+
+    let tempIsDone = [...isDoneArr];
+    tempIsDone[numExercise][numSet - 1] = !tempIsDone[numExercise][numSet - 1];
+    setIsDoneArr(tempIsDone);
+
+    // console.log("AFTER:", isDoneArr, " ");
+
+    Vibration.vibrate(TWENTYTH_SECOND_MS);
+  };
 
   const styles = StyleSheet.create({
     container: {
@@ -20,18 +39,18 @@ const SetComponent = ({ numExercise, weights, setWeights, rep, setReps }) => {
       flexDirection: "row",
       paddingTop: 2,
       paddingBottom: 2,
-      marginTop: 3,
-      marginLeft: 3,
+      marginTop: 5,
+      marginLeft: 5,
       marginRight: 3,
       borderRadius: 9,
-      backgroundColor: isDone ? "#99ffb3" : null,
+      backgroundColor: isDoneArr[numExercise][numSet - 1] ? "#99ffb3" : null,
     },
     setContainer: {
       flex: 0.6,
       alignItems: "center",
     },
     setText: {
-      color: /*isDone ? null :*/ "#2494f0",
+      color: /*isDone[numSet - 1] ? null :*/ "#2494f0",
       fontSize: 17,
     },
     prevContainer: {
@@ -39,7 +58,7 @@ const SetComponent = ({ numExercise, weights, setWeights, rep, setReps }) => {
       alignItems: "center",
     },
     prevText: {
-      color: /*isDone ? null :*/ "#2494f0",
+      color: /*isDone[numSet - 1] ? null :*/ "#2494f0",
       fontSize: 16,
     },
     weightContainer: {
@@ -48,7 +67,7 @@ const SetComponent = ({ numExercise, weights, setWeights, rep, setReps }) => {
     },
     weightText: {
       fontSize: 16,
-      backgroundColor: isDone ? null : "#dedede", //"#7a7a7a",
+      backgroundColor: isDoneArr[numExercise][numSet - 1] ? null : "#dedede", //"#7a7a7a",
       borderRadius: 5,
       width: "80%",
       textAlign: "center",
@@ -61,7 +80,7 @@ const SetComponent = ({ numExercise, weights, setWeights, rep, setReps }) => {
     },
     repText: {
       fontSize: 16,
-      backgroundColor: isDone ? null : "#dedede", //"#7a7a7a",
+      backgroundColor: isDoneArr[numExercise][numSet - 1] ? null : "#dedede", //"#7a7a7a",
       borderRadius: 5,
       width: "80%",
       textAlign: "center",
@@ -78,7 +97,7 @@ const SetComponent = ({ numExercise, weights, setWeights, rep, setReps }) => {
     <View style={styles.container}>
       {/*SET*/}
       <View style={styles.setContainer}>
-        <Text style={styles.setText}>{numExercise}</Text>
+        <Text style={styles.setText}>{numSet}</Text>
       </View>
 
       {/*PREV*/}
@@ -105,12 +124,7 @@ const SetComponent = ({ numExercise, weights, setWeights, rep, setReps }) => {
 
       {/*CHECK*/}
       <View style={styles.checkContainer}>
-        <TouchableOpacity
-          onPress={() => {
-            setIsDone(!isDone);
-            Vibration.vibrate(TENTH_SECOND_MS);
-          }}
-        >
+        <TouchableOpacity onPress={changeOnIsDone}>
           <Feather name="check-square" size={25} color={"#2494f0"} />
         </TouchableOpacity>
       </View>
