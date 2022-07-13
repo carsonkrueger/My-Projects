@@ -14,12 +14,24 @@ const SetComponent = ({
   numExercise,
   weights,
   setWeights,
-  rep,
+  reps,
   setReps,
   isDoneArr,
   setIsDoneArr,
 }) => {
-  const TWENTYTH_SECOND_MS = 100;
+  const TWENTYTH_SECOND_MS = 50;
+
+  const changeWeightText = (weight) => {
+    let tempWeights = [...weights];
+    tempWeights[numExercise][numSet] = weight;
+    setWeights(tempWeights);
+  };
+
+  const changeRepText = (rep) => {
+      let tempReps = [...reps];
+      tempReps[numExercise][numSet] = rep;
+      setReps(tempReps);
+  };
 
   const changeOnIsDone = () => {
     // console.log("BEFORE:", isDoneArr, " ");
@@ -43,7 +55,7 @@ const SetComponent = ({
       marginLeft: 5,
       marginRight: 3,
       borderRadius: 9,
-      backgroundColor: isDoneArr[numExercise][numSet - 1] ? "#99ffb3" : null,
+      backgroundColor: isDoneArr[numExercise][numSet - 1] ? "#bdffce" : null,
     },
     setContainer: {
       flex: 0.6,
@@ -110,6 +122,8 @@ const SetComponent = ({
         <TextInput
           style={styles.weightText}
           keyboardType="number-pad"
+          value={weights[numExercise][numSet]}
+          onChangeText={(newText) => { changeWeightText(newText)}}
           // editable={() => isDone ? false : true}
         ></TextInput>
       </View>
@@ -119,6 +133,8 @@ const SetComponent = ({
         <TextInput
           style={styles.repText}
           keyboardType="number-pad" /*editable={() => isDone ? false : true}*/
+          value={reps[numExercise][numSet]}
+          onChangeText={(newText) => { changeRepText(newText)}}
         ></TextInput>
       </View>
 

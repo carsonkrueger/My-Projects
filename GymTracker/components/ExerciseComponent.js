@@ -8,7 +8,7 @@ import {
   Vibration,
 } from "react-native";
 // import { useFonts, Bebas_Neue } from "@expo-google-fonts/inter";
-import { AntDesign, Feather } from "@expo/vector-icons";
+import { MaterialIcons, Feather } from "@expo/vector-icons";
 
 import SetComponent from "./SetComponent";
 
@@ -16,6 +16,8 @@ const ExerciseComponent = ({
   name,
   numExercise,
   delExercise,
+  exercisesArr,
+  setExercisesArr,
   weights,
   setWeights,
   reps,
@@ -25,6 +27,12 @@ const ExerciseComponent = ({
 }) => {
   // const [isDoneArr, setIsDoneArr] = useState([false]);
   const TWENTYTH_SECOND_MS = 50;
+
+  const changeExerciseName = (name) => {
+    let tempExerciseArr = [...exercisesArr];
+    tempExerciseArr[numExercise][0] = name;
+    setExercisesArr(tempExerciseArr);
+  }
 
   const AddSet = () => {
     let tempReps = [...reps];
@@ -70,10 +78,17 @@ const ExerciseComponent = ({
       <View style={styles.titleContainer}>
         <TextInput
           style={styles.titleText}
-          placeholder="Exercise Name"
-          defaultValue={name}
-          placeholderTextColor="#2494f0"
+          placeholder="EXERCISE NAME"
+          placeholderTextColor="#90c6f5"
+          value={exercisesArr[numExercise][0]}
+          autoCapitalize="characters"
+          onChangeText={(newText) => {changeExerciseName(newText)}}
         />
+
+        <View style={styles.timerContainer}>
+          <MaterialIcons name="timer"/>
+          <TextInput placeholder="0:00"/>
+        </View>
 
         <View style={styles.trashContainer}>
           <TouchableOpacity
@@ -133,7 +148,7 @@ const ExerciseComponent = ({
 
 const styles = StyleSheet.create({
   container: {
-    paddingTop: "20%",
+    paddingTop: "10%",
     width: "100%",
   },
   titleContainer: {
@@ -142,10 +157,15 @@ const styles = StyleSheet.create({
   },
   titleText: {
     flex: 22,
-    fontSize: 22,
+    fontSize: 16,
     // fontFamily: "Bebas Neue",
     color: "#2494f0",
     paddingLeft: 14,
+  },
+  timerContainer:{
+    alignItems: "center",
+    justifyContent: "center",
+    flexDirection: "row",
   },
   trashContainer: {
     alignItems: "center",

@@ -11,6 +11,7 @@ import {
   Vibration,
 } from "react-native";
 
+import BackComponent from "../components/BackComponent";
 import ExerciseComponent from "../components/ExerciseComponent";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -21,13 +22,13 @@ const WorkoutScreen = ({
   setWorkoutList,
 }) => {
   const [workoutName, setWorkoutName] = useState("Workout Name");
-  const [exercisesArr, setExercisesArr] = useState([["Exercise Name", 0]]);
+  const [exercisesArr, setExercisesArr] = useState([["", 0]]);
   // Each array inside the arrays (weights & reps), represents an exercise's sets.
   const [weights, setWeights] = useState([[null]]);
   const [reps, setReps] = useState([[null]]);
   const [isDoneArr, setIsDoneArr] = useState([[false]]);
 
-  const TENTH_SECOND_MS = 50;
+  const TWENTYTH_SECOND_MS = 50;
 
   // useEffect(() => {
   //   let tempWorkoutList = [...workoutList];
@@ -45,31 +46,43 @@ const WorkoutScreen = ({
     setReps(tempReps);
 
     let tempExercise = [...exercisesArr];
-    tempExercise.push(["Exercise Name", exercisesArr.length]);
+    tempExercise.push(["", exercisesArr.length]);
     setExercisesArr(tempExercise);
 
     let tempIsDone = [...isDoneArr];
     tempIsDone.push([false]);
     setIsDoneArr(tempIsDone);
 
-    Vibration.vibrate(TENTH_SECOND_MS);
+    Vibration.vibrate(TWENTYTH_SECOND_MS);
   };
 
-  const DeleteExercise = (numExercise) => {
-    let tempExerciseArr = [...exercisesArr];
-    let tempWeights = [...weights];
-    let tempReps = [...reps];
-    let tempIsDone = [...isDoneArr];
+  const deleteExercise = (numExercise) => {
+    if (exercisesArr.length <= 1) {
+      setExercisesArr([["", 0]]);
+      setWeights([[null]]);
+      setReps([[null]]);
+      setIsDoneArr([[false]]);
+    } 
 
-    tempWeights.splice(numExercise, 1);
-    tempReps.splice(numExercise, 1);
-    tempExerciseArr.splice(numExercise, 1);
-    tempIsDone.splice(numExercise, 1);
+    else {
+      let tempExerciseArr = [...exercisesArr];
+      let tempWeights = [...weights];
+      let tempReps = [...reps];
+      let tempIsDone = [...isDoneArr];
 
-    setExercisesArr(tempExerciseArr);
-    setWeights(tempWeights);
-    setReps(tempReps);
-    setIsDoneArr(tempIsDone);
+      tempWeights.splice(numExercise, 1);
+      tempReps.splice(numExercise, 1);
+      tempExerciseArr.splice(numExercise, 1);
+      tempIsDone.splice(numExercise, 1);
+
+      setExercisesArr(tempExerciseArr);
+      setWeights(tempWeights);
+      setReps(tempReps);
+      setIsDoneArr(tempIsDone);
+    }
+    
+
+    Vibration.vibrate(TWENTYTH_SECOND_MS)
   };
 
   const storeWorkoutData = async () => {
@@ -99,12 +112,20 @@ const WorkoutScreen = ({
     <SafeAreaView style={styles.container}>
       <ScrollView>
         <View style={styles.screenHeader}>
-          <TextInput
-            style={styles.screenHeaderText}
-            placeholder="Workout Name"
-            placeholderTextColor="#2494f0"
+          <View style={styles.screenTitleContainer}>
+            <TextInput
+            style={styles.screenTitleText}
+            placeholder="WORKOUT NAME"
+            placeholderTextColor="#90c6f5"
             onChangeText={(newText) => setWorkoutName(newText)}
+            autoCapitalize="characters"
           ></TextInput>
+          </View>
+          
+
+          <View style={styles.backContainer}>
+            <BackComponent navigation={navigation}/>
+          </View>
         </View>
 
         <View style={styles.notesContainer}>
@@ -113,7 +134,7 @@ const WorkoutScreen = ({
           </Text>
           <TextInput style={styles.notesText}></TextInput>
         </View>
-        {/* {console.log(exercisesArr)} */}
+
         {exercisesArr.map((exercise, i) => {
           // console.log("\n\n", i, "-->", exercise);
           return (
@@ -121,7 +142,9 @@ const WorkoutScreen = ({
               key={i}
               name={exercise[0]}
               numExercise={i}
-              delExercise={DeleteExercise}
+              delExercise={deleteExercise}
+              exercisesArr={exercisesArr}
+              setExercisesArr={setExercisesArr}
               weights={weights}
               setWeights={setWeights}
               reps={reps}
@@ -149,14 +172,21 @@ const styles = StyleSheet.create({
     backgroundColor: "white", //"#525252",
   },
   screenHeader: {
+    flex: 1,
     paddingLeft: 14,
     paddingTop: "16%",
     paddingBottom: "12%",
-    alignItems: "flex-start",
+    flexDirection: "row",
   },
-  screenHeaderText: {
-    fontSize: 22,
+  screenTitleContainer: {
+  },
+  screenTitleText: {
+    fontSize: 18,
     color: "#2494f0",
+  },
+  backContainer: {
+    flex: 1,
+    paddingRight: 10,
   },
   notesContainer: {
     flexDirection: "row",
@@ -178,11 +208,11 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    paddingTop: 70,
+    paddingTop: 50,
     paddingBottom: 300,
   },
   addExerciseText: {
-    fontSize: 16,
+    fontSize: 18,
     color: "#2494f0",
   },
 });
