@@ -44,7 +44,7 @@ const ExerciseComponent = ({
     setRestTimers(tempRestTimers);
   };
 
-  const flipDoTimer = () => {
+  const flipDoTimer = (numExercise) => {
     let tempDoTimer = !doTimer;
     setDoTimer(tempDoTimer);
   };
@@ -102,25 +102,29 @@ const ExerciseComponent = ({
       paddingLeft: 14,
     },
     timerContainer: {
-      flex: 10,
+      flex: 9,
       alignItems: "center",
       justifyContent: "center",
       flexDirection: "row",
-      backgroundColor: doTimer ? "#90c6f5" : null,
-      borderColor: doTimer ? "#90c6f5" : "black",
+      backgroundColor: doTimer ? "#90c6f5" : "white",
+      borderColor: "#90c6f5",
       borderWidth: 1,
       borderRadius: 15,
     },
-    timerIconContainer: {},
+    timerIconContainer: {
+      padding: 6,
+    },
     timerTimeContainer: {},
     timerText: {
       color: doTimer ? "white" : "black",
       width: 27,
       fontSize: 16,
       textAlign: "center",
+      backgroundColor: doTimer ? null : "#dedede",
+      borderRadius: 8,
     },
     trashContainer: {
-      flex: 6.5,
+      flex: 7,
       alignItems: "center",
       justifyContent: "center",
     },
@@ -180,15 +184,13 @@ const ExerciseComponent = ({
         />
 
         <TouchableOpacity style={styles.timerContainer} onPress={flipDoTimer}>
-          {!doTimer && (
-            <View style={styles.timerIconContainer}>
-              <MaterialIcons
-                name="timer"
-                size={24}
-                color={doTimer ? "white" : "black"}
-              />
-            </View>
-          )}
+          <View style={styles.timerIconContainer}>
+            <MaterialIcons
+              name="timer"
+              size={20}
+              color={doTimer ? "white" : "#90c6f5"}
+            />
+          </View>
 
           <View style={styles.timerTimeContainer}>
             {!doTimer && (
