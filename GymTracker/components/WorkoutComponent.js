@@ -2,11 +2,16 @@ import React, { StyleSheet, useState } from "react-native";
 
 import { View, Text } from "react-native";
 
-const WorkoutComponent = ({ navigation }) => {
+const WorkoutComponent = ({ navigation, name }) => {
   return (
-    <View style={styles.container} >
-      <Text style={styles.text} onPress={() => navigation.navigate("WorkoutScreen")}>
-        Workout 1
+    <View style={styles.container}>
+      <Text
+        style={styles.text}
+        onPress={() => {
+          navigation.navigate("WorkoutScreen", { name: name });
+        }}
+      >
+        {workoutName}
       </Text>
     </View>
   );
@@ -23,7 +28,7 @@ const styles = StyleSheet.create({
   },
   text: {
     textAlign: "center",
-  }
+  },
 });
 
 export default WorkoutComponent;

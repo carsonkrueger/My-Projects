@@ -112,19 +112,20 @@ const ExerciseComponent = ({
       borderRadius: 15,
     },
     timerIconContainer: {
-      padding: 6,
+      paddingVertical: 6,
+      paddingRight: 3,
     },
     timerTimeContainer: {},
     timerText: {
       color: doTimer ? "white" : "black",
-      width: 27,
       fontSize: 16,
       textAlign: "center",
       backgroundColor: doTimer ? null : "#dedede",
       borderRadius: 8,
+      paddingHorizontal: 3,
     },
     trashContainer: {
-      flex: 7,
+      flex: 7.3,
       alignItems: "center",
       justifyContent: "center",
     },

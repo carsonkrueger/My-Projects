@@ -14,13 +14,16 @@ import {
 import BackComponent from "../components/BackComponent";
 import ExerciseComponent from "../components/ExerciseComponent";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { loadAsync } from "expo-font";
 
-const WorkoutScreen = ({
-  navigation,
-  numWorkout,
-  workoutList,
-  setWorkoutList,
-}) => {
+const WorkoutScreen = ({ navigation, route }) => {
+  // const { name } = route.params;
+  // try {
+  //   console.log(route.params.name);
+  // } catch {
+  //   console.log("param error");
+  // }
+
   const [workoutName, setWorkoutName] = useState("Workout Name");
   const [exercisesArr, setExercisesArr] = useState([["", 0]]);
   // Each array inside the arrays (weights & reps), represents an exercise's sets.
@@ -31,11 +34,9 @@ const WorkoutScreen = ({
 
   const TWENTYTH_SECOND_MS = 50;
 
-  // useEffect(() => {
-  //   let tempWorkoutList = [...workoutList];
-  //   tempWorkoutList[numWorkout] = [workoutName, exercisesArr.length, ""];
-  //   setWorkoutList(tempWorkoutList);
-  // }, [workoutName, exercisesArr]);
+  useEffect(() => {
+    loadWorkoutData();
+  }, []);
 
   const AddExercise = () => {
     let tempWeights = [...weights];
@@ -93,24 +94,31 @@ const WorkoutScreen = ({
 
   const storeWorkoutData = async () => {
     try {
-      await AsyncStorage.multiSet(
-        ["Workout", workoutName],
-        ["Exercises", exercisesArr]
-      );
+      await AsyncStorage.setItem(workoutName, [
+        exercisesArr,
+        weights,
+        reps,
+        restTimers,
+      ]);
     } catch (error) {
       // Error saving data
+      console.log("ERROR SAVING DATA");
     }
   };
 
-  const retrieveExerciseData = async () => {
+  const loadWorkoutData = async () => {
     try {
-      const value = await AsyncStorage.getItem();
+      console.log("loading data");
+      const workoutData = await AsyncStorage.getItem(route.params.name);
       if (value !== null) {
-        // We have data!!
-        // console.log(value);
+        setExercisesArr(workoutData[0]);
+        setWeights(workoutData[1]);
+        setReps(workoutData[2]);
+        setRestTimers(workoutData[3]);
       }
     } catch (error) {
       // Error retrieving data
+      console.log("ERROR LOADING DATA");
     }
   };
 

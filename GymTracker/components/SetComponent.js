@@ -28,9 +28,9 @@ const SetComponent = ({
   };
 
   const changeRepText = (rep) => {
-      let tempReps = [...reps];
-      tempReps[numExercise][numSet] = rep;
-      setReps(tempReps);
+    let tempReps = [...reps];
+    tempReps[numExercise][numSet] = rep;
+    setReps(tempReps);
   };
 
   const changeOnIsDone = () => {
@@ -49,11 +49,10 @@ const SetComponent = ({
     container: {
       flex: 1,
       flexDirection: "row",
-      paddingTop: 2,
-      paddingBottom: 2,
+      paddingTop: 1,
+      paddingBottom: 1,
       marginTop: 5,
-      marginLeft: 5,
-      marginRight: 3,
+      marginHorizontal: 5,
       borderRadius: 9,
       backgroundColor: isDoneArr[numExercise][numSet - 1] ? "#bdffce" : null,
     },
@@ -123,7 +122,9 @@ const SetComponent = ({
           style={styles.weightText}
           keyboardType="number-pad"
           value={weights[numExercise][numSet]}
-          onChangeText={(newText) => { changeWeightText(newText)}}
+          onChangeText={(newText) => {
+            changeWeightText(newText);
+          }}
           // editable={() => isDone ? false : true}
         ></TextInput>
       </View>
@@ -134,7 +135,9 @@ const SetComponent = ({
           style={styles.repText}
           keyboardType="number-pad" /*editable={() => isDone ? false : true}*/
           value={reps[numExercise][numSet]}
-          onChangeText={(newText) => { changeRepText(newText)}}
+          onChangeText={(newText) => {
+            changeRepText(newText);
+          }}
         ></TextInput>
       </View>
 
