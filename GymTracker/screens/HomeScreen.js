@@ -11,30 +11,44 @@ import {
 import WorkoutComponent from "../components/WorkoutComponent";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const Home = ({ navigation, route }) => {
+const HomeScreen = ({ navigation, route }) => {
   // [ [ NAME OF WORKOUT, NUM EXERCISES, LAST TIME DID WORKOUT ], ... ]
   // const [workoutList, setWorkoutList] = useState([["", 0, ""]]);
   const [workoutList, setWorkoutList] = useState([]);
 
   useEffect(() => {
-    loadWorkoutData;
+    loadHomescreenData();
+    loadWorkoutSpecifics();
   }, []);
 
-  const loadWorkoutData = async () => {
+  const loadHomescreenData = async () => {
     try {
-      const workouts = await AsyncStorage.getAllKeys();
-      if (value !== null) {
-        // We have data!!
-        // let workoutNames = [];
-        // workouts.map((workout, i) => {workoutNames.push(workout)})
-        console.log(workouts);
-        setWorkoutList(workouts);
+      const workoutNames = await AsyncStorage.getAllKeys();
+
+      if (workoutNames !== null) {
+        setWorkoutList(workoutNames);
       }
     } catch (error) {
       // Error retrieving data
-      console.log("Error retrieving data");
+      console.log("Error retrieving homescreen data");
     }
-    console.log("NO DATA TO LOAD");
+    // console.log("NO DATA TO LOAD");
+  };
+
+  const loadWorkoutSpecifics = async () => {
+    try {
+      let name = workoutList[0];
+      const unparsedWorkoutData = await AsyncStorage.getItem(name);
+      // await AsyncStorage.clear();
+      console.log(
+        "\n--------------------\n",
+        name,
+        "\n",
+        JSON.parse(unparsedWorkoutData)
+      );
+    } catch {
+      console.log("couldnt map through workout names");
+    }
   };
 
   return (
@@ -42,18 +56,14 @@ const Home = ({ navigation, route }) => {
       <View style={styles.workoutContainer}>
         {workoutList.map((workout, i) => {
           return (
-            <WorkoutComponent
-              key={i}
-              navigation={navigation}
-              name={workout[0]}
-            />
+            <WorkoutComponent key={i} navigation={navigation} name={workout} />
           );
         })}
       </View>
 
       <View style={styles.createWorkoutContainer}>
         <TouchableOpacity
-          onPress={() => navigation.navigate("WorkoutScreen", { name: null })}
+          onPress={() => navigation.navigate("WorkoutScreen", { name: "" })}
         >
           <Text>Create Workout</Text>
         </TouchableOpacity>
@@ -77,4 +87,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Home;
+export default HomeScreen;

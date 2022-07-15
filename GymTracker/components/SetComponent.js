@@ -12,8 +12,10 @@ import { AntDesign, Feather } from "@expo/vector-icons";
 const SetComponent = ({
   numSet,
   numExercise,
+  prevWeights,
   weights,
   setWeights,
+  prevReps,
   reps,
   setReps,
   isDoneArr,
@@ -25,6 +27,7 @@ const SetComponent = ({
     let tempWeights = [...weights];
     tempWeights[numExercise][numSet] = weight;
     setWeights(tempWeights);
+    // console.log("\n", numExercise, numSet, "\n", weights);
   };
 
   const changeRepText = (rep) => {
@@ -37,7 +40,7 @@ const SetComponent = ({
     // console.log("BEFORE:", isDoneArr, " ");
 
     let tempIsDone = [...isDoneArr];
-    tempIsDone[numExercise][numSet - 1] = !tempIsDone[numExercise][numSet - 1];
+    tempIsDone[numExercise][numSet] = !tempIsDone[numExercise][numSet];
     setIsDoneArr(tempIsDone);
 
     // console.log("AFTER:", isDoneArr, " ");
@@ -54,14 +57,14 @@ const SetComponent = ({
       marginTop: 5,
       marginHorizontal: 5,
       borderRadius: 9,
-      backgroundColor: isDoneArr[numExercise][numSet - 1] ? "#bdffce" : null,
+      backgroundColor: isDoneArr[numExercise][numSet] ? "#bdffce" : null,
     },
     setContainer: {
       flex: 0.6,
       alignItems: "center",
     },
     setText: {
-      color: /*isDone[numSet - 1] ? null :*/ "#2494f0",
+      color: /*isDone[numSet] ? null :*/ "#2494f0",
       fontSize: 17,
     },
     prevContainer: {
@@ -69,7 +72,7 @@ const SetComponent = ({
       alignItems: "center",
     },
     prevText: {
-      color: /*isDone[numSet - 1] ? null :*/ "#2494f0",
+      color: /*isDone[numSet] ? null :*/ "#2494f0",
       fontSize: 16,
     },
     weightContainer: {
@@ -78,7 +81,7 @@ const SetComponent = ({
     },
     weightText: {
       fontSize: 16,
-      backgroundColor: isDoneArr[numExercise][numSet - 1] ? null : "#dedede", //"#7a7a7a",
+      backgroundColor: isDoneArr[numExercise][numSet] ? null : "#dedede", //"#7a7a7a",
       borderRadius: 5,
       width: "80%",
       textAlign: "center",
@@ -91,7 +94,7 @@ const SetComponent = ({
     },
     repText: {
       fontSize: 16,
-      backgroundColor: isDoneArr[numExercise][numSet - 1] ? null : "#dedede", //"#7a7a7a",
+      backgroundColor: isDoneArr[numExercise][numSet] ? null : "#dedede", //"#7a7a7a",
       borderRadius: 5,
       width: "80%",
       textAlign: "center",
@@ -108,7 +111,7 @@ const SetComponent = ({
     <View style={styles.container}>
       {/*SET*/}
       <View style={styles.setContainer}>
-        <Text style={styles.setText}>{numSet}</Text>
+        <Text style={styles.setText}>{numSet + 1}</Text>
       </View>
 
       {/*PREV*/}
@@ -122,6 +125,7 @@ const SetComponent = ({
           style={styles.weightText}
           keyboardType="number-pad"
           value={weights[numExercise][numSet]}
+          placeholder={weights[numExercise][numSet]}
           onChangeText={(newText) => {
             changeWeightText(newText);
           }}
@@ -135,6 +139,7 @@ const SetComponent = ({
           style={styles.repText}
           keyboardType="number-pad" /*editable={() => isDone ? false : true}*/
           value={reps[numExercise][numSet]}
+          placeholder={reps[numExercise][numSet]}
           onChangeText={(newText) => {
             changeRepText(newText);
           }}

@@ -9,6 +9,7 @@ import {
   SafeAreaView,
   ScrollView,
   Vibration,
+  AppRegistry,
 } from "react-native";
 
 import BackComponent from "../components/BackComponent";
@@ -17,25 +18,31 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { loadAsync } from "expo-font";
 
 const WorkoutScreen = ({ navigation, route }) => {
-  // const { name } = route.params;
-  // try {
-  //   console.log(route.params.name);
-  // } catch {
-  //   console.log("param error");
-  // }
-
-  const [workoutName, setWorkoutName] = useState("Workout Name");
+  const [workoutName, setWorkoutName] = useState("");
   const [exercisesArr, setExercisesArr] = useState([["", 0]]);
   // Each array inside the arrays (weights & reps), represents an exercise's sets.
   const [weights, setWeights] = useState([[null]]);
   const [reps, setReps] = useState([[null]]);
+  const [restTimers, setRestTimers] = useState([""]);
+
+  const [prevWeights, setPrevWeights] = useState([[null]]);
+  const [prevReps, setPrevReps] = useState([[null]]);
+
   const [isDoneArr, setIsDoneArr] = useState([[false]]);
-  const [restTimers, setRestTimers] = useState([null]);
+  const [seconds, setSeconds] = useState(0);
+  const [originalWorkoutName, setOriginalWorkoutName] = useState("");
 
   const TWENTYTH_SECOND_MS = 50;
 
   useEffect(() => {
     loadWorkoutData();
+    setOriginalWorkoutName(workoutName);
+
+    const intervalId = setInterval(() => {
+      setSeconds((prevSeconds) => prevSeconds + 1);
+    }, 1000);
+
+    return () => clearInterval(intervalId);
   }, []);
 
   const AddExercise = () => {
@@ -56,7 +63,7 @@ const WorkoutScreen = ({ navigation, route }) => {
     setIsDoneArr(tempIsDone);
 
     let tempRestTimers = [...restTimers];
-    tempRestTimers.push(null);
+    tempRestTimers.push("");
     setRestTimers(tempRestTimers);
 
     Vibration.vibrate(TWENTYTH_SECOND_MS);
@@ -68,7 +75,7 @@ const WorkoutScreen = ({ navigation, route }) => {
       setWeights([[null]]);
       setReps([[null]]);
       setIsDoneArr([[false]]);
-      setRestTimers([null]);
+      setRestTimers([""]);
     } else {
       let tempExerciseArr = [...exercisesArr];
       let tempWeights = [...weights];
@@ -92,29 +99,61 @@ const WorkoutScreen = ({ navigation, route }) => {
     Vibration.vibrate(TWENTYTH_SECOND_MS);
   };
 
+  const checkUniqueWorkoutName = async () => {
+    try {
+      let workoutNames = await AsyncStorage.getAllKeys();
+      workoutNames.map((names, i) => {
+        if (names === workoutName || workoutName === "") {
+          // not unique
+          console.log(
+            "WORKOUT NAME IS NOT UNIQUE OR EMPTY,",
+            workoutName,
+            "CHANGE THE NAME"
+          );
+          return false;
+        }
+        // unique
+        return true;
+      });
+    } catch {
+      console.log("could not check if", workoutName, "is unique");
+    }
+  };
+
   const storeWorkoutData = async () => {
     try {
-      await AsyncStorage.setItem(workoutName, [
-        exercisesArr,
-        weights,
-        reps,
-        restTimers,
-      ]);
+      await AsyncStorage.setItem(
+        workoutName,
+        JSON.stringify([exercisesArr, weights, reps, restTimers])
+      );
     } catch (error) {
       // Error saving data
-      console.log("ERROR SAVING DATA");
+      console.log("ERROR SAVING WORKOUT DATA");
+    }
+
+    if (originalWorkoutName !== workoutName) {
+      try {
+        await AsyncStorage.removeItem(originalWorkoutName);
+      } catch (error) {
+        // Error saving data
+        console.log("ERROR DELETING OLD WORKOUT DATA");
+      }
     }
   };
 
   const loadWorkoutData = async () => {
     try {
-      console.log("loading data");
-      const workoutData = await AsyncStorage.getItem(route.params.name);
-      if (value !== null) {
+      console.log("loading workoutscreen data for:", route.params.name);
+      const unparsedWorkoutData = await AsyncStorage.getItem(route.params.name);
+
+      if (unparsedWorkoutData !== null) {
+        const workoutData = JSON.parse(unparsedWorkoutData);
+        setWorkoutName(route.params.name);
         setExercisesArr(workoutData[0]);
         setWeights(workoutData[1]);
         setReps(workoutData[2]);
         setRestTimers(workoutData[3]);
+        console.log(workoutData[3]);
       }
     } catch (error) {
       // Error retrieving data
@@ -133,11 +172,16 @@ const WorkoutScreen = ({ navigation, route }) => {
               placeholderTextColor="#90c6f5"
               onChangeText={(newText) => setWorkoutName(newText)}
               autoCapitalize="characters"
+              value={workoutName}
             ></TextInput>
           </View>
 
           <View style={styles.backContainer}>
-            <BackComponent navigation={navigation} />
+            <BackComponent
+              navigation={navigation}
+              storeWorkoutData={storeWorkoutData}
+              checkUniqueWorkoutName={checkUniqueWorkoutName}
+            />
           </View>
         </View>
 
@@ -157,11 +201,16 @@ const WorkoutScreen = ({ navigation, route }) => {
               numExercise={i}
               restTimers={restTimers}
               setRestTimers={setRestTimers}
+              seconds={seconds}
               delExercise={deleteExercise}
               exercisesArr={exercisesArr}
               setExercisesArr={setExercisesArr}
+              prevWeights={prevWeights}
+              setPrevWeights={setPrevWeights}
               weights={weights}
               setWeights={setWeights}
+              prevReps={prevReps}
+              setPrevReps={setPrevReps}
               reps={reps}
               setReps={setReps}
               isDoneArr={isDoneArr}

@@ -11,7 +11,7 @@ const WorkoutComponent = ({ navigation, name }) => {
           navigation.navigate("WorkoutScreen", { name: name });
         }}
       >
-        {workoutName}
+        {name}
       </Text>
     </View>
   );

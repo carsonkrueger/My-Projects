@@ -17,11 +17,16 @@ const ExerciseComponent = ({
   numExercise,
   restTimers,
   setRestTimers,
+  seconds,
   delExercise,
   exercisesArr,
   setExercisesArr,
+  prevWeights,
+  setPrevWeights,
   weights,
   setWeights,
+  prevReps,
+  setPrevReps,
   reps,
   setReps,
   isDoneArr,
@@ -31,7 +36,7 @@ const ExerciseComponent = ({
   const TWENTYTH_SECOND_MS = 50;
 
   const [doTimer, setDoTimer] = useState(false);
-
+  const [countdownTime, setCountdownTime] = useState(0);
   const changeExerciseName = (name) => {
     let tempExerciseArr = [...exercisesArr];
     tempExerciseArr[numExercise][0] = name;
@@ -42,11 +47,14 @@ const ExerciseComponent = ({
     let tempRestTimers = [...restTimers];
     tempRestTimers[numExercise] = num;
     setRestTimers(tempRestTimers);
+    console.log(tempRestTimers, restTimers);
   };
 
   const flipDoTimer = (numExercise) => {
-    let tempDoTimer = !doTimer;
-    setDoTimer(tempDoTimer);
+    // console.log("FLIP! doTimer:", doTimer);
+    setDoTimer(!doTimer);
+
+    if (!doTimer) setCountdownTime(seconds);
   };
 
   const AddSet = () => {
@@ -176,7 +184,7 @@ const ExerciseComponent = ({
           style={styles.titleText}
           placeholder="EXERCISE NAME"
           placeholderTextColor="#90c6f5"
-          value={exercisesArr[numExercise][0]}
+          value={name}
           maxLength={20}
           autoCapitalize="characters"
           onChangeText={(newText) => {
@@ -207,7 +215,12 @@ const ExerciseComponent = ({
               />
             )}
             {doTimer && (
-              <Text style={styles.timerText}>{restTimers[numExercise]}</Text>
+              <Text style={styles.timerText}>
+                {(
+                  restTimers[numExercise] -
+                  (seconds - countdownTime)
+                ).toString()}
+              </Text>
             )}
           </View>
         </TouchableOpacity>
@@ -215,6 +228,7 @@ const ExerciseComponent = ({
         <View style={styles.trashContainer}>
           <TouchableOpacity
             onPress={() => {
+              setDoTimer(false);
               delExercise(numExercise);
             }}
           >
@@ -243,10 +257,12 @@ const ExerciseComponent = ({
         return (
           <SetComponent
             key={i}
-            numSet={i + 1}
+            numSet={i}
             numExercise={numExercise}
+            prevWeights={prevWeights}
             weights={weights}
             setWeights={setWeights}
+            prevReps={prevReps}
             reps={reps}
             setReps={setReps}
             isDoneArr={isDoneArr}
