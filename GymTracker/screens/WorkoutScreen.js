@@ -19,14 +19,14 @@ import { loadAsync } from "expo-font";
 
 const WorkoutScreen = ({ navigation, route }) => {
   const [workoutName, setWorkoutName] = useState("");
-  const [exercisesArr, setExercisesArr] = useState([["", 0]]);
+  const [exercisesArr, setExercisesArr] = useState([""]);
   // Each array inside the arrays (weights & reps), represents an exercise's sets.
-  const [weights, setWeights] = useState([[null]]);
-  const [reps, setReps] = useState([[null]]);
+  const [weights, setWeights] = useState([[""]]);
+  const [reps, setReps] = useState([[""]]);
   const [restTimers, setRestTimers] = useState([""]);
 
-  const [prevWeights, setPrevWeights] = useState([[null]]);
-  const [prevReps, setPrevReps] = useState([[null]]);
+  const [prevWeights, setPrevWeights] = useState([[""]]);
+  const [prevReps, setPrevReps] = useState([[""]]);
 
   const [isDoneArr, setIsDoneArr] = useState([[false]]);
   const [seconds, setSeconds] = useState(0);
@@ -35,7 +35,8 @@ const WorkoutScreen = ({ navigation, route }) => {
   const TWENTYTH_SECOND_MS = 50;
 
   useEffect(() => {
-    loadWorkoutData();
+    // loadWorkoutData();
+    loadRouteWorkoutData();
     setOriginalWorkoutName(workoutName);
 
     const intervalId = setInterval(() => {
@@ -47,15 +48,15 @@ const WorkoutScreen = ({ navigation, route }) => {
 
   const AddExercise = () => {
     let tempWeights = [...weights];
-    tempWeights.push([null]);
+    tempWeights.push([""]);
     setWeights(tempWeights);
 
     let tempReps = [...reps];
-    tempReps.push([null]);
+    tempReps.push([""]);
     setReps(tempReps);
 
     let tempExercise = [...exercisesArr];
-    tempExercise.push(["", exercisesArr.length]);
+    tempExercise.push("");
     setExercisesArr(tempExercise);
 
     let tempIsDone = [...isDoneArr];
@@ -71,9 +72,9 @@ const WorkoutScreen = ({ navigation, route }) => {
 
   const deleteExercise = (numExercise) => {
     if (exercisesArr.length <= 1) {
-      setExercisesArr([["", 0]]);
-      setWeights([[null]]);
-      setReps([[null]]);
+      setExercisesArr([""]);
+      setWeights([[""]]);
+      setReps([[""]]);
       setIsDoneArr([[false]]);
       setRestTimers([""]);
     } else {
@@ -116,29 +117,30 @@ const WorkoutScreen = ({ navigation, route }) => {
         return true;
       });
     } catch {
-      console.log("could not check if", workoutName, "is unique");
+      console.log("ERROR: could not check if", workoutName, "is unique");
     }
   };
 
   const storeWorkoutData = async () => {
     try {
       await AsyncStorage.setItem(
-        workoutName,
+        workoutName.toString(),
         JSON.stringify([exercisesArr, weights, reps, restTimers])
       );
+      console.log(JSON.stringify([exercisesArr, weights, reps, restTimers]));
     } catch (error) {
       // Error saving data
       console.log("ERROR SAVING WORKOUT DATA");
     }
 
-    if (originalWorkoutName !== workoutName) {
-      try {
-        await AsyncStorage.removeItem(originalWorkoutName);
-      } catch (error) {
-        // Error saving data
-        console.log("ERROR DELETING OLD WORKOUT DATA");
-      }
-    }
+    // if (originalWorkoutName !== workoutName) {
+    //   try {
+    //     await AsyncStorage.removeItem(originalWorkoutName);
+    //   } catch (error) {
+    //     // Error saving data
+    //     console.log("ERROR DELETING OLD WORKOUT DATA");
+    //   }
+    // }
   };
 
   const loadWorkoutData = async () => {
@@ -148,17 +150,36 @@ const WorkoutScreen = ({ navigation, route }) => {
 
       if (unparsedWorkoutData !== null) {
         const workoutData = JSON.parse(unparsedWorkoutData);
-        setWorkoutName(route.params.name);
-        setExercisesArr(workoutData[0]);
+        console.log(
+          "LOADING\n",
+          "\nexer names\n",
+          workoutData[0],
+          "\nweights\n",
+          workoutData[1],
+          "\nreps\n",
+          workoutData[2],
+          "\ntimes\n",
+          workoutData[3]
+        );
+
+        setWorkoutName(route.params.name.toString());
+        setExercisesArr(...workoutData[0]);
         setWeights(workoutData[1]);
         setReps(workoutData[2]);
         setRestTimers(workoutData[3]);
-        console.log(workoutData[3]);
       }
     } catch (error) {
       // Error retrieving data
-      console.log("ERROR LOADING DATA");
+      console.log("ERROR LOADING DATA:", error);
     }
+  };
+
+  loadRouteWorkoutData = () => {
+    setWorkoutName(route.params.name.toString());
+    setExercisesArr(route.params.data[0]);
+    setWeights(route.params.data[1]);
+    setReps(route.params.data[2]);
+    setRestTimers(route.params.data[3]);
   };
 
   return (
@@ -197,7 +218,7 @@ const WorkoutScreen = ({ navigation, route }) => {
           return (
             <ExerciseComponent
               key={i}
-              name={exercise[0]}
+              name={exercise}
               numExercise={i}
               restTimers={restTimers}
               setRestTimers={setRestTimers}

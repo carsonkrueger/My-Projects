@@ -39,7 +39,7 @@ const ExerciseComponent = ({
   const [countdownTime, setCountdownTime] = useState(0);
   const changeExerciseName = (name) => {
     let tempExerciseArr = [...exercisesArr];
-    tempExerciseArr[numExercise][0] = name;
+    tempExerciseArr[numExercise] = name;
     setExercisesArr(tempExerciseArr);
   };
 
@@ -59,11 +59,11 @@ const ExerciseComponent = ({
 
   const AddSet = () => {
     let tempReps = [...reps];
-    tempReps[numExercise].push(null);
+    tempReps[numExercise].push("");
     setReps(tempReps);
 
     let tempWeights = [...weights];
-    tempWeights[numExercise].push(null);
+    tempWeights[numExercise].push("");
     setWeights(tempWeights);
 
     let tempIsDone = [...isDoneArr];
@@ -252,7 +252,7 @@ const ExerciseComponent = ({
         </View>
         <View style={styles.emptyHead}>{/* Empty header */}</View>
       </View>
-
+      {/* {console.log("WEIGHTS", weights)} */}
       {weights[numExercise].map((weight, i) => {
         return (
           <SetComponent

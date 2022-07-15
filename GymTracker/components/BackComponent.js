@@ -9,10 +9,9 @@ const BackComponent = ({
     <View style={styles.container}>
       <TouchableOpacity
         onPress={() => {
-          if (checkUniqueWorkoutName()) {
-            storeWorkoutData();
-            navigation.navigate("HomeScreen");
-          }
+          checkUniqueWorkoutName();
+          storeWorkoutData();
+          navigation.navigate("HomeScreen");
         }}
       >
         <Text style={styles.text}>FINISH</Text>

@@ -2,13 +2,13 @@ import React, { StyleSheet, useState } from "react-native";
 
 import { View, Text } from "react-native";
 
-const WorkoutComponent = ({ navigation, name }) => {
+const WorkoutComponent = ({ navigation, name, loadWorkoutData }) => {
   return (
     <View style={styles.container}>
       <Text
         style={styles.text}
         onPress={() => {
-          navigation.navigate("WorkoutScreen", { name: name });
+          loadWorkoutData(name);
         }}
       >
         {name}

@@ -18,7 +18,7 @@ const HomeScreen = ({ navigation, route }) => {
 
   useEffect(() => {
     loadHomescreenData();
-    loadWorkoutSpecifics();
+    // loadWorkoutSpecifics();
   }, []);
 
   const loadHomescreenData = async () => {
@@ -35,17 +35,33 @@ const HomeScreen = ({ navigation, route }) => {
     // console.log("NO DATA TO LOAD");
   };
 
+  const loadWorkoutData = async (clickedName) => {
+    try {
+      const workoutData = await AsyncStorage.getItem(clickedName);
+
+      if (workoutData !== null) {
+        navigation.navigate("WorkoutScreen", {
+          name: clickedName,
+          workoutData: JSON.parse(workoutData),
+        });
+      }
+    } catch (error) {
+      // Error retrieving data
+      console.log("Error retrieving homescreen data");
+    }
+    // console.log("NO DATA TO LOAD");
+  };
+
   const loadWorkoutSpecifics = async () => {
     try {
-      let name = workoutList[0];
+      await AsyncStorage.clear();
+      let name = workoutList[0].toString();
+      console.log("Specifics name:", name.toString());
+
       const unparsedWorkoutData = await AsyncStorage.getItem(name);
+      const parsedData = JSON.parse(unparsedWorkoutData);
       // await AsyncStorage.clear();
-      console.log(
-        "\n--------------------\n",
-        name,
-        "\n",
-        JSON.parse(unparsedWorkoutData)
-      );
+      console.log("\n--------------------\n", name, "\n", parsedData);
     } catch {
       console.log("couldnt map through workout names");
     }
@@ -56,14 +72,23 @@ const HomeScreen = ({ navigation, route }) => {
       <View style={styles.workoutContainer}>
         {workoutList.map((workout, i) => {
           return (
-            <WorkoutComponent key={i} navigation={navigation} name={workout} />
+            <WorkoutComponent
+              key={i}
+              navigation={navigation}
+              name={workout}
+              loadWorkoutData={loadWorkoutData}
+            />
           );
         })}
       </View>
 
       <View style={styles.createWorkoutContainer}>
         <TouchableOpacity
-          onPress={() => navigation.navigate("WorkoutScreen", { name: "" })}
+          onPress={() =>
+            navigation.navigate("WorkoutScreen", {
+              name: "",
+            })
+          }
         >
           <Text>Create Workout</Text>
         </TouchableOpacity>

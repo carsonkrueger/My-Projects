@@ -126,6 +126,7 @@ const SetComponent = ({
           keyboardType="number-pad"
           value={weights[numExercise][numSet]}
           placeholder={weights[numExercise][numSet]}
+          editable={!isDoneArr[numExercise][numSet]}
           onChangeText={(newText) => {
             changeWeightText(newText);
           }}
@@ -140,6 +141,7 @@ const SetComponent = ({
           keyboardType="number-pad" /*editable={() => isDone ? false : true}*/
           value={reps[numExercise][numSet]}
           placeholder={reps[numExercise][numSet]}
+          editable={!isDoneArr[numExercise][numSet]}
           onChangeText={(newText) => {
             changeRepText(newText);
           }}
