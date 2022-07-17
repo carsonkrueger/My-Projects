@@ -1,10 +1,10 @@
 import React, { StyleSheet, useState } from "react-native";
 
-import { View, Text } from "react-native";
+import { View, Text, TouchableOpacity } from "react-native";
 
 const WorkoutComponent = ({ navigation, name }) => {
   return (
-    <View style={styles.container}>
+    <TouchableOpacity style={styles.container}>
       <Text
         style={styles.text}
         onPress={() => {
@@ -14,21 +14,21 @@ const WorkoutComponent = ({ navigation, name }) => {
       >
         {name}
       </Text>
-    </View>
+    </TouchableOpacity>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    width: "75%",
+    width: "90%",
     borderWidth: 1,
-    borderColor: "black",
-    borderRadius: 5,
-    paddingVertical: 30,
-    paddingHorizontal: 50,
+    borderColor: "#a3a3a3",
+    borderRadius: 10,
+    paddingVertical: "7%",
+    marginVertical: "2%",
   },
   text: {
-    textAlign: "center",
+    fontSize: 15,
   },
 });
 

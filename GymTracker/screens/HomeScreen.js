@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   SafeAreaView,
+  ScrollView,
 } from "react-native";
 
 import WorkoutComponent from "../components/WorkoutComponent";
@@ -56,13 +57,19 @@ const HomeScreen = ({ navigation, route }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.workoutContainer}>
-        {workoutList.map((workout, i) => {
-          return (
-            <WorkoutComponent key={i} navigation={navigation} name={workout} />
-          );
-        })}
-      </View>
+      <ScrollView style={styles.scrollContainer}>
+        <View style={styles.workoutListContainer}>
+          {workoutList.map((workout, i) => {
+            return (
+              <WorkoutComponent
+                key={i}
+                navigation={navigation}
+                name={workout}
+              />
+            );
+          })}
+        </View>
+      </ScrollView>
 
       <View style={styles.createWorkoutContainer}>
         <TouchableOpacity
@@ -83,14 +90,24 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  workoutContainer: {
+  scrollContainer: {
+    flex: 2,
+  },
+  workoutListContainer: {
     flex: 3,
+    paddingTop: "20%",
     alignItems: "center",
-    justifyContent: "center",
+    justifyContent: "flex-start",
   },
   createWorkoutContainer: {
-    flex: 1,
+    width: "16%",
+    height: "8%",
     alignItems: "center",
+    justifyContent: "center",
+    borderColor: "black",
+    borderWidth: 1,
+    borderRadius: 100,
+    backgroundColor: "#90c6f5",
   },
 });
 
