@@ -18,7 +18,6 @@ const HomeScreen = ({ navigation, route }) => {
 
   useEffect(() => {
     loadHomescreenData();
-    // loadWorkoutSpecifics();
   }, []);
 
   const loadHomescreenData = async () => {
@@ -31,23 +30,6 @@ const HomeScreen = ({ navigation, route }) => {
     } catch (error) {
       // Error retrieving data
       console.log("Error retrieving homescreen data");
-    }
-    // console.log("NO DATA TO LOAD");
-  };
-
-  const loadWorkoutData = async (clickedName) => {
-    try {
-      const workoutData = await AsyncStorage.getItem(clickedName);
-
-      if (workoutData !== null) {
-        navigation.navigate("WorkoutScreen", {
-          name: clickedName,
-          workoutData: JSON.parse(workoutData),
-        });
-      }
-    } catch (error) {
-      // Error retrieving data
-      console.log("Error retrieving workoutdata on homescreen data");
     }
     // console.log("NO DATA TO LOAD");
   };

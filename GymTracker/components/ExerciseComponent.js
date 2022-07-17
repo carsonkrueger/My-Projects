@@ -253,7 +253,7 @@ const ExerciseComponent = ({
         </View>
         <View style={styles.emptyHead}>{/* Empty header */}</View>
       </View>
-      {console.log("--------", exercisesArr)}
+
       {weights[numExercise].map((weight, i) => {
         return (
           <SetComponent

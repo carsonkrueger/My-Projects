@@ -60,10 +60,10 @@ const WorkoutScreen = ({ navigation, route }) => {
     loadWorkoutData();
     //loadRouteWorkoutData();
     // setOriginalWorkoutName(workoutName);
-    // const intervalId = setInterval(() => {
-    //   setSeconds((prevSeconds) => prevSeconds + 1);
-    // }, 1000);
-    // return () => clearInterval(intervalId);
+    const intervalId = setInterval(() => {
+      setSeconds((prevSeconds) => prevSeconds + 1);
+    }, 1000);
+    return () => clearInterval(intervalId);
   }, []);
 
   const addExercise = () => {
@@ -80,7 +80,7 @@ const WorkoutScreen = ({ navigation, route }) => {
     restTimers.push("");
 
     let isDoneArr = [...states.isDoneArr];
-    isDoneArr.push(false);
+    isDoneArr.push([false]);
 
     setStates({
       ...states,
@@ -93,29 +93,41 @@ const WorkoutScreen = ({ navigation, route }) => {
   };
 
   const deleteExercise = () => {
-    let exercisesArr = [...states.exercisesArr];
-    exercisesArr.pop();
+    if (states.exercisesArr.length <= 1) {
+      setStates({
+        ...states,
+        workoutName: "",
+        exercisesArr: [""],
+        weights: [[""]],
+        reps: [[""]],
+        restTimers: [""],
+        isDoneArr: [[false]],
+      });
+    } else {
+      let exercisesArr = [...states.exercisesArr];
+      exercisesArr.pop();
 
-    let weights = [...states.weights];
-    weights.pop();
+      let weights = [...states.weights];
+      weights.pop();
 
-    let reps = [...states.reps];
-    reps.pop();
+      let reps = [...states.reps];
+      reps.pop();
 
-    let restTimers = [...states.restTimers];
-    restTimers.pop();
+      let restTimers = [...states.restTimers];
+      restTimers.pop();
 
-    let isDoneArr = [...states.isDoneArr];
-    isDoneArr.pop();
+      let isDoneArr = [...states.isDoneArr];
+      isDoneArr.pop();
 
-    setStates({
-      ...states,
-      exercisesArr,
-      weights,
-      reps,
-      restTimers,
-      isDoneArr,
-    });
+      setStates({
+        ...states,
+        exercisesArr,
+        weights,
+        reps,
+        restTimers,
+        isDoneArr,
+      });
+    }
   };
 
   const setExercisesArr = (exercisesArr) => {
@@ -160,67 +172,6 @@ const WorkoutScreen = ({ navigation, route }) => {
     });
   };
 
-  const setOriginalWorkoutName = (originalWorkoutName) => {
-    setStates({
-      ...states,
-      originalWorkoutName,
-    });
-  };
-
-  // const AddExercise = () => {
-  //   let tempWeights = [...weights];
-  //   tempWeights.push([""]);
-  //   setWeights(tempWeights);
-
-  //   let tempReps = [...reps];
-  //   tempReps.push([""]);
-  //   setReps(tempReps);
-
-  //   let tempExercise = [...exercisesArr];
-  //   tempExercise.push("");
-  //   setExercisesArr(tempExercise);
-
-  //   let tempIsDone = [...isDoneArr];
-  //   tempIsDone.push([false]);
-  //   setIsDoneArr(tempIsDone);
-
-  //   let tempRestTimers = [...restTimers];
-  //   tempRestTimers.push("");
-  //   setRestTimers(tempRestTimers);
-
-  //   Vibration.vibrate(TWENTYTH_SECOND_MS);
-  // };
-
-  // const deleteExercise = (numExercise) => {
-  //   if (exercisesArr.length <= 1) {
-  //     setExercisesArr([""]);
-  //     setWeights([[""]]);
-  //     setReps([[""]]);
-  //     setIsDoneArr([[false]]);
-  //     setRestTimers([""]);
-  //   } else {
-  //     let tempExerciseArr = [...exercisesArr];
-  //     let tempWeights = [...weights];
-  //     let tempReps = [...reps];
-  //     let tempIsDone = [...isDoneArr];
-  //     let tempRestTimers = [...restTimers];
-
-  //     tempWeights.splice(numExercise, 1);
-  //     tempReps.splice(numExercise, 1);
-  //     tempExerciseArr.splice(numExercise, 1);
-  //     tempIsDone.splice(numExercise, 1);
-  //     tempRestTimers.splice(numExercise, 1);
-
-  //     setExercisesArr(tempExerciseArr);
-  //     setWeights(tempWeights);
-  //     setReps(tempReps);
-  //     setIsDoneArr(tempIsDone);
-  //     setRestTimers(tempRestTimers);
-  //   }
-
-  //   Vibration.vibrate(TWENTYTH_SECOND_MS);
-  // };
-
   const checkUniqueWorkoutName = async () => {
     try {
       let workoutNames = await AsyncStorage.getAllKeys();
@@ -251,14 +202,7 @@ const WorkoutScreen = ({ navigation, route }) => {
           states.weights,
           states.reps,
           states.restTimers,
-        ])
-      );
-      console.log(
-        JSON.stringify([
-          states.exercisesArr,
-          states.weights,
-          states.reps,
-          states.restTimers,
+          states.isDoneArr,
         ])
       );
     } catch (error) {
@@ -291,29 +235,14 @@ const WorkoutScreen = ({ navigation, route }) => {
           weights: workoutData[1],
           reps: workoutData[2],
           restTimers: workoutData[3],
-          isDoneArr: [[false]],
+          isDoneArr: workoutData[4],
           originalWorkoutName: route.params.name,
         });
-
-        // setWorkoutName(route.params.name.toString());
-        // setExercisesArr(workoutData[0]);
-        // setWeights(workoutData[1]);
-        // setReps(workoutData[2]);
-        // setRestTimers(workoutData[3]);
-        // setStateFromStorage(workoutData);
       }
     } catch (error) {
       // Error retrieving data
       console.log("ERROR LOADING DATA:", error);
     }
-  };
-
-  const setStateFromStorage = (workoutData) => {
-    setWorkoutName((prev) => route.params.name.toString());
-    setExercisesArr((prev) => workoutData[0]);
-    setWeights((prev) => workoutData[1]);
-    setReps((prev) => workoutData[2]);
-    setRestTimers((prev) => workoutData[3]);
   };
 
   const loadRouteWorkoutData = () => {
