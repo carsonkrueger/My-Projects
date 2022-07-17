@@ -17,8 +17,9 @@ const HomeScreen = ({ navigation, route }) => {
   const [workoutList, setWorkoutList] = useState([]);
 
   useEffect(() => {
+    AsyncStorage.clear();
     loadHomescreenData();
-  }, []);
+  }, [route]);
 
   const loadHomescreenData = async () => {
     try {
@@ -30,6 +31,7 @@ const HomeScreen = ({ navigation, route }) => {
     } catch (error) {
       // Error retrieving data
       console.log("Error retrieving homescreen data");
+      throw error;
     }
     // console.log("NO DATA TO LOAD");
   };
@@ -44,8 +46,9 @@ const HomeScreen = ({ navigation, route }) => {
       const parsedData = JSON.parse(unparsedWorkoutData);
       await AsyncStorage.clear();
       console.log("\n--------------------\n", name, "\n", parsedData);
-    } catch {
+    } catch (error) {
       console.log("couldnt map through workout names");
+      throw error;
     }
   };
 
@@ -54,12 +57,7 @@ const HomeScreen = ({ navigation, route }) => {
       <View style={styles.workoutContainer}>
         {workoutList.map((workout, i) => {
           return (
-            <WorkoutComponent
-              key={i}
-              navigation={navigation}
-              name={workout}
-              loadWorkoutData={loadWorkoutData}
-            />
+            <WorkoutComponent key={i} navigation={navigation} name={workout} />
           );
         })}
       </View>

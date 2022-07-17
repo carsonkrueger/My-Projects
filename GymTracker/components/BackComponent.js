@@ -3,15 +3,17 @@ import React, { StyleSheet, View, Text, TouchableOpacity } from "react-native";
 const BackComponent = ({
   navigation,
   storeWorkoutData,
+  workoutName,
   checkUniqueWorkoutName,
 }) => {
   return (
     <View style={styles.container}>
       <TouchableOpacity
         onPress={() => {
-          checkUniqueWorkoutName();
+          // checkUniqueWorkoutName();
           storeWorkoutData();
-          navigation.navigate("HomeScreen");
+          // navigation.goBack();
+          navigation.navigate("HomeScreen", { workoutName: workoutName });
         }}
       >
         <Text style={styles.text}>FINISH</Text>

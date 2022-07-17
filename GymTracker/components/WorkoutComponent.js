@@ -2,7 +2,7 @@ import React, { StyleSheet, useState } from "react-native";
 
 import { View, Text } from "react-native";
 
-const WorkoutComponent = ({ navigation, name, loadWorkoutData }) => {
+const WorkoutComponent = ({ navigation, name }) => {
   return (
     <View style={styles.container}>
       <Text

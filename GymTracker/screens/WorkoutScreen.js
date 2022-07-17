@@ -92,7 +92,7 @@ const WorkoutScreen = ({ navigation, route }) => {
     });
   };
 
-  const deleteExercise = () => {
+  const deleteExercise = (idx) => {
     if (states.exercisesArr.length <= 1) {
       setStates({
         ...states,
@@ -105,19 +105,19 @@ const WorkoutScreen = ({ navigation, route }) => {
       });
     } else {
       let exercisesArr = [...states.exercisesArr];
-      exercisesArr.pop();
+      exercisesArr.splice(idx, 1);
 
       let weights = [...states.weights];
-      weights.pop();
+      weights.splice(idx, 1);
 
       let reps = [...states.reps];
-      reps.pop();
+      reps.splice(idx, 1);
 
       let restTimers = [...states.restTimers];
-      restTimers.pop();
+      restTimers.splice(idx, 1);
 
       let isDoneArr = [...states.isDoneArr];
-      isDoneArr.pop();
+      isDoneArr.splice(idx, 1);
 
       setStates({
         ...states,
@@ -188,8 +188,9 @@ const WorkoutScreen = ({ navigation, route }) => {
         // unique
         return true;
       });
-    } catch {
+    } catch (error) {
       console.log("ERROR: could not check if", workoutName, "is unique");
+      throw error;
     }
   };
 
@@ -208,16 +209,8 @@ const WorkoutScreen = ({ navigation, route }) => {
     } catch (error) {
       // Error saving data
       console.log("ERROR SAVING WORKOUT DATA");
+      throw error;
     }
-
-    // if (originalWorkoutName !== workoutName) {
-    //   try {
-    //     await AsyncStorage.removeItem(originalWorkoutName);
-    //   } catch (error) {
-    //     // Error saving data
-    //     console.log("ERROR DELETING OLD WORKOUT DATA");
-    //   }
-    // }
   };
 
   const loadWorkoutData = async () => {
@@ -235,13 +228,17 @@ const WorkoutScreen = ({ navigation, route }) => {
           weights: workoutData[1],
           reps: workoutData[2],
           restTimers: workoutData[3],
-          isDoneArr: workoutData[4],
+          // isDoneArr gets reset to false for every set
+          isDoneArr: workoutData[4].map((exer, i) =>
+            exer.map((set, i) => false)
+          ),
           originalWorkoutName: route.params.name,
         });
       }
     } catch (error) {
       // Error retrieving data
       console.log("ERROR LOADING DATA:", error);
+      throw error;
     }
   };
 
@@ -272,6 +269,7 @@ const WorkoutScreen = ({ navigation, route }) => {
             <BackComponent
               navigation={navigation}
               storeWorkoutData={storeWorkoutData}
+              workoutName={states.workoutName}
               checkUniqueWorkoutName={checkUniqueWorkoutName}
             />
           </View>
@@ -283,10 +281,6 @@ const WorkoutScreen = ({ navigation, route }) => {
           </Text>
           <TextInput style={styles.notesText}></TextInput>
         </View>
-
-        {console.log("BEFORE", states)}
-        {/* {doPrint ? addExercise() && setDoPrint(false) : console.log("Done")} */}
-        {console.log("AFTER", states)}
 
         {states.exercisesArr.map((exercise, i) => {
           // console.log("\n\n", i, "-->", exercise);
