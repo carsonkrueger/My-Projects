@@ -47,7 +47,7 @@ const HomeScreen = ({ navigation, route }) => {
       }
     } catch (error) {
       // Error retrieving data
-      console.log("Error retrieving homescreen data");
+      console.log("Error retrieving workoutdata on homescreen data");
     }
     // console.log("NO DATA TO LOAD");
   };
@@ -60,7 +60,7 @@ const HomeScreen = ({ navigation, route }) => {
 
       const unparsedWorkoutData = await AsyncStorage.getItem(name);
       const parsedData = JSON.parse(unparsedWorkoutData);
-      // await AsyncStorage.clear();
+      await AsyncStorage.clear();
       console.log("\n--------------------\n", name, "\n", parsedData);
     } catch {
       console.log("couldnt map through workout names");

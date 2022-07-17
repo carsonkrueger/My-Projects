@@ -8,7 +8,8 @@ const WorkoutComponent = ({ navigation, name, loadWorkoutData }) => {
       <Text
         style={styles.text}
         onPress={() => {
-          loadWorkoutData(name);
+          // loadWorkoutData(name);
+          navigation.navigate("WorkoutScreen", { name: name });
         }}
       >
         {name}

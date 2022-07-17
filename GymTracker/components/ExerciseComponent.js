@@ -21,12 +21,12 @@ const ExerciseComponent = ({
   delExercise,
   exercisesArr,
   setExercisesArr,
-  prevWeights,
-  setPrevWeights,
+  // prevWeights,
+  // setPrevWeights,
   weights,
   setWeights,
-  prevReps,
-  setPrevReps,
+  // prevReps,
+  // setPrevReps,
   reps,
   setReps,
   isDoneArr,
@@ -37,6 +37,7 @@ const ExerciseComponent = ({
 
   const [doTimer, setDoTimer] = useState(false);
   const [countdownTime, setCountdownTime] = useState(0);
+
   const changeExerciseName = (name) => {
     let tempExerciseArr = [...exercisesArr];
     tempExerciseArr[numExercise] = name;
@@ -252,17 +253,17 @@ const ExerciseComponent = ({
         </View>
         <View style={styles.emptyHead}>{/* Empty header */}</View>
       </View>
-      {/* {console.log("WEIGHTS", weights)} */}
+      {console.log("--------", exercisesArr)}
       {weights[numExercise].map((weight, i) => {
         return (
           <SetComponent
             key={i}
             numSet={i}
             numExercise={numExercise}
-            prevWeights={prevWeights}
+            // prevWeights={prevWeights}
             weights={weights}
             setWeights={setWeights}
-            prevReps={prevReps}
+            // prevReps={prevReps}
             reps={reps}
             setReps={setReps}
             isDoneArr={isDoneArr}

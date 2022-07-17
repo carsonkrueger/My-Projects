@@ -15,90 +15,211 @@ import {
 import BackComponent from "../components/BackComponent";
 import ExerciseComponent from "../components/ExerciseComponent";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { loadAsync } from "expo-font";
 
 const WorkoutScreen = ({ navigation, route }) => {
-  const [workoutName, setWorkoutName] = useState("");
-  const [exercisesArr, setExercisesArr] = useState([""]);
-  // Each array inside the arrays (weights & reps), represents an exercise's sets.
-  const [weights, setWeights] = useState([[""]]);
-  const [reps, setReps] = useState([[""]]);
-  const [restTimers, setRestTimers] = useState([""]);
+  const [states, setStates] = useState({
+    workoutName: "",
+    exercisesArr: [""],
+    weights: [[""]],
+    reps: [[""]],
+    restTimers: [""],
+    isDoneArr: [[false]],
+    originalWorkoutName: "",
+  });
+  // const [workoutName, setWorkoutName] = useState("");
+  // const [exercisesArr, setExercisesArr] = useState([""]);
+  // // Each array inside the arrays (weights & reps), represents an exercise's sets.
+  // const [weights, setWeights] = useState([[""]]);
+  // const [reps, setReps] = useState([[""]]);
+  // const [restTimers, setRestTimers] = useState([""]);
 
-  const [prevWeights, setPrevWeights] = useState([[""]]);
-  const [prevReps, setPrevReps] = useState([[""]]);
+  // const [prevWeights, setPrevWeights] = useState([[""]]);
+  // const [prevReps, setPrevReps] = useState([[""]]);
 
-  const [isDoneArr, setIsDoneArr] = useState([[false]]);
+  // const [isDoneArr, setIsDoneArr] = useState([[false]]);
+  // const [seconds, setSeconds] = useState(0);
+  // const [originalWorkoutName, setOriginalWorkoutName] = useState("");
+
+  // const [workoutName, setWorkoutName] = useState(route.params.name.toString());
+  // const [exercisesArr, setExercisesArr] = useState(route.params.workoutData[0]);
+  // // Each array inside the arrays (weights & reps), represents an exercise's sets.
+  // const [weights, setWeights] = useState(route.params.workoutData[1]);
+  // const [reps, setReps] = useState(route.params.workoutData[2]);
+  // const [restTimers, setRestTimers] = useState(route.params.workoutData[3]);
+
+  // const [prevWeights, setPrevWeights] = useState([[""]]);
+  // const [prevReps, setPrevReps] = useState([[""]]);
+
+  // const [isDoneArr, setIsDoneArr] = useState([[false]]);
   const [seconds, setSeconds] = useState(0);
-  const [originalWorkoutName, setOriginalWorkoutName] = useState("");
+  // const [originalWorkoutName, setOriginalWorkoutName] = useState("");
 
   const TWENTYTH_SECOND_MS = 50;
 
   useEffect(() => {
-    // loadWorkoutData();
-    loadRouteWorkoutData();
-    setOriginalWorkoutName(workoutName);
-
-    const intervalId = setInterval(() => {
-      setSeconds((prevSeconds) => prevSeconds + 1);
-    }, 1000);
-
-    return () => clearInterval(intervalId);
+    loadWorkoutData();
+    //loadRouteWorkoutData();
+    // setOriginalWorkoutName(workoutName);
+    // const intervalId = setInterval(() => {
+    //   setSeconds((prevSeconds) => prevSeconds + 1);
+    // }, 1000);
+    // return () => clearInterval(intervalId);
   }, []);
 
-  const AddExercise = () => {
-    let tempWeights = [...weights];
-    tempWeights.push([""]);
-    setWeights(tempWeights);
+  const addExercise = () => {
+    let exercisesArr = [...states.exercisesArr];
+    exercisesArr.push("");
 
-    let tempReps = [...reps];
-    tempReps.push([""]);
-    setReps(tempReps);
+    let weights = [...states.weights];
+    weights.push([""]);
 
-    let tempExercise = [...exercisesArr];
-    tempExercise.push("");
-    setExercisesArr(tempExercise);
+    let reps = [...states.reps];
+    reps.push([""]);
 
-    let tempIsDone = [...isDoneArr];
-    tempIsDone.push([false]);
-    setIsDoneArr(tempIsDone);
+    let restTimers = [...states.restTimers];
+    restTimers.push("");
 
-    let tempRestTimers = [...restTimers];
-    tempRestTimers.push("");
-    setRestTimers(tempRestTimers);
+    let isDoneArr = [...states.isDoneArr];
+    isDoneArr.push(false);
 
-    Vibration.vibrate(TWENTYTH_SECOND_MS);
+    setStates({
+      ...states,
+      exercisesArr,
+      weights,
+      reps,
+      restTimers,
+      isDoneArr,
+    });
   };
 
-  const deleteExercise = (numExercise) => {
-    if (exercisesArr.length <= 1) {
-      setExercisesArr([""]);
-      setWeights([[""]]);
-      setReps([[""]]);
-      setIsDoneArr([[false]]);
-      setRestTimers([""]);
-    } else {
-      let tempExerciseArr = [...exercisesArr];
-      let tempWeights = [...weights];
-      let tempReps = [...reps];
-      let tempIsDone = [...isDoneArr];
-      let tempRestTimers = [...restTimers];
+  const deleteExercise = () => {
+    let exercisesArr = [...states.exercisesArr];
+    exercisesArr.pop();
 
-      tempWeights.splice(numExercise, 1);
-      tempReps.splice(numExercise, 1);
-      tempExerciseArr.splice(numExercise, 1);
-      tempIsDone.splice(numExercise, 1);
-      tempRestTimers.splice(numExercise, 1);
+    let weights = [...states.weights];
+    weights.pop();
 
-      setExercisesArr(tempExerciseArr);
-      setWeights(tempWeights);
-      setReps(tempReps);
-      setIsDoneArr(tempIsDone);
-      setRestTimers(tempRestTimers);
-    }
+    let reps = [...states.reps];
+    reps.pop();
 
-    Vibration.vibrate(TWENTYTH_SECOND_MS);
+    let restTimers = [...states.restTimers];
+    restTimers.pop();
+
+    let isDoneArr = [...states.isDoneArr];
+    isDoneArr.pop();
+
+    setStates({
+      ...states,
+      exercisesArr,
+      weights,
+      reps,
+      restTimers,
+      isDoneArr,
+    });
   };
+
+  const setExercisesArr = (exercisesArr) => {
+    setStates({
+      ...states,
+      exercisesArr,
+    });
+  };
+
+  const setWeights = (weights) => {
+    setStates({
+      ...states,
+      weights,
+    });
+  };
+
+  const setReps = (reps) => {
+    setStates({
+      ...states,
+      reps,
+    });
+  };
+
+  const setRestTimers = (restTimers) => {
+    setStates({
+      ...states,
+      restTimers,
+    });
+  };
+
+  const setIsDoneArr = (isDoneArr) => {
+    setStates({
+      ...states,
+      isDoneArr,
+    });
+  };
+
+  const setWorkoutName = (workoutName) => {
+    setStates({
+      ...states,
+      workoutName,
+    });
+  };
+
+  const setOriginalWorkoutName = (originalWorkoutName) => {
+    setStates({
+      ...states,
+      originalWorkoutName,
+    });
+  };
+
+  // const AddExercise = () => {
+  //   let tempWeights = [...weights];
+  //   tempWeights.push([""]);
+  //   setWeights(tempWeights);
+
+  //   let tempReps = [...reps];
+  //   tempReps.push([""]);
+  //   setReps(tempReps);
+
+  //   let tempExercise = [...exercisesArr];
+  //   tempExercise.push("");
+  //   setExercisesArr(tempExercise);
+
+  //   let tempIsDone = [...isDoneArr];
+  //   tempIsDone.push([false]);
+  //   setIsDoneArr(tempIsDone);
+
+  //   let tempRestTimers = [...restTimers];
+  //   tempRestTimers.push("");
+  //   setRestTimers(tempRestTimers);
+
+  //   Vibration.vibrate(TWENTYTH_SECOND_MS);
+  // };
+
+  // const deleteExercise = (numExercise) => {
+  //   if (exercisesArr.length <= 1) {
+  //     setExercisesArr([""]);
+  //     setWeights([[""]]);
+  //     setReps([[""]]);
+  //     setIsDoneArr([[false]]);
+  //     setRestTimers([""]);
+  //   } else {
+  //     let tempExerciseArr = [...exercisesArr];
+  //     let tempWeights = [...weights];
+  //     let tempReps = [...reps];
+  //     let tempIsDone = [...isDoneArr];
+  //     let tempRestTimers = [...restTimers];
+
+  //     tempWeights.splice(numExercise, 1);
+  //     tempReps.splice(numExercise, 1);
+  //     tempExerciseArr.splice(numExercise, 1);
+  //     tempIsDone.splice(numExercise, 1);
+  //     tempRestTimers.splice(numExercise, 1);
+
+  //     setExercisesArr(tempExerciseArr);
+  //     setWeights(tempWeights);
+  //     setReps(tempReps);
+  //     setIsDoneArr(tempIsDone);
+  //     setRestTimers(tempRestTimers);
+  //   }
+
+  //   Vibration.vibrate(TWENTYTH_SECOND_MS);
+  // };
 
   const checkUniqueWorkoutName = async () => {
     try {
@@ -124,10 +245,22 @@ const WorkoutScreen = ({ navigation, route }) => {
   const storeWorkoutData = async () => {
     try {
       await AsyncStorage.setItem(
-        workoutName.toString(),
-        JSON.stringify([exercisesArr, weights, reps, restTimers])
+        states.workoutName.toString(),
+        JSON.stringify([
+          states.exercisesArr,
+          states.weights,
+          states.reps,
+          states.restTimers,
+        ])
       );
-      console.log(JSON.stringify([exercisesArr, weights, reps, restTimers]));
+      console.log(
+        JSON.stringify([
+          states.exercisesArr,
+          states.weights,
+          states.reps,
+          states.restTimers,
+        ])
+      );
     } catch (error) {
       // Error saving data
       console.log("ERROR SAVING WORKOUT DATA");
@@ -149,24 +282,25 @@ const WorkoutScreen = ({ navigation, route }) => {
       const unparsedWorkoutData = await AsyncStorage.getItem(route.params.name);
 
       if (unparsedWorkoutData !== null) {
+        // We have data!
         const workoutData = JSON.parse(unparsedWorkoutData);
-        console.log(
-          "LOADING\n",
-          "\nexer names\n",
-          workoutData[0],
-          "\nweights\n",
-          workoutData[1],
-          "\nreps\n",
-          workoutData[2],
-          "\ntimes\n",
-          workoutData[3]
-        );
 
-        setWorkoutName(route.params.name.toString());
-        setExercisesArr(...workoutData[0]);
-        setWeights(workoutData[1]);
-        setReps(workoutData[2]);
-        setRestTimers(workoutData[3]);
+        setStates({
+          workoutName: route.params.name,
+          exercisesArr: workoutData[0],
+          weights: workoutData[1],
+          reps: workoutData[2],
+          restTimers: workoutData[3],
+          isDoneArr: [[false]],
+          originalWorkoutName: route.params.name,
+        });
+
+        // setWorkoutName(route.params.name.toString());
+        // setExercisesArr(workoutData[0]);
+        // setWeights(workoutData[1]);
+        // setReps(workoutData[2]);
+        // setRestTimers(workoutData[3]);
+        // setStateFromStorage(workoutData);
       }
     } catch (error) {
       // Error retrieving data
@@ -174,7 +308,15 @@ const WorkoutScreen = ({ navigation, route }) => {
     }
   };
 
-  loadRouteWorkoutData = () => {
+  const setStateFromStorage = (workoutData) => {
+    setWorkoutName((prev) => route.params.name.toString());
+    setExercisesArr((prev) => workoutData[0]);
+    setWeights((prev) => workoutData[1]);
+    setReps((prev) => workoutData[2]);
+    setRestTimers((prev) => workoutData[3]);
+  };
+
+  const loadRouteWorkoutData = () => {
     setWorkoutName(route.params.name.toString());
     setExercisesArr(route.params.data[0]);
     setWeights(route.params.data[1]);
@@ -193,7 +335,7 @@ const WorkoutScreen = ({ navigation, route }) => {
               placeholderTextColor="#90c6f5"
               onChangeText={(newText) => setWorkoutName(newText)}
               autoCapitalize="characters"
-              value={workoutName}
+              value={states.workoutName}
             ></TextInput>
           </View>
 
@@ -213,35 +355,39 @@ const WorkoutScreen = ({ navigation, route }) => {
           <TextInput style={styles.notesText}></TextInput>
         </View>
 
-        {exercisesArr.map((exercise, i) => {
+        {console.log("BEFORE", states)}
+        {/* {doPrint ? addExercise() && setDoPrint(false) : console.log("Done")} */}
+        {console.log("AFTER", states)}
+
+        {states.exercisesArr.map((exercise, i) => {
           // console.log("\n\n", i, "-->", exercise);
           return (
             <ExerciseComponent
               key={i}
               name={exercise}
               numExercise={i}
-              restTimers={restTimers}
+              restTimers={states.restTimers}
               setRestTimers={setRestTimers}
               seconds={seconds}
               delExercise={deleteExercise}
-              exercisesArr={exercisesArr}
+              exercisesArr={states.exercisesArr}
               setExercisesArr={setExercisesArr}
-              prevWeights={prevWeights}
-              setPrevWeights={setPrevWeights}
-              weights={weights}
+              // prevWeights={prevWeights}
+              // setPrevWeights={setPrevWeights}
+              weights={states.weights}
               setWeights={setWeights}
-              prevReps={prevReps}
-              setPrevReps={setPrevReps}
-              reps={reps}
+              // prevReps={prevReps}
+              // setPrevReps={setPrevReps}
+              reps={states.reps}
               setReps={setReps}
-              isDoneArr={isDoneArr}
+              isDoneArr={states.isDoneArr}
               setIsDoneArr={setIsDoneArr}
             />
           );
         })}
 
         <View style={styles.addExerciseContainer}>
-          <TouchableOpacity onPress={AddExercise}>
+          <TouchableOpacity onPress={addExercise}>
             <Text style={styles.addExerciseText}>ADD EXERCISE</Text>
           </TouchableOpacity>
         </View>
