@@ -10,16 +10,18 @@ import {
 
 import WorkoutComponent from "../components/WorkoutComponent";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useIsFocused } from "@react-navigation/native";
 
 const HomeScreen = ({ navigation, route }) => {
   // [ [ NAME OF WORKOUT, NUM EXERCISES, LAST TIME DID WORKOUT ], ... ]
   // const [workoutList, setWorkoutList] = useState([["", 0, ""]]);
   const [workoutList, setWorkoutList] = useState([]);
+  const isFocused = useIsFocused();
 
   useEffect(() => {
-    AsyncStorage.clear();
-    loadHomescreenData();
-  }, [route]);
+    // AsyncStorage.clear();
+    isFocused && loadHomescreenData();
+  }, [isFocused]);
 
   const loadHomescreenData = async () => {
     try {
