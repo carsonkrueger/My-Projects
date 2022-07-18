@@ -95,8 +95,14 @@ const ExerciseComponent = ({
 
   const styles = StyleSheet.create({
     container: {
-      paddingTop: "10%",
+      flex: 1,
+      marginTop: "3%",
+      // marginHorizontal: "2%",
+      marginRight: "2%",
+      paddingTop: "5%",
       width: "100%",
+      borderWidth: 1,
+      borderRadius: 20,
     },
     titleContainer: {
       flex: 1,
