@@ -96,7 +96,6 @@ const WorkoutScreen = ({ navigation, route }) => {
     if (states.exercisesArr.length <= 1) {
       setStates({
         ...states,
-        workoutName: "",
         exercisesArr: [""],
         weights: [[""]],
         reps: [[""]],

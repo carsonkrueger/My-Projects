@@ -7,11 +7,16 @@ import {
   StyleSheet,
   SafeAreaView,
   ScrollView,
+  Dimensions,
 } from "react-native";
 
 import WorkoutComponent from "../components/WorkoutComponent";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useIsFocused } from "@react-navigation/native";
+import { Feather } from "@expo/vector-icons";
+
+const windowWidth = Dimensions.get("window").width;
+const windowHeight = Dimensions.get("window").height;
 
 const HomeScreen = ({ navigation, route }) => {
   // [ [ NAME OF WORKOUT, NUM EXERCISES, LAST TIME DID WORKOUT ], ... ]
@@ -57,7 +62,11 @@ const HomeScreen = ({ navigation, route }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView style={styles.scrollContainer}>
+      <ScrollView stickyHeaderIndices={[0, 2]}>
+        <View style={styles.screenHeader}>
+          <Text style={styles.screenHeaderText}>WORKOUTS</Text>
+        </View>
+
         <View style={styles.workoutListContainer}>
           {workoutList.map((workout, i) => {
             return (
@@ -79,7 +88,7 @@ const HomeScreen = ({ navigation, route }) => {
             })
           }
         >
-          <Text>Create Workout</Text>
+          <Feather name="plus" color="white" size={25} />
         </TouchableOpacity>
       </View>
     </SafeAreaView>
@@ -90,22 +99,35 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+  screenHeader: {
+    paddingTop: 50,
+    paddingLeft: "5%",
+    backgroundColor: "#90c6f5", //"white",
+    paddingBottom: 10,
+  },
+  screenHeaderText: {
+    fontSize: 20,
+    color: "white", //"#2494f0",
+  },
   scrollContainer: {
     flex: 2,
+    paddingBottom: "10%",
   },
   workoutListContainer: {
     flex: 3,
-    paddingTop: "20%",
+    paddingTop: "2%",
+    paddingBottom: "25%",
     alignItems: "center",
     justifyContent: "flex-start",
   },
   createWorkoutContainer: {
-    width: "16%",
-    height: "8%",
+    position: "absolute",
+    marginTop: windowHeight - 40,
+    width: 70,
+    marginHorizontal: windowWidth / 2 - 70 / 2,
+    height: 70,
     alignItems: "center",
     justifyContent: "center",
-    borderColor: "black",
-    borderWidth: 1,
     borderRadius: 100,
     backgroundColor: "#90c6f5",
   },
