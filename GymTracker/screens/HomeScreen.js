@@ -27,7 +27,7 @@ const HomeScreen = ({ navigation, route }) => {
   useEffect(() => {
     // AsyncStorage.clear();
     isFocused && loadHomescreenData();
-  }, [isFocused]);
+  }, [isFocused, workoutList]);
 
   const loadHomescreenData = async () => {
     try {
@@ -95,9 +95,12 @@ const HomeScreen = ({ navigation, route }) => {
   );
 };
 
+const BUTTON_SIZE = 60;
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: "white",
   },
   screenHeader: {
     paddingTop: 50,
@@ -123,9 +126,9 @@ const styles = StyleSheet.create({
   createWorkoutContainer: {
     position: "absolute",
     marginTop: windowHeight - 40,
-    width: 70,
-    marginHorizontal: windowWidth / 2 - 70 / 2,
-    height: 70,
+    width: BUTTON_SIZE,
+    marginHorizontal: windowWidth / 2 - BUTTON_SIZE / 2,
+    height: BUTTON_SIZE,
     alignItems: "center",
     justifyContent: "center",
     borderRadius: 100,
