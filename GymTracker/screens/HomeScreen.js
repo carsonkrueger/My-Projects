@@ -71,7 +71,7 @@ const HomeScreen = ({ navigation, route }) => {
           {workoutList.map((workout, i) => {
             return (
               <WorkoutComponent
-                key={i}
+                key={workout}
                 navigation={navigation}
                 name={workout}
               />

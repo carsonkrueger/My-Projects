@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 
 import {
   StyleSheet,
@@ -16,15 +16,24 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const WorkoutComponent = ({ navigation, name }) => {
   const translation = useRef(new Animated.Value(0)).current;
+  const [isTranslated, setIsTranslated] = useState(false);
 
   const handleLongPress = () => {
-    console.log("long press");
-
-    Animated.timing(translation, {
-      toValue: -60,
-      timing: 100,
-      useNativeDriver: true,
-    }).start();
+    if (!isTranslated) {
+      setIsTranslated(true);
+      Animated.timing(translation, {
+        toValue: -60,
+        timing: 100,
+        useNativeDriver: true,
+      }).start();
+    } else {
+      setIsTranslated(false);
+      Animated.timing(translation, {
+        toValue: 0,
+        timing: 100,
+        useNativeDriver: true,
+      }).start();
+    }
 
     Vibration.vibrate(25);
   };
@@ -64,6 +73,7 @@ const WorkoutComponent = ({ navigation, name }) => {
     },
     date: {
       color: "#9c9c9c",
+      fontSize: 11,
     },
     preview: {},
     trashContainer: {
@@ -94,7 +104,7 @@ const WorkoutComponent = ({ navigation, name }) => {
         >
           <View style={styles.left}>
             <Text style={styles.title}>{name}</Text>
-            <Text style={styles.date}>Last Used:</Text>
+            <Text style={styles.date}>Last Performed:</Text>
           </View>
           <View style={styles.right}></View>
         </TouchableOpacity>

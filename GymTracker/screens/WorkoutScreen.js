@@ -194,6 +194,9 @@ const WorkoutScreen = ({ navigation, route }) => {
   };
 
   const storeWorkoutData = async () => {
+    if (originalWorkoutName !== workoutName)
+      AsyncStorage.removeItem(originalWorkoutName);
+
     try {
       await AsyncStorage.setItem(
         states.workoutName.toString(),
@@ -239,14 +242,6 @@ const WorkoutScreen = ({ navigation, route }) => {
       console.log("ERROR LOADING DATA:", error);
       throw error;
     }
-  };
-
-  const loadRouteWorkoutData = () => {
-    setWorkoutName(route.params.name.toString());
-    setExercisesArr(route.params.data[0]);
-    setWeights(route.params.data[1]);
-    setReps(route.params.data[2]);
-    setRestTimers(route.params.data[3]);
   };
 
   return (
