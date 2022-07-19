@@ -26,40 +26,14 @@ const WorkoutScreen = ({ navigation, route }) => {
     isDoneArr: [[false]],
     originalWorkoutName: "",
   });
-  // const [workoutName, setWorkoutName] = useState("");
-  // const [exercisesArr, setExercisesArr] = useState([""]);
-  // // Each array inside the arrays (weights & reps), represents an exercise's sets.
-  // const [weights, setWeights] = useState([[""]]);
-  // const [reps, setReps] = useState([[""]]);
-  // const [restTimers, setRestTimers] = useState([""]);
 
-  // const [prevWeights, setPrevWeights] = useState([[""]]);
-  // const [prevReps, setPrevReps] = useState([[""]]);
-
-  // const [isDoneArr, setIsDoneArr] = useState([[false]]);
-  // const [seconds, setSeconds] = useState(0);
-  // const [originalWorkoutName, setOriginalWorkoutName] = useState("");
-
-  // const [workoutName, setWorkoutName] = useState(route.params.name.toString());
-  // const [exercisesArr, setExercisesArr] = useState(route.params.workoutData[0]);
-  // // Each array inside the arrays (weights & reps), represents an exercise's sets.
-  // const [weights, setWeights] = useState(route.params.workoutData[1]);
-  // const [reps, setReps] = useState(route.params.workoutData[2]);
-  // const [restTimers, setRestTimers] = useState(route.params.workoutData[3]);
-
-  // const [prevWeights, setPrevWeights] = useState([[""]]);
-  // const [prevReps, setPrevReps] = useState([[""]]);
-
-  // const [isDoneArr, setIsDoneArr] = useState([[false]]);
   const [seconds, setSeconds] = useState(0);
-  // const [originalWorkoutName, setOriginalWorkoutName] = useState("");
 
   const TWENTYTH_SECOND_MS = 50;
 
   useEffect(() => {
     loadWorkoutData();
-    //loadRouteWorkoutData();
-    // setOriginalWorkoutName(workoutName);
+
     const intervalId = setInterval(() => {
       setSeconds((prevSeconds) => prevSeconds + 1);
     }, 1000);
@@ -171,32 +145,7 @@ const WorkoutScreen = ({ navigation, route }) => {
     });
   };
 
-  const checkUniqueWorkoutName = async () => {
-    try {
-      let workoutNames = await AsyncStorage.getAllKeys();
-      workoutNames.map((names, i) => {
-        if (names === workoutName || workoutName === "") {
-          // not unique
-          console.log(
-            "WORKOUT NAME IS NOT UNIQUE OR EMPTY,",
-            workoutName,
-            "CHANGE THE NAME"
-          );
-          return false;
-        }
-        // unique
-        return true;
-      });
-    } catch (error) {
-      console.log("ERROR: could not check if", workoutName, "is unique");
-      throw error;
-    }
-  };
-
   const storeWorkoutData = async () => {
-    if (originalWorkoutName !== workoutName)
-      AsyncStorage.removeItem(originalWorkoutName);
-
     try {
       await AsyncStorage.setItem(
         states.workoutName.toString(),
@@ -208,6 +157,8 @@ const WorkoutScreen = ({ navigation, route }) => {
           states.isDoneArr,
         ])
       );
+      if (originalWorkoutName !== workoutName && originalWorkoutName !== "")
+        AsyncStorage.removeItem(originalWorkoutName.toString());
     } catch (error) {
       // Error saving data
       console.log("ERROR SAVING WORKOUT DATA");
@@ -264,7 +215,7 @@ const WorkoutScreen = ({ navigation, route }) => {
               navigation={navigation}
               storeWorkoutData={storeWorkoutData}
               workoutName={states.workoutName}
-              checkUniqueWorkoutName={checkUniqueWorkoutName}
+              originalWorkoutName={states.originalWorkoutName}
             />
           </View>
         </View>
@@ -316,7 +267,6 @@ const WorkoutScreen = ({ navigation, route }) => {
 const styles = StyleSheet.create({
   container: {
     // Adding justifyContent or alignItems here will cause a bug with scrollView
-    flex: 1,
     backgroundColor: "white", //"#525252",
   },
   screenHeader: {

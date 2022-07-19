@@ -1,19 +1,48 @@
-import React, { StyleSheet, View, Text, TouchableOpacity } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useRef } from "react";
+import React, {
+  StyleSheet,
+  View,
+  Text,
+  TouchableOpacity,
+  Alert,
+} from "react-native";
 
 const BackComponent = ({
   navigation,
   storeWorkoutData,
   workoutName,
-  checkUniqueWorkoutName,
+  originalWorkoutName,
 }) => {
+  const names = useRef([]);
+
+  const getWorkoutNames = async () => {
+    try {
+      names = await AsyncStorage.getAllKeys();
+    } catch (error) {
+      console.log("could not get workout names for back component:", error);
+    }
+  };
+
+  const isWorkoutUnique = () => {
+    if (workoutName === "") return false;
+    getWorkoutNames();
+    return workoutName === originalWorkoutName || !names.includes(workoutName);
+  };
+
   return (
     <View style={styles.container}>
       <TouchableOpacity
         onPress={() => {
           // checkUniqueWorkoutName();
-          storeWorkoutData();
-          // navigation.goBack();
-          navigation.navigate("HomeScreen", { workoutName: workoutName });
+          if (isWorkoutUnique()) {
+            console.log("workout is unique", isWorkoutUnique());
+            storeWorkoutData();
+            // navigation.goBack();
+            navigation.navigate("HomeScreen");
+          } else {
+            Alert.alert("Please change your workout name");
+          }
         }}
       >
         <Text style={styles.text}>FINISH</Text>
