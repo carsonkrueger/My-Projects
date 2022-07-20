@@ -21,16 +21,17 @@ const ExerciseComponent = ({
   delExercise,
   exercisesArr,
   setExercisesArr,
-  // prevWeights,
+  prevWeights,
   // setPrevWeights,
   weights,
   setWeights,
-  // prevReps,
+  prevReps,
   // setPrevReps,
   reps,
   setReps,
   isDoneArr,
   setIsDoneArr,
+  isLocked,
 }) => {
   // const [isDoneArr, setIsDoneArr] = useState([false]);
   const TWENTYTH_SECOND_MS = 50;
@@ -48,7 +49,6 @@ const ExerciseComponent = ({
     let tempRestTimers = [...restTimers];
     tempRestTimers[numExercise] = num;
     setRestTimers(tempRestTimers);
-    console.log(tempRestTimers, restTimers);
   };
 
   const flipDoTimer = (numExercise) => {
@@ -71,7 +71,7 @@ const ExerciseComponent = ({
     tempIsDone[numExercise].push(false);
     setIsDoneArr(tempIsDone);
 
-    Vibration.vibrate(TWENTYTH_SECOND_MS);
+    // Vibration.vibrate(TWENTYTH_SECOND_MS);
   };
 
   const DeleteSet = () => {
@@ -90,19 +90,20 @@ const ExerciseComponent = ({
     tempIsDone[numExercise].pop();
     setIsDoneArr(tempIsDone);
 
-    Vibration.vibrate(TWENTYTH_SECOND_MS);
+    // Vibration.vibrate(TWENTYTH_SECOND_MS);
   };
 
   const styles = StyleSheet.create({
     container: {
       flex: 1,
-      marginTop: "3%",
-      // marginHorizontal: "2%",
-      marginRight: "2%",
-      paddingTop: "5%",
-      width: "100%",
-      borderWidth: 1,
+      marginVertical: "2%",
+      // borderColor: "#2494f0",
+      // borderWidth: 1,
       borderRadius: 20,
+      marginHorizontal: "2%",
+      paddingTop: "5%",
+      backgroundColor: "white",
+      paddingBottom: isLocked ? "4%" : "0%",
     },
     titleContainer: {
       flex: 1,
@@ -117,25 +118,27 @@ const ExerciseComponent = ({
       paddingLeft: 14,
     },
     timerContainer: {
-      flex: 9,
+      paddingHorizontal: "0%",
+      paddingVertical: ".3%",
+      flex: isLocked ? 7 : 9,
+      marginRight: isLocked ? "4%" : 0,
       alignItems: "center",
       justifyContent: "center",
       flexDirection: "row",
-      backgroundColor: doTimer ? "#90c6f5" : "white",
-      borderColor: "#90c6f5",
+      backgroundColor: doTimer ? "#2494f0" : "white",
+      borderColor: "#2494f0",
       borderWidth: 1,
       borderRadius: 15,
     },
     timerIconContainer: {
-      paddingVertical: 6,
-      paddingRight: 3,
+      paddingRight: "5%",
     },
     timerTimeContainer: {},
     timerText: {
-      color: doTimer ? "white" : "black",
+      color: doTimer ? "white" : isLocked ? "#2494f0" : "black",
       fontSize: 16,
       textAlign: "center",
-      backgroundColor: doTimer ? null : "#dedede",
+      backgroundColor: doTimer || isLocked ? null : "#dedede",
       borderRadius: 8,
       paddingHorizontal: 3,
     },
@@ -174,7 +177,7 @@ const ExerciseComponent = ({
     },
     addDelSetContainer: {
       flexDirection: "row",
-      padding: 8,
+      paddingTop: "2%",
       alignItems: "center",
       justifyContent: "space-evenly",
     },
@@ -193,6 +196,7 @@ const ExerciseComponent = ({
           placeholderTextColor="#90c6f5"
           value={name}
           maxLength={20}
+          editable={!isLocked}
           autoCapitalize="characters"
           onChangeText={(newText) => {
             changeExerciseName(newText);
@@ -204,44 +208,53 @@ const ExerciseComponent = ({
             <MaterialIcons
               name="timer"
               size={20}
-              color={doTimer ? "white" : "#90c6f5"}
+              color={doTimer ? "white" : "#2494f0"}
             />
           </View>
 
           <View style={styles.timerTimeContainer}>
-            {!doTimer && (
-              <TextInput
-                style={styles.timerText}
-                placeholder="0s"
-                value={restTimers[numExercise]}
-                maxLength={3}
-                keyboardType="numeric"
-                onChangeText={(newNum) => {
-                  changeRestTime(newNum);
-                }}
-              />
-            )}
-            {doTimer && (
+            <TextInput
+              style={styles.timerText}
+              placeholder="0s"
+              value={
+                doTimer
+                  ? (
+                      restTimers[numExercise] -
+                      (seconds - countdownTime)
+                    ).toString()
+                  : restTimers[numExercise]
+              }
+              maxLength={3}
+              keyboardType="numeric"
+              editable={!doTimer && !isLocked}
+              onChangeText={(newNum) => {
+                changeRestTime(newNum);
+              }}
+            />
+
+            {/* {doTimer && (
               <Text style={styles.timerText}>
                 {(
                   restTimers[numExercise] -
                   (seconds - countdownTime)
                 ).toString()}
               </Text>
-            )}
+            )} */}
           </View>
         </TouchableOpacity>
 
-        <View style={styles.trashContainer}>
-          <TouchableOpacity
-            onPress={() => {
-              setDoTimer(false);
-              delExercise(numExercise);
-            }}
-          >
-            <Feather name="trash" color="#de3e3e" size={18} />
-          </TouchableOpacity>
-        </View>
+        {!isLocked && (
+          <View style={styles.trashContainer}>
+            <TouchableOpacity
+              onPress={() => {
+                setDoTimer(false);
+                delExercise(numExercise);
+              }}
+            >
+              <Feather name="trash" color="#de3e3e" size={18} />
+            </TouchableOpacity>
+          </View>
+        )}
       </View>
 
       <View style={styles.headers}>
@@ -266,10 +279,10 @@ const ExerciseComponent = ({
             key={i}
             numSet={i}
             numExercise={numExercise}
-            // prevWeights={prevWeights}
+            prevWeights={prevWeights}
             weights={weights}
             setWeights={setWeights}
-            // prevReps={prevReps}
+            prevReps={prevReps}
             reps={reps}
             setReps={setReps}
             isDoneArr={isDoneArr}
@@ -278,15 +291,17 @@ const ExerciseComponent = ({
         );
       })}
 
-      <View style={styles.addDelSetContainer}>
-        <TouchableOpacity onPress={DeleteSet}>
-          <Feather name="minus" color="#2494f0" size={22} />
-        </TouchableOpacity>
+      {!isLocked && (
+        <View style={styles.addDelSetContainer}>
+          <TouchableOpacity onPress={DeleteSet}>
+            <Feather name="minus" color="#2494f0" size={22} />
+          </TouchableOpacity>
 
-        <TouchableOpacity onPress={AddSet}>
-          <Feather name="plus" color="#2494f0" size={22} />
-        </TouchableOpacity>
-      </View>
+          <TouchableOpacity onPress={AddSet}>
+            <Feather name="plus" color="#2494f0" size={22} />
+          </TouchableOpacity>
+        </View>
+      )}
     </View>
   );
 };

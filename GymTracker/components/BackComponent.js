@@ -1,5 +1,5 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import React, {
   StyleSheet,
   View,
@@ -16,18 +16,33 @@ const BackComponent = ({
 }) => {
   const names = useRef([]);
 
-  const getWorkoutNames = async () => {
+  useEffect(() => {
+    getNames();
+  }, []);
+
+  const getNames = async () => {
     try {
-      names = await AsyncStorage.getAllKeys();
+      names.current = await AsyncStorage.getAllKeys();
     } catch (error) {
-      console.log("could not get workout names for back component:", error);
+      console.log("ERROR GETTING NAMES:", error);
     }
   };
 
   const isWorkoutUnique = () => {
-    if (workoutName === "") return false;
-    getWorkoutNames();
-    return workoutName === originalWorkoutName || !names.includes(workoutName);
+    if (names.current === null) return true;
+    else if (workoutName === "") {
+      Alert.alert("Please change your workout name");
+      return false;
+    } else if (
+      !(
+        workoutName === originalWorkoutName ||
+        !names.current.includes(workoutName)
+      )
+    ) {
+      Alert.alert("Workout names must be unique");
+      return false;
+    }
+    return true;
   };
 
   return (
@@ -36,12 +51,8 @@ const BackComponent = ({
         onPress={() => {
           // checkUniqueWorkoutName();
           if (isWorkoutUnique()) {
-            console.log("workout is unique", isWorkoutUnique());
             storeWorkoutData();
-            // navigation.goBack();
             navigation.navigate("HomeScreen");
-          } else {
-            Alert.alert("Please change your workout name");
           }
         }}
       >
@@ -59,7 +70,7 @@ styles = StyleSheet.create({
     paddingRight: 5,
   },
   text: {
-    color: "#2494f0",
+    color: "white", //"#2494f0",
     fontSize: 17,
   },
 });

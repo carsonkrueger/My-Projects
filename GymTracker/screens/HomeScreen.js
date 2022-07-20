@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 
 import {
   View,
@@ -15,14 +15,14 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useIsFocused } from "@react-navigation/native";
 import { Feather } from "@expo/vector-icons";
 
-const windowWidth = Dimensions.get("window").width;
-const windowHeight = Dimensions.get("window").height;
-
 const HomeScreen = ({ navigation }) => {
   // [ [ NAME OF WORKOUT, NUM EXERCISES, LAST TIME DID WORKOUT ], ... ]
   // const [workoutList, setWorkoutList] = useState([["", 0, ""]]);
   const [workoutList, setWorkoutList] = useState([]);
   const isFocused = useIsFocused();
+
+  const windowWidth = useRef(Dimensions.get("window").width);
+  const windowHeight = useRef(Dimensions.get("window").height);
 
   useEffect(() => {
     // AsyncStorage.clear();
@@ -60,11 +60,66 @@ const HomeScreen = ({ navigation }) => {
     }
   };
 
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: "white",
+    },
+    screenHeader: {
+      paddingTop: 50,
+      paddingLeft: "5%",
+      backgroundColor: "#2494f0", //"white",
+      paddingBottom: 10,
+    },
+    screenHeaderText: {
+      fontSize: 20,
+      color: "white", //"#2494f0",
+    },
+    scrollContainer: {
+      flex: 2,
+      paddingBottom: "10%",
+    },
+    workoutListContainer: {
+      flex: 3,
+      paddingTop: "2%",
+      paddingBottom: "25%",
+      alignItems: "center",
+      justifyContent: "flex-start",
+    },
+    subHeaderText: {
+      paddingTop: "3%",
+      paddingLeft: "5%",
+      fontSize: 15,
+      color: "#cfcfcf",
+    },
+    createWorkoutButton: {
+      position: "absolute",
+      marginTop: windowHeight.current - 40,
+      alignItems: "center",
+      justifyContent: "center",
+      borderRadius: 40,
+      backgroundColor: "#2494f0",
+      width: 170,
+      height: 40,
+      alignItems: "center",
+      justifyContent: "center",
+      marginLeft: windowWidth.current / 2 - 85,
+    },
+    createWorkoutText: {
+      color: "white",
+      fontSize: 16,
+    },
+  });
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView stickyHeaderIndices={[0, 2]}>
         <View style={styles.screenHeader}>
           <Text style={styles.screenHeaderText}>WORKOUTS</Text>
+        </View>
+
+        <View>
+          <Text>My Templates</Text>
         </View>
 
         <View style={styles.workoutListContainer}>
@@ -80,60 +135,19 @@ const HomeScreen = ({ navigation }) => {
         </View>
       </ScrollView>
 
-      <View style={styles.createWorkoutContainer}>
-        <TouchableOpacity
-          onPress={() =>
-            navigation.navigate("WorkoutScreen", {
-              name: "",
-            })
-          }
-        >
-          <Feather name="plus" color="white" size={25} />
-        </TouchableOpacity>
-      </View>
+      <TouchableOpacity
+        style={styles.createWorkoutButton}
+        onPress={() =>
+          navigation.navigate("WorkoutScreen", {
+            name: "",
+          })
+        }
+      >
+        <Text style={styles.createWorkoutText}>CREATE WORKOUT</Text>
+        {/* <Feather name="plus" color="white" size={25} /> */}
+      </TouchableOpacity>
     </SafeAreaView>
   );
 };
-
-const BUTTON_SIZE = 60;
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "white",
-  },
-  screenHeader: {
-    paddingTop: 50,
-    paddingLeft: "5%",
-    backgroundColor: "#90c6f5", //"white",
-    paddingBottom: 10,
-  },
-  screenHeaderText: {
-    fontSize: 20,
-    color: "white", //"#2494f0",
-  },
-  scrollContainer: {
-    flex: 2,
-    paddingBottom: "10%",
-  },
-  workoutListContainer: {
-    flex: 3,
-    paddingTop: "2%",
-    paddingBottom: "25%",
-    alignItems: "center",
-    justifyContent: "flex-start",
-  },
-  createWorkoutContainer: {
-    position: "absolute",
-    marginTop: windowHeight - 40,
-    width: BUTTON_SIZE,
-    marginHorizontal: windowWidth / 2 - BUTTON_SIZE / 2,
-    height: BUTTON_SIZE,
-    alignItems: "center",
-    justifyContent: "center",
-    borderRadius: 100,
-    backgroundColor: "#90c6f5",
-  },
-});
 
 export default HomeScreen;

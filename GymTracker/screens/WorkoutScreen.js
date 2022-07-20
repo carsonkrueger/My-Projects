@@ -8,13 +8,12 @@ import {
   TextInput,
   SafeAreaView,
   ScrollView,
-  Vibration,
-  AppRegistry,
 } from "react-native";
 
 import BackComponent from "../components/BackComponent";
 import ExerciseComponent from "../components/ExerciseComponent";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Feather } from "@expo/vector-icons";
 
 const WorkoutScreen = ({ navigation, route }) => {
   const [states, setStates] = useState({
@@ -25,9 +24,12 @@ const WorkoutScreen = ({ navigation, route }) => {
     restTimers: [""],
     isDoneArr: [[false]],
     originalWorkoutName: "",
+    prevWeights: [[""]],
+    prevReps: [[""]],
   });
 
   const [seconds, setSeconds] = useState(0);
+  const [isLocked, setIsLocked] = useState(false);
 
   const TWENTYTH_SECOND_MS = 50;
 
@@ -145,6 +147,10 @@ const WorkoutScreen = ({ navigation, route }) => {
     });
   };
 
+  const switchLock = () => {
+    setIsLocked(!isLocked);
+  };
+
   const storeWorkoutData = async () => {
     try {
       await AsyncStorage.setItem(
@@ -157,8 +163,11 @@ const WorkoutScreen = ({ navigation, route }) => {
           states.isDoneArr,
         ])
       );
-      if (originalWorkoutName !== workoutName && originalWorkoutName !== "")
-        AsyncStorage.removeItem(originalWorkoutName.toString());
+      if (
+        states.originalWorkoutName !== states.workoutName &&
+        states.originalWorkoutName !== ""
+      )
+        AsyncStorage.removeItem(states.originalWorkoutName.toString());
     } catch (error) {
       // Error saving data
       console.log("ERROR SAVING WORKOUT DATA");
@@ -176,7 +185,7 @@ const WorkoutScreen = ({ navigation, route }) => {
         const workoutData = JSON.parse(unparsedWorkoutData);
 
         setStates({
-          workoutName: route.params.name,
+          workoutName: route.params.name.toString(),
           exercisesArr: workoutData[0],
           weights: workoutData[1],
           reps: workoutData[2],
@@ -185,7 +194,9 @@ const WorkoutScreen = ({ navigation, route }) => {
           isDoneArr: workoutData[4].map((exer, i) =>
             exer.map((set, i) => false)
           ),
-          originalWorkoutName: route.params.name,
+          originalWorkoutName: route.params.name.toString(),
+          prevWeights: workoutData[1],
+          prevReps: workoutData[2],
         });
       }
     } catch (error) {
@@ -195,28 +206,100 @@ const WorkoutScreen = ({ navigation, route }) => {
     }
   };
 
+  const styles = StyleSheet.create({
+    container: {
+      // Adding justifyContent or alignItems here will cause a bug with scrollView
+      backgroundColor: "#ededed",
+      flex: 1,
+    },
+    screenHeader: {
+      flex: 1,
+      marginTop: "14%",
+      marginBottom: "8%",
+      marginHorizontal: "4%",
+      paddingVertical: "3%",
+      borderRadius: 10,
+      flexDirection: "row",
+      backgroundColor: "#2494f0", //"white",
+    },
+    screenTitleContainer: {
+      paddingLeft: "6%",
+    },
+    screenTitleText: {
+      fontSize: 18,
+      color: "white", //"#2494f0",
+    },
+    backContainer: {
+      flex: 1,
+    },
+    lockContainer: {
+      paddingHorizontal: 15,
+    },
+    notesContainer: {
+      flexDirection: "row",
+      paddingHorizontal: "3%",
+      alignItems: "center",
+    },
+    notesTitle: {
+      flex: 1,
+    },
+    notesText: {
+      flex: 5,
+      borderRadius: 5,
+      backgroundColor: "#dedede",
+      paddingLeft: 3,
+      paddingRight: 5,
+    },
+    addExerciseContainer: {
+      flex: 1,
+      alignItems: "center",
+      justifyContent: "center",
+      marginVertical: "7%",
+      marginHorizontal: 80,
+      backgroundColor: "#43a2f0",
+      height: 40,
+      borderRadius: 30,
+    },
+    addExerciseText: {
+      fontSize: 18,
+      color: "white",
+    },
+  });
+
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView>
-        <View style={styles.screenHeader}>
-          <View style={styles.screenTitleContainer}>
-            <TextInput
-              style={styles.screenTitleText}
-              placeholder="WORKOUT NAME"
-              placeholderTextColor="#90c6f5"
-              onChangeText={(newText) => setWorkoutName(newText)}
-              autoCapitalize="characters"
-              value={states.workoutName}
-            ></TextInput>
-          </View>
+      <ScrollView stickyHeaderIndices={[0]}>
+        <View>
+          <View style={styles.screenHeader}>
+            <View style={styles.screenTitleContainer}>
+              <TextInput
+                style={styles.screenTitleText}
+                placeholder="WORKOUT NAME"
+                placeholderTextColor="#90c6f5"
+                onChangeText={(newText) => setWorkoutName(newText)}
+                autoCapitalize="characters"
+                value={states.workoutName}
+              ></TextInput>
+            </View>
 
-          <View style={styles.backContainer}>
-            <BackComponent
-              navigation={navigation}
-              storeWorkoutData={storeWorkoutData}
-              workoutName={states.workoutName}
-              originalWorkoutName={states.originalWorkoutName}
-            />
+            <View style={styles.backContainer}>
+              <BackComponent
+                navigation={navigation}
+                storeWorkoutData={storeWorkoutData}
+                workoutName={states.workoutName}
+                originalWorkoutName={states.originalWorkoutName}
+              />
+            </View>
+
+            <View style={styles.lockContainer}>
+              <TouchableOpacity onPress={switchLock}>
+                <Feather
+                  name={isLocked ? "lock" : "unlock"}
+                  color="white"
+                  size={24}
+                />
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
 
@@ -240,78 +323,30 @@ const WorkoutScreen = ({ navigation, route }) => {
               delExercise={deleteExercise}
               exercisesArr={states.exercisesArr}
               setExercisesArr={setExercisesArr}
-              // prevWeights={prevWeights}
-              // setPrevWeights={setPrevWeights}
+              prevWeights={states.prevWeights}
               weights={states.weights}
               setWeights={setWeights}
-              // prevReps={prevReps}
-              // setPrevReps={setPrevReps}
+              prevReps={states.prevReps}
               reps={states.reps}
               setReps={setReps}
               isDoneArr={states.isDoneArr}
               setIsDoneArr={setIsDoneArr}
+              isLocked={isLocked}
             />
           );
         })}
 
-        <View style={styles.addExerciseContainer}>
-          <TouchableOpacity onPress={addExercise}>
+        {!isLocked && (
+          <TouchableOpacity
+            style={styles.addExerciseContainer}
+            onPress={addExercise}
+          >
             <Text style={styles.addExerciseText}>ADD EXERCISE</Text>
           </TouchableOpacity>
-        </View>
+        )}
       </ScrollView>
     </SafeAreaView>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    // Adding justifyContent or alignItems here will cause a bug with scrollView
-    backgroundColor: "white", //"#525252",
-  },
-  screenHeader: {
-    flex: 1,
-    paddingLeft: 14,
-    paddingTop: "16%",
-    paddingBottom: "12%",
-    flexDirection: "row",
-  },
-  screenTitleContainer: {},
-  screenTitleText: {
-    fontSize: 18,
-    color: "#2494f0",
-  },
-  backContainer: {
-    flex: 1,
-    paddingRight: 10,
-  },
-  notesContainer: {
-    flexDirection: "row",
-    paddingRight: 10,
-    paddingLeft: 10,
-    alignItems: "center",
-  },
-  notesTitle: {
-    flex: 1,
-  },
-  notesText: {
-    flex: 5,
-    borderRadius: 5,
-    backgroundColor: "#dedede",
-    paddingLeft: 3,
-    paddingRight: 5,
-  },
-  addExerciseContainer: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    paddingTop: 50,
-    paddingBottom: 300,
-  },
-  addExerciseText: {
-    fontSize: 18,
-    color: "#2494f0",
-  },
-});
 
 export default WorkoutScreen;

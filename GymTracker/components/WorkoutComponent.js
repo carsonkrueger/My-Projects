@@ -14,7 +14,7 @@ import {
 import { Feather } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const WorkoutComponent = ({ navigation, name }) => {
+const WorkoutComponent = ({ navigation, name, workoutList }) => {
   const translation = useRef(new Animated.Value(0)).current;
   const [isTranslated, setIsTranslated] = useState(false);
 
@@ -97,7 +97,10 @@ const WorkoutComponent = ({ navigation, name }) => {
           style={styles.topButton}
           onPress={() => {
             // loadWorkoutData(name);
-            navigation.navigate("WorkoutScreen", { name: name });
+            navigation.navigate("WorkoutScreen", {
+              name: name,
+              workoutList: workoutList,
+            });
           }}
           onLongPress={handleLongPress}
           delayLongPress={500}

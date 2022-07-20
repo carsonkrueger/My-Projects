@@ -81,7 +81,7 @@ const SetComponent = ({
     },
     weightText: {
       fontSize: 16,
-      backgroundColor: isDoneArr[numExercise][numSet] ? null : "#dedede", //"#7a7a7a",
+      backgroundColor: isDoneArr[numExercise][numSet] ? null : "#ededed", //"#7a7a7a",
       borderRadius: 5,
       width: "80%",
       textAlign: "center",
@@ -94,7 +94,7 @@ const SetComponent = ({
     },
     repText: {
       fontSize: 16,
-      backgroundColor: isDoneArr[numExercise][numSet] ? null : "#dedede", //"#7a7a7a",
+      backgroundColor: isDoneArr[numExercise][numSet] ? null : "#ededed", //"#7a7a7a",
       borderRadius: 5,
       width: "80%",
       textAlign: "center",
