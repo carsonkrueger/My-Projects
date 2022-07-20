@@ -14,7 +14,7 @@ import {
 import { Feather } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const WorkoutComponent = ({ navigation, name, workoutList }) => {
+const WorkoutComponent = ({ navigation, name, setForceUpdate }) => {
   const translation = useRef(new Animated.Value(0)).current;
   const [isTranslated, setIsTranslated] = useState(false);
 
@@ -23,14 +23,14 @@ const WorkoutComponent = ({ navigation, name, workoutList }) => {
       setIsTranslated(true);
       Animated.timing(translation, {
         toValue: -60,
-        timing: 100,
+        duration: 300,
         useNativeDriver: true,
       }).start();
     } else {
       setIsTranslated(false);
       Animated.timing(translation, {
         toValue: 0,
-        timing: 100,
+        duration: 300,
         useNativeDriver: true,
       }).start();
     }
@@ -40,12 +40,14 @@ const WorkoutComponent = ({ navigation, name, workoutList }) => {
 
   const handleDeleteWorkout = () => {
     AsyncStorage.removeItem(name);
+    setForceUpdate((prevNum) => prevNum + 1);
   };
 
   const styles = StyleSheet.create({
     container: {
       width: "90%",
       marginVertical: "2%",
+      marginHorizontal: "5%",
     },
     topContainer: {
       flex: 1,
@@ -83,8 +85,8 @@ const WorkoutComponent = ({ navigation, name, workoutList }) => {
       marginLeft: "70%",
       width: "30%",
       height: "100%",
-      paddingTop: "7.5%",
-      paddingLeft: "17.5%",
+      paddingTop: "6%",
+      paddingLeft: "17%",
       borderRadius: 15,
       backgroundColor: "red",
     },
@@ -99,7 +101,6 @@ const WorkoutComponent = ({ navigation, name, workoutList }) => {
             // loadWorkoutData(name);
             navigation.navigate("WorkoutScreen", {
               name: name,
-              workoutList: workoutList,
             });
           }}
           onLongPress={handleLongPress}
@@ -118,7 +119,7 @@ const WorkoutComponent = ({ navigation, name, workoutList }) => {
         onPress={handleDeleteWorkout}
       >
         <View>
-          <Feather name="trash" color="black" size={18} />
+          <Feather name="trash" color="white" size={22} />
         </View>
       </TouchableOpacity>
     </View>

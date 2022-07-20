@@ -13,21 +13,20 @@ import {
 import WorkoutComponent from "../components/WorkoutComponent";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useIsFocused } from "@react-navigation/native";
-import { Feather } from "@expo/vector-icons";
 
 const HomeScreen = ({ navigation }) => {
   // [ [ NAME OF WORKOUT, NUM EXERCISES, LAST TIME DID WORKOUT ], ... ]
   // const [workoutList, setWorkoutList] = useState([["", 0, ""]]);
   const [workoutList, setWorkoutList] = useState([]);
+  const [forceUpdate, setForceUpdate] = useState(0);
   const isFocused = useIsFocused();
 
   const windowWidth = useRef(Dimensions.get("window").width);
   const windowHeight = useRef(Dimensions.get("window").height);
 
   useEffect(() => {
-    // AsyncStorage.clear();
     isFocused && loadHomescreenData();
-  }, [isFocused, workoutList]);
+  }, [isFocused, forceUpdate]);
 
   const loadHomescreenData = async () => {
     try {
@@ -67,30 +66,25 @@ const HomeScreen = ({ navigation }) => {
     },
     screenHeader: {
       paddingTop: 50,
-      paddingLeft: "5%",
       backgroundColor: "#2494f0", //"white",
       paddingBottom: 10,
+      borderRadius: 20,
+      alignItems: "center",
     },
     screenHeaderText: {
       fontSize: 20,
       color: "white", //"#2494f0",
     },
-    scrollContainer: {
-      flex: 2,
-      paddingBottom: "10%",
-    },
-    workoutListContainer: {
-      flex: 3,
-      paddingTop: "2%",
-      paddingBottom: "25%",
-      alignItems: "center",
-      justifyContent: "flex-start",
+    subHeaderContainer: {
+      width: "100%",
+      paddingLeft: "2%",
+      paddingVertical: "2%",
     },
     subHeaderText: {
       paddingTop: "3%",
       paddingLeft: "5%",
       fontSize: 15,
-      color: "#cfcfcf",
+      color: "#bfbfbf",
     },
     createWorkoutButton: {
       position: "absolute",
@@ -115,23 +109,26 @@ const HomeScreen = ({ navigation }) => {
     <SafeAreaView style={styles.container}>
       <ScrollView stickyHeaderIndices={[0, 2]}>
         <View style={styles.screenHeader}>
-          <Text style={styles.screenHeaderText}>WORKOUTS</Text>
+          <Text style={styles.screenHeaderText}>THE GYM TRACKER</Text>
         </View>
 
-        <View>
-          <Text>My Templates</Text>
+        <View style={styles.subHeaderContainer}>
+          <Text style={styles.subHeaderText}>My Workouts</Text>
         </View>
 
-        <View style={styles.workoutListContainer}>
-          {workoutList.map((workout, i) => {
-            return (
-              <WorkoutComponent
-                key={workout}
-                navigation={navigation}
-                name={workout}
-              />
-            );
-          })}
+        {workoutList.map((workout, i) => {
+          return (
+            <WorkoutComponent
+              key={workout}
+              navigation={navigation}
+              name={workout}
+              setForceUpdate={setForceUpdate}
+            />
+          );
+        })}
+
+        <View style={styles.subHeaderContainer}>
+          <Text style={styles.subHeaderText}>Templates</Text>
         </View>
       </ScrollView>
 

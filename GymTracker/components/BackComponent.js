@@ -67,11 +67,10 @@ styles = StyleSheet.create({
     flex: 1,
     alignItems: "flex-end",
     justifyContent: "center",
-    paddingRight: 5,
   },
   text: {
     color: "white", //"#2494f0",
-    fontSize: 17,
+    fontSize: 18,
   },
 });
 

@@ -57,11 +57,12 @@ const SetComponent = ({
       marginTop: 5,
       marginHorizontal: 5,
       borderRadius: 9,
-      backgroundColor: isDoneArr[numExercise][numSet] ? "#bdffce" : null,
+      backgroundColor: isDoneArr[numExercise][numSet] ? "#9effb6" : null,
     },
     setContainer: {
       flex: 0.6,
       alignItems: "center",
+      justifyContent: "center",
     },
     setText: {
       color: /*isDone[numSet] ? null :*/ "#2494f0",

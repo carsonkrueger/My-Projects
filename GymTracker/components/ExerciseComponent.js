@@ -115,7 +115,7 @@ const ExerciseComponent = ({
       fontSize: 16,
       // fontFamily: "Bebas Neue",
       color: "#2494f0",
-      paddingLeft: 14,
+      paddingLeft: 16,
     },
     timerContainer: {
       paddingHorizontal: "0%",
@@ -127,7 +127,7 @@ const ExerciseComponent = ({
       flexDirection: "row",
       backgroundColor: doTimer ? "#2494f0" : "white",
       borderColor: "#2494f0",
-      borderWidth: 1,
+      borderWidth: 1.2,
       borderRadius: 15,
     },
     timerIconContainer: {
@@ -154,6 +154,7 @@ const ExerciseComponent = ({
       width: "100%",
     },
     setHead: {
+      fontSize: 10,
       flex: 0.6,
       alignItems: "center",
     },
@@ -173,11 +174,12 @@ const ExerciseComponent = ({
       flex: 0.7,
     },
     whiteText: {
+      fontSize: 14,
       color: "black",
     },
     addDelSetContainer: {
       flexDirection: "row",
-      paddingTop: "2%",
+      paddingVertical: "2%",
       alignItems: "center",
       justifyContent: "space-evenly",
     },

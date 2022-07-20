@@ -161,6 +161,7 @@ const WorkoutScreen = ({ navigation, route }) => {
           states.reps,
           states.restTimers,
           states.isDoneArr,
+          isLocked,
         ])
       );
       if (
@@ -198,6 +199,7 @@ const WorkoutScreen = ({ navigation, route }) => {
           prevWeights: workoutData[1],
           prevReps: workoutData[2],
         });
+        setIsLocked(workoutData[5]);
       }
     } catch (error) {
       // Error retrieving data
@@ -220,7 +222,7 @@ const WorkoutScreen = ({ navigation, route }) => {
       paddingVertical: "3%",
       borderRadius: 10,
       flexDirection: "row",
-      backgroundColor: "#2494f0", //"white",
+      backgroundColor: "#2494f0",
     },
     screenTitleContainer: {
       paddingLeft: "6%",
@@ -238,6 +240,7 @@ const WorkoutScreen = ({ navigation, route }) => {
     notesContainer: {
       flexDirection: "row",
       paddingHorizontal: "3%",
+      paddingVertical: "3%",
       alignItems: "center",
     },
     notesTitle: {
@@ -303,12 +306,12 @@ const WorkoutScreen = ({ navigation, route }) => {
           </View>
         </View>
 
-        <View style={styles.notesContainer}>
+        {/* <View style={styles.notesContainer}>
           <Text style={styles.notesTitle} multiline={true}>
             NOTES
           </Text>
           <TextInput style={styles.notesText}></TextInput>
-        </View>
+        </View> */}
 
         {states.exercisesArr.map((exercise, i) => {
           // console.log("\n\n", i, "-->", exercise);
