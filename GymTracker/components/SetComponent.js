@@ -117,7 +117,14 @@ const SetComponent = ({
 
       {/*PREV*/}
       <View style={styles.prevContainer}>
-        <Text style={styles.prevText}></Text>
+        <Text style={styles.prevText}>
+          {prevWeights[numExercise][numSet].toString() === "" ||
+          prevReps[numExercise][numSet].toString() === ""
+            ? "---"
+            : prevWeights[numExercise][numSet].toString() +
+              "x" +
+              prevReps[numExercise][numSet].toString()}
+        </Text>
       </View>
 
       {/*WEIGHT*/}
@@ -125,8 +132,7 @@ const SetComponent = ({
         <TextInput
           style={styles.weightText}
           keyboardType="number-pad"
-          value={weights[numExercise][numSet]}
-          placeholder={weights[numExercise][numSet]}
+          placeholder={prevWeights[numExercise][numSet]}
           editable={!isDoneArr[numExercise][numSet]}
           onChangeText={(newText) => {
             changeWeightText(newText);
@@ -140,8 +146,7 @@ const SetComponent = ({
         <TextInput
           style={styles.repText}
           keyboardType="number-pad" /*editable={() => isDone ? false : true}*/
-          value={reps[numExercise][numSet]}
-          placeholder={reps[numExercise][numSet]}
+          placeholder={prevReps[numExercise][numSet]}
           editable={!isDoneArr[numExercise][numSet]}
           onChangeText={(newText) => {
             changeRepText(newText);

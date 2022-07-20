@@ -275,7 +275,7 @@ const ExerciseComponent = ({
         <View style={styles.emptyHead}>{/* Empty header */}</View>
       </View>
 
-      {weights[numExercise].map((weight, i) => {
+      {prevWeights[numExercise].map((weight, i) => {
         return (
           <SetComponent
             key={i}
