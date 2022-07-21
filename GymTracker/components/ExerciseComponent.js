@@ -22,11 +22,9 @@ const ExerciseComponent = ({
   exercisesArr,
   setExercisesArr,
   prevWeights,
-  // setPrevWeights,
   weights,
   setWeights,
   prevReps,
-  // setPrevReps,
   reps,
   setReps,
   isDoneArr,
@@ -198,7 +196,7 @@ const ExerciseComponent = ({
           placeholderTextColor="#90c6f5"
           value={name}
           maxLength={20}
-          editable={!isLocked}
+          editable={isLocked}
           autoCapitalize="characters"
           onChangeText={(newText) => {
             changeExerciseName(newText);
@@ -275,7 +273,7 @@ const ExerciseComponent = ({
         <View style={styles.emptyHead}>{/* Empty header */}</View>
       </View>
 
-      {prevWeights[numExercise].map((weight, i) => {
+      {weights[numExercise].map((weight, i) => {
         return (
           <SetComponent
             key={i}

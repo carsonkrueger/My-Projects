@@ -48,6 +48,26 @@ const SetComponent = ({
     Vibration.vibrate(TWENTYTH_SECOND_MS);
   };
 
+  const getPrevWeightsText = () => {
+    if (prevWeights.length < numExercise + 1) {
+      return "";
+    } else if (prevWeights[numExercise].length < numSet + 1) {
+      return "";
+    } else {
+      return prevWeights[numExercise][numSet].toString();
+    }
+  };
+
+  const getPrevRepsText = () => {
+    if (prevReps.length < numExercise + 1) {
+      return "";
+    } else if (prevReps[numExercise].length < numSet + 1) {
+      return "";
+    } else {
+      return prevReps[numExercise][numSet].toString();
+    }
+  };
+
   const styles = StyleSheet.create({
     container: {
       flex: 1,
@@ -71,6 +91,7 @@ const SetComponent = ({
     prevContainer: {
       flex: 1,
       alignItems: "center",
+      justifyContent: "center",
     },
     prevText: {
       color: /*isDone[numSet] ? null :*/ "#2494f0",
@@ -118,12 +139,9 @@ const SetComponent = ({
       {/*PREV*/}
       <View style={styles.prevContainer}>
         <Text style={styles.prevText}>
-          {prevWeights[numExercise][numSet].toString() === "" ||
-          prevReps[numExercise][numSet].toString() === ""
-            ? "---"
-            : prevWeights[numExercise][numSet].toString() +
-              "x" +
-              prevReps[numExercise][numSet].toString()}
+          {getPrevRepsText() !== "" && getPrevWeightsText() !== ""
+            ? getPrevWeightsText() + "x" + getPrevRepsText()
+            : "---"}
         </Text>
       </View>
 
@@ -132,7 +150,8 @@ const SetComponent = ({
         <TextInput
           style={styles.weightText}
           keyboardType="number-pad"
-          placeholder={prevWeights[numExercise][numSet]}
+          value={weights[numExercise][numSet]}
+          placeholder={getPrevWeightsText()}
           editable={!isDoneArr[numExercise][numSet]}
           onChangeText={(newText) => {
             changeWeightText(newText);
@@ -146,7 +165,8 @@ const SetComponent = ({
         <TextInput
           style={styles.repText}
           keyboardType="number-pad" /*editable={() => isDone ? false : true}*/
-          placeholder={prevReps[numExercise][numSet]}
+          value={reps[numExercise][numSet]}
+          placeholder={getPrevRepsText()}
           editable={!isDoneArr[numExercise][numSet]}
           onChangeText={(newText) => {
             changeRepText(newText);

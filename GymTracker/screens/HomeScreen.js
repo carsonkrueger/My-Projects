@@ -13,6 +13,7 @@ import {
 import WorkoutComponent from "../components/WorkoutComponent";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useIsFocused } from "@react-navigation/native";
+import { Feather } from "@expo/vector-icons";
 
 const HomeScreen = ({ navigation }) => {
   // [ [ NAME OF WORKOUT, NUM EXERCISES, LAST TIME DID WORKOUT ], ... ]
@@ -23,6 +24,91 @@ const HomeScreen = ({ navigation }) => {
 
   const windowWidth = useRef(Dimensions.get("window").width);
   const windowHeight = useRef(Dimensions.get("window").height);
+
+  const templates = useRef([[
+    ["SQUAT", "DEADLIFT", "LEG EXTENSIONS", "BARBELL THRUSTS"],
+    [
+      ["", "", "", ""],
+      ["", "", ""],
+      ["", "", ""],
+      ["", "", ""],
+    ],
+    [
+      ["", "", "", ""],
+      ["", "", ""],
+      ["", "", ""],
+      ["", "", ""],
+    ],
+    ["180", "150", "120", "120"],
+    [
+      [false, false, false, false],
+      [false, false, false],
+      [false, false, false],
+      [false, false, false],
+    ],
+    true,
+  ];
+
+  const push = [
+    [
+      "BENCH",
+      "DUMBELL SH. PRESS",
+      "CABLE FLYS",
+      "CABLE LATERAL RAISE",
+      "TRICEP CABLE KICKBACK",
+    ],
+    [
+      ["", "", ""],
+      ["", "", ""],
+      ["", "", ""],
+      ["", "", ""],
+      ["", "", ""],
+    ],
+    [
+      ["", "", ""],
+      ["", "", ""],
+      ["", "", ""],
+      ["", "", ""],
+      ["", "", ""],
+    ],
+    ["150", "150", "120", "120", "90"],
+    [
+      [false, false, false],
+      [false, false, false],
+      [false, false, false],
+      [false, false, false],
+      [false, false, false],
+    ],
+    true,
+  ];
+}
+
+  const pull = [
+    ["PULL UP", "PENDLAY ROW", "EZ BAR CURL", "PREACHER CURL", "CABLE FACE PULL"],
+    [
+      ["", "", ""],
+      ["", "", ""],
+      ["", "", ""],
+      ["", "", ""],
+      ["", ""],
+    ],
+    [
+      ["", "", ""],
+      ["", "", ""],
+      ["", "", ""],
+      ["", "", ""],
+      ["", ""],
+    ],
+    ["150", "150", "120", "120", "60"],
+    [
+      [false, false, false],
+      [false, false, false],
+      [false, false, false],
+      [false, false, false],
+      [false, false],
+    ],
+    true,
+  ]])
 
   useEffect(() => {
     isFocused && loadHomescreenData();
@@ -43,20 +129,91 @@ const HomeScreen = ({ navigation }) => {
     // console.log("NO DATA TO LOAD");
   };
 
-  const loadWorkoutSpecifics = async () => {
-    try {
-      await AsyncStorage.clear();
-      let name = workoutList[0].toString();
-      console.log("Specifics name:", name.toString());
+  const storeTemplates = () => {
+    const leg = [
+      ["SQUAT", "DEADLIFT", "LEG EXTENSIONS", "BARBELL THRUSTS"],
+      [
+        ["", "", "", ""],
+        ["", "", ""],
+        ["", "", ""],
+        ["", "", ""],
+      ],
+      [
+        ["", "", "", ""],
+        ["", "", ""],
+        ["", "", ""],
+        ["", "", ""],
+      ],
+      ["180", "150", "120", "120"],
+      [
+        [false, false, false, false],
+        [false, false, false],
+        [false, false, false],
+        [false, false, false],
+      ],
+      true,
+    ];
 
-      const unparsedWorkoutData = await AsyncStorage.getItem(name);
-      const parsedData = JSON.parse(unparsedWorkoutData);
-      await AsyncStorage.clear();
-      console.log("\n--------------------\n", name, "\n", parsedData);
-    } catch (error) {
-      console.log("couldnt map through workout names");
-      throw error;
-    }
+    const push = [
+      [
+        "BENCH",
+        "DUMBELL SH. PRESS",
+        "CABLE FLYS",
+        "CABLE LATERAL RAISE",
+        "TRICEP CABLE KICKBACK",
+      ],
+      [
+        ["", "", ""],
+        ["", "", ""],
+        ["", "", ""],
+        ["", "", ""],
+        ["", "", ""],
+      ],
+      [
+        ["", "", ""],
+        ["", "", ""],
+        ["", "", ""],
+        ["", "", ""],
+        ["", "", ""],
+      ],
+      ["150", "150", "120", "120", "90"],
+      [
+        [false, false, false],
+        [false, false, false],
+        [false, false, false],
+        [false, false, false],
+        [false, false, false],
+      ],
+      true,
+    ];
+  }
+
+    const pull = [
+      ["PULL UP", "PENDLAY ROW", "EZ BAR CURL", "PREACHER CURL", "CABLE FACE PULL"],
+      [
+        ["", "", ""],
+        ["", "", ""],
+        ["", "", ""],
+        ["", "", ""],
+        ["", ""],
+      ],
+      [
+        ["", "", ""],
+        ["", "", ""],
+        ["", "", ""],
+        ["", "", ""],
+        ["", ""],
+      ],
+      ["150", "150", "120", "120", "60"],
+      [
+        [false, false, false],
+        [false, false, false],
+        [false, false, false],
+        [false, false, false],
+        [false, false],
+      ],
+      true,
+    ];
   };
 
   const styles = StyleSheet.create({
@@ -85,6 +242,18 @@ const HomeScreen = ({ navigation }) => {
       paddingLeft: "5%",
       fontSize: 15,
       color: "#bfbfbf",
+    },
+    newCreateWorkoutContainer: {
+      width: "90%",
+      marginVertical: "2%",
+      marginHorizontal: "5%",
+      justifyContent: "center",
+      alignItems: "center",
+      // borderWidth: 1,
+      // borderColor: "#c9c9c9",
+      borderRadius: 10,
+      paddingVertical: "2%",
+      backgroundColor: "#2494f0",
     },
     createWorkoutButton: {
       position: "absolute",
@@ -116,6 +285,18 @@ const HomeScreen = ({ navigation }) => {
           <Text style={styles.subHeaderText}>My Workouts</Text>
         </View>
 
+        <TouchableOpacity
+          onPress={() =>
+            navigation.navigate("WorkoutScreen", {
+              name: "",
+            })
+          }
+        >
+          <View style={styles.newCreateWorkoutContainer}>
+            <Feather name="plus" color="white" size={30} />
+          </View>
+        </TouchableOpacity>
+
         {workoutList.map((workout, i) => {
           return (
             <WorkoutComponent
@@ -132,7 +313,7 @@ const HomeScreen = ({ navigation }) => {
         </View>
       </ScrollView>
 
-      <TouchableOpacity
+      {/* <TouchableOpacity
         style={styles.createWorkoutButton}
         onPress={() =>
           navigation.navigate("WorkoutScreen", {
@@ -141,8 +322,7 @@ const HomeScreen = ({ navigation }) => {
         }
       >
         <Text style={styles.createWorkoutText}>CREATE WORKOUT</Text>
-        {/* <Feather name="plus" color="white" size={25} /> */}
-      </TouchableOpacity>
+      </TouchableOpacity> */}
     </SafeAreaView>
   );
 };

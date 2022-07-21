@@ -164,10 +164,7 @@ const WorkoutScreen = ({ navigation, route }) => {
           isLocked,
         ])
       );
-      if (
-        states.originalWorkoutName !== states.workoutName &&
-        states.originalWorkoutName !== ""
-      )
+      if (states.originalWorkoutName !== states.workoutName)
         AsyncStorage.removeItem(states.originalWorkoutName.toString());
     } catch (error) {
       // Error saving data
@@ -184,12 +181,14 @@ const WorkoutScreen = ({ navigation, route }) => {
       if (unparsedWorkoutData !== null) {
         // We have data!
         const workoutData = JSON.parse(unparsedWorkoutData);
+        let tempWeights = workoutData[1].map((exer) => exer.map((wgt) => ""));
+        let tempReps = workoutData[2].map((exer) => exer.map((wgt) => ""));
 
         setStates({
           workoutName: route.params.name.toString(),
           exercisesArr: workoutData[0],
-          weights: workoutData[1],
-          reps: workoutData[2],
+          weights: tempWeights,
+          reps: tempReps,
           restTimers: workoutData[3],
           // isDoneArr gets reset to false for every set
           isDoneArr: workoutData[4].map((exer, i) =>
@@ -213,11 +212,12 @@ const WorkoutScreen = ({ navigation, route }) => {
       // Adding justifyContent or alignItems here will cause a bug with scrollView
       backgroundColor: "#ededed",
       flex: 1,
+      paddingBottom: "2%",
     },
     screenHeader: {
       flex: 1,
       marginTop: "14%",
-      marginBottom: "8%",
+      marginBottom: "3%",
       marginHorizontal: "4%",
       paddingVertical: "3%",
       borderRadius: 10,
@@ -282,6 +282,7 @@ const WorkoutScreen = ({ navigation, route }) => {
                 onChangeText={(newText) => setWorkoutName(newText)}
                 autoCapitalize="characters"
                 value={states.workoutName}
+                editable={!isLocked}
               ></TextInput>
             </View>
 
