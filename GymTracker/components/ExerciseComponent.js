@@ -27,8 +27,8 @@ const ExerciseComponent = ({
   prevReps,
   reps,
   setReps,
-  isDoneArr,
-  setIsDoneArr,
+  // isDoneArr,
+  // setIsDoneArr,
   isLocked,
 }) => {
   // const [isDoneArr, setIsDoneArr] = useState([false]);
@@ -65,9 +65,9 @@ const ExerciseComponent = ({
     tempWeights[numExercise].push("");
     setWeights(tempWeights);
 
-    let tempIsDone = [...isDoneArr];
-    tempIsDone[numExercise].push(false);
-    setIsDoneArr(tempIsDone);
+    // let tempIsDone = [...isDoneArr];
+    // tempIsDone[numExercise].push(false);
+    // setIsDoneArr(tempIsDone);
 
     // Vibration.vibrate(TWENTYTH_SECOND_MS);
   };
@@ -84,9 +84,9 @@ const ExerciseComponent = ({
     tempReps[numExercise].pop();
     setReps(tempReps);
 
-    let tempIsDone = [...isDoneArr];
-    tempIsDone[numExercise].pop();
-    setIsDoneArr(tempIsDone);
+    // let tempIsDone = [...isDoneArr];
+    // tempIsDone[numExercise].pop();
+    // setIsDoneArr(tempIsDone);
 
     // Vibration.vibrate(TWENTYTH_SECOND_MS);
   };
@@ -196,7 +196,7 @@ const ExerciseComponent = ({
           placeholderTextColor="#90c6f5"
           value={name}
           maxLength={20}
-          editable={isLocked}
+          editable={!isLocked}
           autoCapitalize="characters"
           onChangeText={(newText) => {
             changeExerciseName(newText);
@@ -285,8 +285,8 @@ const ExerciseComponent = ({
             prevReps={prevReps}
             reps={reps}
             setReps={setReps}
-            isDoneArr={isDoneArr}
-            setIsDoneArr={setIsDoneArr}
+            // isDoneArr={isDoneArr}
+            // setIsDoneArr={setIsDoneArr}
           />
         );
       })}

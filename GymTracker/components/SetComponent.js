@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   TouchableOpacity,
   View,
@@ -18,16 +18,29 @@ const SetComponent = ({
   prevReps,
   reps,
   setReps,
-  isDoneArr,
-  setIsDoneArr,
+  // isDoneArr,
+  // setIsDoneArr,
 }) => {
   const TWENTYTH_SECOND_MS = 50;
+  const [isDone, setIsDone] = useState(false);
+
+  useEffect(() => {
+    if (
+      isDone &&
+      weights[numExercise][numSet] == "" &&
+      reps[numExercise][numSet] == "" &&
+      prevWeights[numExercise][numSet] !== "" &&
+      prevReps[numExercise][numSet] !== ""
+    ) {
+      changeWeightText(prevWeights[numExercise][numSet]);
+      changeRepText(prevReps[numExercise][numSet]);
+    }
+  }, [isDone]);
 
   const changeWeightText = (weight) => {
     let tempWeights = [...weights];
     tempWeights[numExercise][numSet] = weight;
     setWeights(tempWeights);
-    // console.log("\n", numExercise, numSet, "\n", weights);
   };
 
   const changeRepText = (rep) => {
@@ -37,13 +50,9 @@ const SetComponent = ({
   };
 
   const changeOnIsDone = () => {
-    // console.log("BEFORE:", isDoneArr, " ");
-
     let tempIsDone = [...isDoneArr];
     tempIsDone[numExercise][numSet] = !tempIsDone[numExercise][numSet];
     setIsDoneArr(tempIsDone);
-
-    // console.log("AFTER:", isDoneArr, " ");
 
     Vibration.vibrate(TWENTYTH_SECOND_MS);
   };
@@ -77,7 +86,9 @@ const SetComponent = ({
       marginTop: 5,
       marginHorizontal: 5,
       borderRadius: 9,
-      backgroundColor: isDoneArr[numExercise][numSet] ? "#9effb6" : null,
+      backgroundColor: isDone /*isDoneArr[numExercise][numSet]*/
+        ? "#9effb6"
+        : null,
     },
     setContainer: {
       flex: 0.6,
@@ -95,7 +106,7 @@ const SetComponent = ({
     },
     prevText: {
       color: /*isDone[numSet] ? null :*/ "#2494f0",
-      fontSize: 16,
+      fontSize: 14,
     },
     weightContainer: {
       flex: 1,
@@ -103,7 +114,9 @@ const SetComponent = ({
     },
     weightText: {
       fontSize: 16,
-      backgroundColor: isDoneArr[numExercise][numSet] ? null : "#ededed", //"#7a7a7a",
+      backgroundColor: isDone /*isDoneArr[numExercise][numSet]*/
+        ? null
+        : "#ededed", //"#7a7a7a",
       borderRadius: 5,
       width: "80%",
       textAlign: "center",
@@ -116,7 +129,9 @@ const SetComponent = ({
     },
     repText: {
       fontSize: 16,
-      backgroundColor: isDoneArr[numExercise][numSet] ? null : "#ededed", //"#7a7a7a",
+      backgroundColor: isDone /*isDoneArr[numExercise][numSet]*/
+        ? null
+        : "#ededed", //"#7a7a7a",
       borderRadius: 5,
       width: "80%",
       textAlign: "center",
@@ -140,7 +155,7 @@ const SetComponent = ({
       <View style={styles.prevContainer}>
         <Text style={styles.prevText}>
           {getPrevRepsText() !== "" && getPrevWeightsText() !== ""
-            ? getPrevWeightsText() + "x" + getPrevRepsText()
+            ? getPrevWeightsText() + " x " + getPrevRepsText()
             : "---"}
         </Text>
       </View>
@@ -152,7 +167,7 @@ const SetComponent = ({
           keyboardType="number-pad"
           value={weights[numExercise][numSet]}
           placeholder={getPrevWeightsText()}
-          editable={!isDoneArr[numExercise][numSet]}
+          editable={!isDone} //isDoneArr[numExercise][numSet]}
           onChangeText={(newText) => {
             changeWeightText(newText);
           }}
@@ -167,7 +182,7 @@ const SetComponent = ({
           keyboardType="number-pad" /*editable={() => isDone ? false : true}*/
           value={reps[numExercise][numSet]}
           placeholder={getPrevRepsText()}
-          editable={!isDoneArr[numExercise][numSet]}
+          editable={!isDone} //isDoneArr[numExercise][numSet]}
           onChangeText={(newText) => {
             changeRepText(newText);
           }}
@@ -176,7 +191,12 @@ const SetComponent = ({
 
       {/*CHECK*/}
       <View style={styles.checkContainer}>
-        <TouchableOpacity onPress={changeOnIsDone}>
+        <TouchableOpacity
+          onPress={() => {
+            setIsDone(!isDone);
+            Vibration.vibrate(TWENTYTH_SECOND_MS);
+          }}
+        >
           <Feather name="check-square" size={25} color={"#2494f0"} />
         </TouchableOpacity>
       </View>

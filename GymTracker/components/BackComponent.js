@@ -10,11 +10,16 @@ import React, {
 
 const BackComponent = ({
   navigation,
-  storeWorkoutData,
+  storeWorkoutAndLeave,
   workoutName,
   originalWorkoutName,
 }) => {
   const names = useRef([]);
+  const templateNames = useRef([
+    "LEGS-TEMPLATE",
+    "PUSH-TEMPLATE",
+    "PULL-TEMPLATE",
+  ]);
 
   useEffect(() => {
     getNames();
@@ -37,7 +42,8 @@ const BackComponent = ({
       !(
         workoutName === originalWorkoutName ||
         !names.current.includes(workoutName)
-      )
+      ) ||
+      templateNames.current.includes(workoutName)
     ) {
       Alert.alert("Workout names must be unique");
       return false;
@@ -51,8 +57,7 @@ const BackComponent = ({
         onPress={() => {
           // checkUniqueWorkoutName();
           if (isWorkoutUnique()) {
-            storeWorkoutData();
-            navigation.navigate("HomeScreen");
+            storeWorkoutAndLeave();
           }
         }}
       >

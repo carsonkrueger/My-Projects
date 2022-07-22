@@ -12,7 +12,10 @@ import {
 
 import BackComponent from "../components/BackComponent";
 import ExerciseComponent from "../components/ExerciseComponent";
+
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import BackgroundTimer from "react-native-background-timer";
+
 import { Feather } from "@expo/vector-icons";
 
 const WorkoutScreen = ({ navigation, route }) => {
@@ -22,7 +25,7 @@ const WorkoutScreen = ({ navigation, route }) => {
     weights: [[""]],
     reps: [[""]],
     restTimers: [""],
-    isDoneArr: [[false]],
+    // isDoneArr: [[false]],
     originalWorkoutName: "",
     prevWeights: [[""]],
     prevReps: [[""]],
@@ -36,10 +39,15 @@ const WorkoutScreen = ({ navigation, route }) => {
   useEffect(() => {
     loadWorkoutData();
 
-    const intervalId = setInterval(() => {
+    // const intervalId = setInterval(() => {
+    //   setSeconds((prevSeconds) => prevSeconds + 1);
+    // }, 1000);
+
+    // return () => clearInterval(intervalId);
+    BackgroundTimer.runBackgroundTimer(() => {
       setSeconds((prevSeconds) => prevSeconds + 1);
     }, 1000);
-    return () => clearInterval(intervalId);
+    return () => BackgroundTimer.stopBackgroundTimer();
   }, []);
 
   const addExercise = () => {
@@ -55,8 +63,8 @@ const WorkoutScreen = ({ navigation, route }) => {
     let restTimers = [...states.restTimers];
     restTimers.push("");
 
-    let isDoneArr = [...states.isDoneArr];
-    isDoneArr.push([false]);
+    // let isDoneArr = [...states.isDoneArr];
+    // isDoneArr.push([false]);
 
     setStates({
       ...states,
@@ -64,7 +72,7 @@ const WorkoutScreen = ({ navigation, route }) => {
       weights,
       reps,
       restTimers,
-      isDoneArr,
+      // isDoneArr,
     });
   };
 
@@ -76,7 +84,7 @@ const WorkoutScreen = ({ navigation, route }) => {
         weights: [[""]],
         reps: [[""]],
         restTimers: [""],
-        isDoneArr: [[false]],
+        // isDoneArr: [[false]],
       });
     } else {
       let exercisesArr = [...states.exercisesArr];
@@ -91,8 +99,8 @@ const WorkoutScreen = ({ navigation, route }) => {
       let restTimers = [...states.restTimers];
       restTimers.splice(idx, 1);
 
-      let isDoneArr = [...states.isDoneArr];
-      isDoneArr.splice(idx, 1);
+      // let isDoneArr = [...states.isDoneArr];
+      // isDoneArr.splice(idx, 1);
 
       setStates({
         ...states,
@@ -100,7 +108,7 @@ const WorkoutScreen = ({ navigation, route }) => {
         weights,
         reps,
         restTimers,
-        isDoneArr,
+        // isDoneArr,
       });
     }
   };
@@ -151,7 +159,7 @@ const WorkoutScreen = ({ navigation, route }) => {
     setIsLocked(!isLocked);
   };
 
-  const storeWorkoutData = async () => {
+  const storeWorkoutAndLeave = async () => {
     try {
       await AsyncStorage.setItem(
         states.workoutName.toString(),
@@ -160,12 +168,13 @@ const WorkoutScreen = ({ navigation, route }) => {
           states.weights,
           states.reps,
           states.restTimers,
-          states.isDoneArr,
+          // states.isDoneArr,
           isLocked,
         ])
       );
       if (states.originalWorkoutName !== states.workoutName)
-        AsyncStorage.removeItem(states.originalWorkoutName.toString());
+        AsyncStorage.removeItem(states.originalWorkoutName);
+      navigation.navigate("HomeScreen");
     } catch (error) {
       // Error saving data
       console.log("ERROR SAVING WORKOUT DATA");
@@ -191,14 +200,14 @@ const WorkoutScreen = ({ navigation, route }) => {
           reps: tempReps,
           restTimers: workoutData[3],
           // isDoneArr gets reset to false for every set
-          isDoneArr: workoutData[4].map((exer, i) =>
-            exer.map((set, i) => false)
-          ),
+          // isDoneArr: workoutData[4].map((exer, i) =>
+          //   exer.map((set, i) => false)
+          // ),
           originalWorkoutName: route.params.name.toString(),
           prevWeights: workoutData[1],
           prevReps: workoutData[2],
         });
-        setIsLocked(workoutData[5]);
+        setIsLocked(workoutData[4]);
       }
     } catch (error) {
       // Error retrieving data
@@ -289,7 +298,7 @@ const WorkoutScreen = ({ navigation, route }) => {
             <View style={styles.backContainer}>
               <BackComponent
                 navigation={navigation}
-                storeWorkoutData={storeWorkoutData}
+                storeWorkoutAndLeave={storeWorkoutAndLeave}
                 workoutName={states.workoutName}
                 originalWorkoutName={states.originalWorkoutName}
               />
@@ -333,8 +342,8 @@ const WorkoutScreen = ({ navigation, route }) => {
               prevReps={states.prevReps}
               reps={states.reps}
               setReps={setReps}
-              isDoneArr={states.isDoneArr}
-              setIsDoneArr={setIsDoneArr}
+              // isDoneArr={states.isDoneArr}
+              // setIsDoneArr={setIsDoneArr}
               isLocked={isLocked}
             />
           );

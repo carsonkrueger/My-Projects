@@ -11,6 +11,7 @@ import {
 } from "react-native";
 
 import WorkoutComponent from "../components/WorkoutComponent";
+import TemplateComponent from "../components/templateComponent";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useIsFocused } from "@react-navigation/native";
 import { Feather } from "@expo/vector-icons";
@@ -19,121 +20,20 @@ const HomeScreen = ({ navigation }) => {
   // [ [ NAME OF WORKOUT, NUM EXERCISES, LAST TIME DID WORKOUT ], ... ]
   // const [workoutList, setWorkoutList] = useState([["", 0, ""]]);
   const [workoutList, setWorkoutList] = useState([]);
+  const [exercisesArr, setExercisesArr] = useState([[]]);
   const [forceUpdate, setForceUpdate] = useState(0);
   const isFocused = useIsFocused();
 
   const windowWidth = useRef(Dimensions.get("window").width);
   const windowHeight = useRef(Dimensions.get("window").height);
 
-  const templates = useRef([[
-    ["SQUAT", "DEADLIFT", "LEG EXTENSIONS", "BARBELL THRUSTS"],
+  const templateNames = useRef(["LEGS", "PUSH", "PULL"]);
+  const templateList = useRef([
     [
-      ["", "", "", ""],
-      ["", "", ""],
-      ["", "", ""],
-      ["", "", ""],
-    ],
-    [
-      ["", "", "", ""],
-      ["", "", ""],
-      ["", "", ""],
-      ["", "", ""],
-    ],
-    ["180", "150", "120", "120"],
-    [
-      [false, false, false, false],
-      [false, false, false],
-      [false, false, false],
-      [false, false, false],
-    ],
-    true,
-  ];
-
-  const push = [
-    [
-      "BENCH",
-      "DUMBELL SH. PRESS",
-      "CABLE FLYS",
-      "CABLE LATERAL RAISE",
-      "TRICEP CABLE KICKBACK",
-    ],
-    [
-      ["", "", ""],
-      ["", "", ""],
-      ["", "", ""],
-      ["", "", ""],
-      ["", "", ""],
-    ],
-    [
-      ["", "", ""],
-      ["", "", ""],
-      ["", "", ""],
-      ["", "", ""],
-      ["", "", ""],
-    ],
-    ["150", "150", "120", "120", "90"],
-    [
-      [false, false, false],
-      [false, false, false],
-      [false, false, false],
-      [false, false, false],
-      [false, false, false],
-    ],
-    true,
-  ];
-}
-
-  const pull = [
-    ["PULL UP", "PENDLAY ROW", "EZ BAR CURL", "PREACHER CURL", "CABLE FACE PULL"],
-    [
-      ["", "", ""],
-      ["", "", ""],
-      ["", "", ""],
-      ["", "", ""],
-      ["", ""],
-    ],
-    [
-      ["", "", ""],
-      ["", "", ""],
-      ["", "", ""],
-      ["", "", ""],
-      ["", ""],
-    ],
-    ["150", "150", "120", "120", "60"],
-    [
-      [false, false, false],
-      [false, false, false],
-      [false, false, false],
-      [false, false, false],
-      [false, false],
-    ],
-    true,
-  ]])
-
-  useEffect(() => {
-    isFocused && loadHomescreenData();
-  }, [isFocused, forceUpdate]);
-
-  const loadHomescreenData = async () => {
-    try {
-      const workoutNames = await AsyncStorage.getAllKeys();
-
-      if (workoutNames !== null) {
-        setWorkoutList(workoutNames);
-      }
-    } catch (error) {
-      // Error retrieving data
-      console.log("Error retrieving homescreen data");
-      throw error;
-    }
-    // console.log("NO DATA TO LOAD");
-  };
-
-  const storeTemplates = () => {
-    const leg = [
-      ["SQUAT", "DEADLIFT", "LEG EXTENSIONS", "BARBELL THRUSTS"],
+      ["SQUAT", "DEADLIFT", "LEG EXTENSIONS", "BARBELL THRUSTS", "CALF RAISES"],
       [
         ["", "", "", ""],
+        ["", "", ""],
         ["", "", ""],
         ["", "", ""],
         ["", "", ""],
@@ -143,18 +43,12 @@ const HomeScreen = ({ navigation }) => {
         ["", "", ""],
         ["", "", ""],
         ["", "", ""],
+        ["", "", ""],
       ],
-      ["180", "150", "120", "120"],
-      [
-        [false, false, false, false],
-        [false, false, false],
-        [false, false, false],
-        [false, false, false],
-      ],
-      true,
-    ];
-
-    const push = [
+      ["180", "150", "120", "120", "60"],
+      false,
+    ],
+    [
       [
         "BENCH",
         "DUMBELL SH. PRESS",
@@ -177,19 +71,16 @@ const HomeScreen = ({ navigation }) => {
         ["", "", ""],
       ],
       ["150", "150", "120", "120", "90"],
+      false,
+    ],
+    [
       [
-        [false, false, false],
-        [false, false, false],
-        [false, false, false],
-        [false, false, false],
-        [false, false, false],
+        "PULL UP",
+        "PENDLAY ROW",
+        "EZ BAR CURL",
+        "PREACHER CURL",
+        "CABLE FACE PULL",
       ],
-      true,
-    ];
-  }
-
-    const pull = [
-      ["PULL UP", "PENDLAY ROW", "EZ BAR CURL", "PREACHER CURL", "CABLE FACE PULL"],
       [
         ["", "", ""],
         ["", "", ""],
@@ -205,15 +96,63 @@ const HomeScreen = ({ navigation }) => {
         ["", ""],
       ],
       ["150", "150", "120", "120", "60"],
-      [
-        [false, false, false],
-        [false, false, false],
-        [false, false, false],
-        [false, false, false],
-        [false, false],
-      ],
-      true,
-    ];
+      false,
+    ],
+  ]);
+
+  useEffect(() => {
+    storeTemplateData();
+  }, []);
+
+  useEffect(() => {
+    isFocused && loadHomescreenNames();
+  }, [isFocused, forceUpdate]);
+
+  const loadHomescreenNames = async () => {
+    try {
+      const workoutNames = await AsyncStorage.getAllKeys();
+
+      // remove from workout list to prevent them from being rendered under "MY WORKOUTS"
+      if (workoutNames.includes("LEGS-TEMPLATE")) {
+        workoutNames.splice(
+          workoutNames.findIndex((workout) => workout === "LEGS-TEMPLATE"),
+          1
+        );
+        workoutNames.splice(
+          workoutNames.findIndex((workout) => workout === "PUSH-TEMPLATE"),
+          1
+        );
+        workoutNames.splice(
+          workoutNames.findIndex((workout) => workout === "PULL-TEMPLATE"),
+          1
+        );
+      }
+
+      if (workoutNames !== null) {
+        setWorkoutList(workoutNames);
+      }
+    } catch (error) {
+      // Error retrieving data
+      console.log("Error retrieving homescreen data");
+      throw error;
+    }
+  };
+
+  const loadHomescreenExercises = async () => {};
+
+  const storeTemplateData = async () => {
+    try {
+      // const workoutNames = await AsyncStorage.getAllKeys();
+      // if (!workoutNames.includes("LEGS-TEMPLATE")) {
+      await AsyncStorage.multiSet([
+        ["LEGS-TEMPLATE", JSON.stringify(templateList.current[0])],
+        ["PUSH-TEMPLATE", JSON.stringify(templateList.current[1])],
+        ["PULL-TEMPLATE", JSON.stringify(templateList.current[2])],
+      ]);
+    } catch (error) {
+      console.log("could not store template data");
+      throw error;
+    }
   };
 
   const styles = StyleSheet.create({
@@ -311,6 +250,10 @@ const HomeScreen = ({ navigation }) => {
         <View style={styles.subHeaderContainer}>
           <Text style={styles.subHeaderText}>Templates</Text>
         </View>
+
+        {templateNames.current.map((workout, i) => (
+          <TemplateComponent key={i} name={workout} navigation={navigation} />
+        ))}
       </ScrollView>
 
       {/* <TouchableOpacity
