@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 import {
   View,
@@ -14,9 +14,20 @@ import BackComponent from "../components/BackComponent";
 import ExerciseComponent from "../components/ExerciseComponent";
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import BackgroundTimer from "react-native-background-timer";
+import SQLite from "react-native-sqlite-storage";
 
 import { Feather } from "@expo/vector-icons";
+
+const db = SQLite.openDatabase(
+  {
+    name: "Main",
+    location: "default",
+  },
+  () => {}, // callback
+  (error) => {
+    console.log(error);
+  }
+);
 
 const WorkoutScreen = ({ navigation, route }) => {
   const [states, setStates] = useState({
@@ -31,6 +42,7 @@ const WorkoutScreen = ({ navigation, route }) => {
     prevReps: [[""]],
   });
 
+  const id = useRef(route.params.id);
   const [seconds, setSeconds] = useState(0);
   const [isLocked, setIsLocked] = useState(false);
 
@@ -39,15 +51,11 @@ const WorkoutScreen = ({ navigation, route }) => {
   useEffect(() => {
     loadWorkoutData();
 
-    // const intervalId = setInterval(() => {
-    //   setSeconds((prevSeconds) => prevSeconds + 1);
-    // }, 1000);
-
-    // return () => clearInterval(intervalId);
-    BackgroundTimer.runBackgroundTimer(() => {
+    const intervalId = setInterval(() => {
       setSeconds((prevSeconds) => prevSeconds + 1);
     }, 1000);
-    return () => BackgroundTimer.stopBackgroundTimer();
+
+    return () => clearInterval(intervalId);
   }, []);
 
   const addExercise = () => {
@@ -159,62 +167,116 @@ const WorkoutScreen = ({ navigation, route }) => {
     setIsLocked(!isLocked);
   };
 
-  const storeWorkoutAndLeave = async () => {
+  const loadData = () => {
     try {
-      await AsyncStorage.setItem(
-        states.workoutName.toString(),
-        JSON.stringify([
-          states.exercisesArr,
-          states.weights,
-          states.reps,
-          states.restTimers,
-          // states.isDoneArr,
-          isLocked,
-        ])
-      );
-      if (states.originalWorkoutName !== states.workoutName)
-        AsyncStorage.removeItem(states.originalWorkoutName);
-      navigation.navigate("HomeScreen");
+      db.transaction((tx) => {
+        tx.executeSql(
+          "SELECT * FROM Workouts WHERE ID = ?", 
+          [id.current],
+          (tx, result) => {
+            result.rows.
+          }
+        )
+      })
+    }
+  }
+
+  const saveNewData = () => {
+    try {
+      db.transaction((tx) => {
+        tx.executeSql(
+          "INSERT INTO Workouts (WorkoutName, Exercises, Weights, Reps, RestTimers, IsLocked) VALUES (?,?,?,?,?,?)",
+          [
+            JSON.stringify(states.workoutName),
+            JSON.stringify(states.exercisesArr),
+            JSON.stringify(states.weights),
+            JSON.stringify(states.reps),
+            JSON.stringify(states.restTimers),
+            JSON.stringify(states.isLocked),
+          ]
+        );
+      });
     } catch (error) {
-      // Error saving data
-      console.log("ERROR SAVING WORKOUT DATA");
-      throw error;
+      console.log("ERROR SAVING WORKOUT SCREEN DATA", error);
     }
   };
 
-  const loadWorkoutData = async () => {
+  const updateData = () => {
     try {
-      console.log("loading workoutscreen data for:", route.params.name);
-      const unparsedWorkoutData = await AsyncStorage.getItem(route.params.name);
-
-      if (unparsedWorkoutData !== null) {
-        // We have data!
-        const workoutData = JSON.parse(unparsedWorkoutData);
-        let tempWeights = workoutData[1].map((exer) => exer.map((wgt) => ""));
-        let tempReps = workoutData[2].map((exer) => exer.map((wgt) => ""));
-
-        setStates({
-          workoutName: route.params.name.toString(),
-          exercisesArr: workoutData[0],
-          weights: tempWeights,
-          reps: tempReps,
-          restTimers: workoutData[3],
-          // isDoneArr gets reset to false for every set
-          // isDoneArr: workoutData[4].map((exer, i) =>
-          //   exer.map((set, i) => false)
-          // ),
-          originalWorkoutName: route.params.name.toString(),
-          prevWeights: workoutData[1],
-          prevReps: workoutData[2],
-        });
-        setIsLocked(workoutData[4]);
-      }
+      db.transaction((tx) => {
+        tx.executeSql(
+          "UPDATE Workouts SET WorkoutName = ?, Exercises  = ?, Weights  = ?, Reps  = ?, RestTimers  = ?, IsLocked  = ? WHERE ID = ?",
+          [
+            JSON.stringify(states.workoutName),
+            JSON.stringify(states.exercisesArr),
+            JSON.stringify(states.weights),
+            JSON.stringify(states.reps),
+            JSON.stringify(states.restTimers),
+            JSON.stringify(states.isLocked),
+          ]
+        );
+      });
     } catch (error) {
-      // Error retrieving data
-      console.log("ERROR LOADING DATA:", error);
-      throw error;
+      console.log("ERROR UPDATING WORKOUT SCREEN DATA", error);
     }
-  };
+  }
+
+  // const storeWorkoutAndLeave = async () => {
+  //   try {
+  //     await AsyncStorage.setItem(
+  //       states.workoutName.toString(),
+  //       JSON.stringify([
+  //         states.exercisesArr,
+  //         states.weights,
+  //         states.reps,
+  //         states.restTimers,
+  //         // states.isDoneArr,
+  //         isLocked,
+  //       ])
+  //     );
+  //     if (states.originalWorkoutName !== states.workoutName)
+  //       AsyncStorage.removeItem(states.originalWorkoutName);
+  //     navigation.navigate("HomeScreen");
+  //   } catch (error) {
+  //     // Error saving data
+  //     console.log("ERROR SAVING WORKOUT DATA");
+  //     throw error;
+  //   }
+  // };
+
+  // const loadWorkoutData = async () => {
+  //   try {
+  //     console.log("loading workoutscreen data for:", route.params.name);
+  //     const unparsedWorkoutData = await AsyncStorage.getItem(route.params.name);
+
+  //     if (unparsedWorkoutData !== null) {
+  //       // We have data!
+  //       const workoutData = JSON.parse(unparsedWorkoutData);
+  //       let tempWeights = workoutData[1].map((exer) => exer.map((wgt) => ""));
+  //       let tempReps = workoutData[2].map((exer) => exer.map((wgt) => ""));
+
+  //       setStates({
+  //         workoutName: route.params.name.toString(),
+  //         exercisesArr: workoutData[0],
+  //         weights: tempWeights,
+  //         reps: tempReps,
+  //         restTimers: workoutData[3],
+  //         // isDoneArr gets reset to false for every set
+  //         // isDoneArr: workoutData[4].map((exer, i) =>
+  //         //   exer.map((set, i) => false)
+  //         // ),
+  //         originalWorkoutName: route.params.name.toString(),
+  //         prevWeights: workoutData[1],
+  //         prevReps: workoutData[2],
+  //       });
+  //       setIsLocked(workoutData[4]);
+  //     }
+  //   } catch (error) {
+  //     // Error retrieving data
+  //     console.log("ERROR LOADING DATA:", error);
+  //     throw error;
+  //   }
+  // };
 
   const styles = StyleSheet.create({
     container: {

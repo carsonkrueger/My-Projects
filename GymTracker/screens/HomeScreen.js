@@ -12,9 +12,21 @@ import {
 
 import WorkoutComponent from "../components/WorkoutComponent";
 import TemplateComponent from "../components/templateComponent";
+import SQLite from "react-native-sqlite-storage";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useIsFocused } from "@react-navigation/native";
 import { Feather } from "@expo/vector-icons";
+
+const db = SQLite.openDatabase(
+  {
+    name: "Main",
+    location: "default",
+  },
+  () => {}, // callback
+  (error) => {
+    console.log(error);
+  }
+);
 
 const HomeScreen = ({ navigation }) => {
   // [ [ NAME OF WORKOUT, NUM EXERCISES, LAST TIME DID WORKOUT ], ... ]
@@ -101,12 +113,36 @@ const HomeScreen = ({ navigation }) => {
   ]);
 
   useEffect(() => {
-    storeTemplateData();
+    // storeTemplateData();
+    createTable();
   }, []);
 
   useEffect(() => {
-    isFocused && loadHomescreenNames();
+    // isFocused && loadHomescreenNames();
   }, [isFocused, forceUpdate]);
+
+  const createTable = () => {
+    db.transaction((tx) => {
+      tx.executeSql(
+        "CREATE TABLE IF NOT EXISTS" +
+          "Workouts" +
+          "(ID INTEGER PRIMARY KEY AUTOINCREMENT, WorkoutName STRING, Exercises STRING, Weights STRING, Reps STRING, RestTimers STRING, IsLocked STRING);"
+      );
+    });
+  };
+
+  const loadData = () => {
+    try {
+      db.transaction((tx) => {
+        tx.executeSql(
+          "SELECT * FROM Workouts", [], // ORDER BY LastPerformed
+          (tx, result) => {
+            
+          }
+        )
+      })
+    }
+  }
 
   const loadHomescreenNames = async () => {
     try {
