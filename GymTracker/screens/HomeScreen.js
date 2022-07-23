@@ -12,14 +12,14 @@ import {
 
 import WorkoutComponent from "../components/WorkoutComponent";
 import TemplateComponent from "../components/templateComponent";
-import SQLite from "react-native-sqlite-storage";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { openDatabase } from "react-native-sqlite-storage";
+// import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useIsFocused } from "@react-navigation/native";
 import { Feather } from "@expo/vector-icons";
 
-const db = SQLite.openDatabase(
+const db = openDatabase(
   {
-    name: "Main",
+    name: "main",
     location: "default",
   },
   () => {}, // callback
@@ -114,12 +114,11 @@ const HomeScreen = ({ navigation }) => {
 
   useEffect(() => {
     // storeTemplateData();
-    AsyncStorage.clear();
-    createTable();
+    // createTable();
   }, []);
 
   useEffect(() => {
-    isFocused && loadData();
+    // isFocused && loadData();
   }, [isFocused, forceUpdate]);
 
   const createTable = () => {

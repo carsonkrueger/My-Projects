@@ -13,21 +13,21 @@ import {
 import BackComponent from "../components/BackComponent";
 import ExerciseComponent from "../components/ExerciseComponent";
 
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import SQLite from "react-native-sqlite-storage";
+// import AsyncStorage from "@react-native-async-storage/async-storage";
+// import { openDatabase } from "react-native-sqlite-storage";
 
 import { Feather } from "@expo/vector-icons";
 
-const db = SQLite.openDatabase(
-  {
-    name: "Main",
-    location: "default",
-  },
-  () => {}, // callback
-  (error) => {
-    console.log(error);
-  }
-);
+// const db = openDatabase(
+//   {
+//     name: "Main",
+//     location: "default",
+//   },
+//   () => {}, // callback
+//   (error) => {
+//     console.log(error);
+//   }
+// );
 
 const WorkoutScreen = ({ navigation, route }) => {
   const [states, setStates] = useState({
@@ -49,7 +49,7 @@ const WorkoutScreen = ({ navigation, route }) => {
   const TWENTYTH_SECOND_MS = 50;
 
   useEffect(() => {
-    loadWorkoutData();
+    // loadWorkoutData();
 
     const intervalId = setInterval(() => {
       setSeconds((prevSeconds) => prevSeconds + 1);
