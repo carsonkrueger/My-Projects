@@ -32,7 +32,7 @@ const HomeScreen = ({ navigation }) => {
   // [ [ NAME OF WORKOUT, NUM EXERCISES, LAST TIME DID WORKOUT ], ... ]
   // const [workoutList, setWorkoutList] = useState([["", 0, ""]]);
   const [workoutList, setWorkoutList] = useState([]);
-  const [exercisesArr, setExercisesArr] = useState([[]]);
+
   const [forceUpdate, setForceUpdate] = useState(0);
   const isFocused = useIsFocused();
 
@@ -114,11 +114,12 @@ const HomeScreen = ({ navigation }) => {
 
   useEffect(() => {
     // storeTemplateData();
+    AsyncStorage.clear();
     createTable();
   }, []);
 
   useEffect(() => {
-    // isFocused && loadHomescreenNames();
+    isFocused && loadData();
   }, [isFocused, forceUpdate]);
 
   const createTable = () => {
@@ -126,7 +127,7 @@ const HomeScreen = ({ navigation }) => {
       tx.executeSql(
         "CREATE TABLE IF NOT EXISTS" +
           "Workouts" +
-          "(ID INTEGER PRIMARY KEY AUTOINCREMENT, WorkoutName STRING, Exercises STRING, Weights STRING, Reps STRING, RestTimers STRING, IsLocked STRING);"
+          "(ID INTEGER PRIMARY KEY AUTOINCREMENT, Name STRING, Exercises STRING, Weights STRING, Reps STRING, RestTimers STRING, IsLocked STRING);"
       );
     });
   };
@@ -135,14 +136,19 @@ const HomeScreen = ({ navigation }) => {
     try {
       db.transaction((tx) => {
         tx.executeSql(
-          "SELECT * FROM Workouts", [], // ORDER BY LastPerformed
+          "SELECT Name FROM Workouts;",
+          [], // ORDER BY LastPerformed
           (tx, result) => {
-            
+            for (let i = 0; i < result.length; i++) {
+              workoutList.push(result.rows.item(i));
+            }
           }
-        )
-      })
+        );
+      });
+    } catch (error) {
+      console.log("ERROR LOADING HOMESCREEN DATA");
     }
-  }
+  };
 
   const loadHomescreenNames = async () => {
     try {

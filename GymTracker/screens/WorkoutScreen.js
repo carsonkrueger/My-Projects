@@ -42,7 +42,7 @@ const WorkoutScreen = ({ navigation, route }) => {
     prevReps: [[""]],
   });
 
-  const id = useRef(route.params.id);
+  const WORKOUT_ID = useRef(route.params.id);
   const [seconds, setSeconds] = useState(0);
   const [isLocked, setIsLocked] = useState(false);
 
@@ -168,26 +168,40 @@ const WorkoutScreen = ({ navigation, route }) => {
   };
 
   const loadData = () => {
+    if (WORKOUT_ID.current === null) {
+      console.log("workout id is null, cannot load data");
+      return;
+    }
+
     try {
       db.transaction((tx) => {
         tx.executeSql(
-          "SELECT * FROM Workouts WHERE ID = ?", 
-          [id.current],
+          "SELECT * FROM Workouts WHERE ID = ?;",
+          [WORKOUT_ID.current],
           (tx, result) => {
-            result.rows.
+            setStates({
+              workoutName: result[0],
+              exercisesArr: JSON.parse(result[1]),
+              weights: JSON.parse(result[2]),
+              reps: JSON.parse(result[3]),
+              restTimers: JSON.parse(result[4]),
+              isLocked: JSON.parse(result[5]),
+            });
           }
-        )
-      })
+        );
+      });
+    } catch (error) {
+      console.log("could not load data for workout screen");
     }
-  }
+  };
 
   const saveNewData = () => {
     try {
       db.transaction((tx) => {
         tx.executeSql(
-          "INSERT INTO Workouts (WorkoutName, Exercises, Weights, Reps, RestTimers, IsLocked) VALUES (?,?,?,?,?,?)",
+          "INSERT INTO Workouts (Name, Exercises, Weights, Reps, RestTimers, IsLocked) VALUES (?,?,?,?,?,?);",
           [
-            JSON.stringify(states.workoutName),
+            states.workoutName,
             JSON.stringify(states.exercisesArr),
             JSON.stringify(states.weights),
             JSON.stringify(states.reps),
@@ -213,13 +227,14 @@ const WorkoutScreen = ({ navigation, route }) => {
             JSON.stringify(states.reps),
             JSON.stringify(states.restTimers),
             JSON.stringify(states.isLocked),
+            WORKOUT_ID,
           ]
         );
       });
     } catch (error) {
       console.log("ERROR UPDATING WORKOUT SCREEN DATA", error);
     }
-  }
+  };
 
   // const storeWorkoutAndLeave = async () => {
   //   try {
