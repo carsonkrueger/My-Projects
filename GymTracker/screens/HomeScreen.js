@@ -12,25 +12,17 @@ import {
 
 import WorkoutComponent from "../components/WorkoutComponent";
 import TemplateComponent from "../components/templateComponent";
-import SQLite from "react-native-sqlite-storage";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+
+import * as SQLite from "expo-sqlite";
+// import AsyncStorage from "@react-native-async-storage/async-storage";
+
 import { useIsFocused } from "@react-navigation/native";
 import { Feather } from "@expo/vector-icons";
 
-const db = SQLite.openDatabase(
-  {
-    name: "Main",
-    location: "default",
-  },
-  () => {}, // callback
-  (error) => {
-    console.log(error);
-  }
-);
+const db = SQLite.openDatabase("GymTracker");
 
 const HomeScreen = ({ navigation }) => {
   // [ [ NAME OF WORKOUT, NUM EXERCISES, LAST TIME DID WORKOUT ], ... ]
-  // const [workoutList, setWorkoutList] = useState([["", 0, ""]]);
   const [workoutList, setWorkoutList] = useState([]);
 
   const [forceUpdate, setForceUpdate] = useState(0);
@@ -113,40 +105,76 @@ const HomeScreen = ({ navigation }) => {
   ]);
 
   useEffect(() => {
-    // storeTemplateData();
-    AsyncStorage.clear();
     createTable();
   }, []);
 
   useEffect(() => {
     isFocused && loadData();
+    // deleteData();
   }, [isFocused, forceUpdate]);
 
   const createTable = () => {
-    db.transaction((tx) => {
-      tx.executeSql(
-        "CREATE TABLE IF NOT EXISTS" +
-          "Workouts" +
-          "(ID INTEGER PRIMARY KEY AUTOINCREMENT, Name STRING, Exercises STRING, Weights STRING, Reps STRING, RestTimers STRING, IsLocked STRING);"
-      );
-    });
+    db.transaction(
+      (tx) => {
+        tx.executeSql(
+          "CREATE TABLE IF NOT EXISTS Workouts (ID INTEGER PRIMARY KEY AUTOINCREMENT, Name TINYTEXT, Exercises TEXT, Weights TEXT, Reps TEXT, RestTimers TINYTEXT, IsLocked TINYTEXT);"
+        );
+      },
+      (tx, error) => console.log("ERROR")
+    );
   };
 
   const loadData = () => {
+    let tempWorkoutList = [];
+
     try {
       db.transaction((tx) => {
         tx.executeSql(
-          "SELECT Name FROM Workouts;",
-          [], // ORDER BY LastPerformed
+          "SELECT Name, Exercises FROM Workouts", // ORDER BY LastPerformed
+          null,
           (tx, result) => {
-            for (let i = 0; i < result.length; i++) {
-              workoutList.push(result.rows.item(i));
+            // success cb
+            for (let i = 0; i < result.rows.length; i++) {
+              tempWorkoutList.push(result.rows.item(i));
             }
-          }
+            console.log(result.rows._array);
+            // setWorkoutList(tempWorkoutList);
+          },
+          (tx, error) => console.log("ERROR loading homescreen data") // error cb
         );
       });
     } catch (error) {
       console.log("ERROR LOADING HOMESCREEN DATA");
+    }
+  };
+
+  const testCreateWorkout = () => {
+    const stri = "poop";
+    try {
+      db.transaction(
+        (tx) =>
+          tx.executeSql("INSERT INTO Workouts (Name, Exercises) VALUES (?, ?)"),
+        [stri, stri],
+        () => setForceUpdate((prev) => prev + 1),
+        (tx, error) => console.log("ERROR INSERTING WORKOUT")
+      );
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const deleteData = () => {
+    try {
+      db.transaction(
+        (tx) => {
+          tx.executeSql("DELETE FROM Workouts WHERE Name = ?");
+        },
+        [null],
+        () => {},
+        (tx, error) => console.log("ERROR DELETING WORKOUT")
+      );
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -259,7 +287,9 @@ const HomeScreen = ({ navigation }) => {
     <SafeAreaView style={styles.container}>
       <ScrollView stickyHeaderIndices={[0, 2]}>
         <View style={styles.screenHeader}>
-          <Text style={styles.screenHeaderText}>THE GYM TRACKER</Text>
+          <Text style={styles.screenHeaderText} onPress={testCreateWorkout}>
+            THE GYM TRACKER
+          </Text>
         </View>
 
         <View style={styles.subHeaderContainer}>

@@ -10,7 +10,7 @@ import React, {
 
 const BackComponent = ({
   navigation,
-  storeWorkoutAndLeave,
+  // storeWorkoutAndLeave,
   workoutName,
   originalWorkoutName,
 }) => {
@@ -57,7 +57,7 @@ const BackComponent = ({
         onPress={() => {
           // checkUniqueWorkoutName();
           if (isWorkoutUnique()) {
-            storeWorkoutAndLeave();
+            // storeWorkoutAndLeave();
           }
         }}
       >
