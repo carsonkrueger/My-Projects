@@ -12,7 +12,7 @@ import {
 // import Animated, { useSharedValue } from "react-native-reanimated";
 
 import { Feather } from "@expo/vector-icons";
-// import AsyncStorage from "@react-native-async-storage/async-storage";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const TemplateComponent = ({ navigation, name }) => {
   const handleLongPress = () => {
