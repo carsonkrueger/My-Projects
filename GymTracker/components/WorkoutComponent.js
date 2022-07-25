@@ -1,5 +1,7 @@
 import React, { useRef, useState } from "react";
 
+import * as SQLite from "expo-sqlite";
+
 import {
   StyleSheet,
   View,
@@ -12,13 +14,21 @@ import {
 // import Animated, { useSharedValue } from "react-native-reanimated";
 
 import { Feather } from "@expo/vector-icons";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const WorkoutComponent = ({ navigation, name, setForceUpdate }) => {
+const db = SQLite.openDatabase("GymTracker");
+
+const WorkoutComponent = ({
+  navigation,
+  id,
+  name,
+  exercises,
+  setForceUpdate,
+}) => {
   const translation = useRef(new Animated.Value(0)).current;
   const [isTranslated, setIsTranslated] = useState(false);
 
   const handleLongPress = () => {
+    console.log(id);
     if (!isTranslated) {
       setIsTranslated(true);
       Animated.timing(translation, {
@@ -38,8 +48,20 @@ const WorkoutComponent = ({ navigation, name, setForceUpdate }) => {
     Vibration.vibrate(25);
   };
 
-  const handleDeleteWorkout = () => {
-    AsyncStorage.removeItem(name);
+  const handleDeleteWorkout = async () => {
+    try {
+      await db.transaction(
+        async (tx) =>
+          await tx.executeSql(
+            "DELETE FROM Workouts WHERE ID = ?",
+            [id],
+            () => {},
+            (tx, error) => console.log("ERROR DELETING WORKOUT")
+          )
+      );
+    } catch (error) {
+      console.log(error);
+    }
     setForceUpdate((prevNum) => prevNum + 1);
   };
 
@@ -100,7 +122,7 @@ const WorkoutComponent = ({ navigation, name, setForceUpdate }) => {
           onPress={() => {
             // loadWorkoutData(name);
             navigation.navigate("WorkoutScreen", {
-              name: name,
+              id: id,
             });
           }}
           onLongPress={handleLongPress}

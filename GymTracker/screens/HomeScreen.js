@@ -31,132 +31,191 @@ const HomeScreen = ({ navigation }) => {
   const windowWidth = useRef(Dimensions.get("window").width);
   const windowHeight = useRef(Dimensions.get("window").height);
 
-  const templateNames = useRef(["LEGS", "PUSH", "PULL"]);
-  const templateList = useRef([
-    [
-      ["SQUAT", "DEADLIFT", "LEG EXTENSIONS", "BARBELL THRUSTS", "CALF RAISES"],
-      [
+  // const templateNames = useRef(["LEGS", "PUSH", "PULL"]);
+  const templatePresetList = useRef([
+    {
+      Name: "LEGS",
+      Exercises: [
+        "SQUAT",
+        "DEADLIFT",
+        "LEG EXTENSIONS",
+        "BARBELL THRUSTS",
+        "CALF RAISES",
+      ],
+      Weights: [
         ["", "", "", ""],
         ["", "", ""],
         ["", "", ""],
         ["", "", ""],
         ["", "", ""],
       ],
-      [
+      Reps: [
         ["", "", "", ""],
         ["", "", ""],
         ["", "", ""],
         ["", "", ""],
         ["", "", ""],
       ],
-      ["180", "150", "120", "120", "60"],
-      false,
-    ],
-    [
-      [
+      RestTimers: ["180", "150", "120", "120", "60"],
+      IsLocke: false,
+    },
+    {
+      Name: "PUSH",
+      Exercises: [
         "BENCH",
         "DUMBELL SH. PRESS",
         "CABLE FLYS",
         "CABLE LATERAL RAISE",
         "TRICEP CABLE KICKBACK",
       ],
-      [
+      Weights: [
         ["", "", ""],
         ["", "", ""],
         ["", "", ""],
         ["", "", ""],
         ["", "", ""],
       ],
-      [
+      Reps: [
         ["", "", ""],
         ["", "", ""],
         ["", "", ""],
         ["", "", ""],
         ["", "", ""],
       ],
-      ["150", "150", "120", "120", "90"],
-      false,
-    ],
-    [
-      [
+      RestTimers: ["150", "150", "120", "120", "90"],
+      IsLocked: false,
+    },
+    {
+      Name: "PULL",
+      Exercises: [
         "PULL UP",
         "PENDLAY ROW",
         "EZ BAR CURL",
         "PREACHER CURL",
         "CABLE FACE PULL",
       ],
-      [
+      Weights: [
         ["", "", ""],
         ["", "", ""],
         ["", "", ""],
         ["", "", ""],
         ["", ""],
       ],
-      [
+      Reps: [
         ["", "", ""],
         ["", "", ""],
         ["", "", ""],
         ["", "", ""],
         ["", ""],
       ],
-      ["150", "150", "120", "120", "60"],
-      false,
-    ],
+      RestTimers: ["150", "150", "120", "120", "60"],
+      IsLocked: false,
+    },
   ]);
+  const templateList = useRef([]);
 
   useEffect(() => {
-    createTable();
+    createWorkoutsTable();
+    createTemplateTable();
+    createTemplateData();
   }, []);
 
   useEffect(() => {
     isFocused && loadData();
-    // deleteData();
+    deleteData();
   }, [isFocused, forceUpdate]);
 
-  const createTable = () => {
+  const createWorkoutsTable = () => {
     db.transaction(
       (tx) => {
         tx.executeSql(
-          "CREATE TABLE IF NOT EXISTS Workouts (ID INTEGER PRIMARY KEY AUTOINCREMENT, Name TINYTEXT, Exercises TEXT, Weights TEXT, Reps TEXT, RestTimers TINYTEXT, IsLocked TINYTEXT);"
+          "CREATE TABLE IF NOT EXISTS Workouts (ID INTEGER PRIMARY KEY AUTOINCREMENT, Name TINYTEXT, Exercises TEXT, Weights TEXT, Reps TEXT, RestTimers TEXT, IsLocked TINYTEXT);"
         );
       },
       (tx, error) => console.log("ERROR")
     );
   };
 
-  const loadData = () => {
-    let tempWorkoutList = [];
+  const createTemplateTable = () => {
+    db.transaction(
+      (tx) => {
+        tx.executeSql(
+          "CREATE TABLE IF NOT EXISTS Templates (ID INTEGER PRIMARY KEY AUTOINCREMENT, Name TINYTEXT, Exercises TEXT, Weights TEXT, Reps TEXT, RestTimers TEXT, IsLocked TINYTEXT);"
+        );
+      },
+      (tx, error) => console.log("ERROR")
+    );
+  };
 
+  const createTemplateData = () => {
+    templatePresetList.current.map((workout, i) => {
+      console.log(workout.Name);
+      db.transaction((tx) =>
+        tx.executeSql(
+          "INSERT INTO Templates (ID, Name, Exercises, Weights, Reps, RestTimers, IsLocked) VALUES (?,?,?,?,?,?,?) WHERE NOT EXISTS ( SELECT Name FROM Templates WHERE Name = ? )",
+          [
+            i,
+            workout.Name,
+            JSON.stringify(workout.Exercises),
+            JSON.stringify(workout.Weights),
+            JSON.stringify(workout.Reps),
+            JSON.stringify(workout.RestTimers),
+            JSON.stringify(workout.IsLocked),
+            workout.Name,
+          ]
+        )
+      );
+    });
+  };
+
+  const loadData = () => {
+    // workoutList data loading
     try {
       db.transaction((tx) => {
         tx.executeSql(
-          "SELECT Name, Exercises FROM Workouts", // ORDER BY LastPerformed
+          "SELECT ID, Name, Exercises FROM Workouts", // ORDER BY LastPerformed
           null,
           (tx, result) => {
-            // success cb
-            for (let i = 0; i < result.rows.length; i++) {
-              tempWorkoutList.push(result.rows.item(i));
-            }
-            console.log(result.rows._array);
-            // setWorkoutList(tempWorkoutList);
+            setWorkoutList(result.rows._array);
+            // console.log(result.rows._array);
           },
-          (tx, error) => console.log("ERROR loading homescreen data") // error cb
+          (tx, error) =>
+            console.log("ERROR loading homescreen WorkoutList data") // error cb
         );
       });
     } catch (error) {
-      console.log("ERROR LOADING HOMESCREEN DATA");
+      console.log("ERROR LOADING HOMESCREEN WorkoutList DATA");
+    }
+
+    // templateList data loading
+    try {
+      db.transaction((tx) => {
+        tx.executeSql(
+          "SELECT ID, Name, Exercises FROM Templates", // ORDER BY LastPerformed
+          null,
+          (tx, result) => {
+            templateList.current = result.rows._array;
+            // console.log(result.rows._array);
+          },
+          (tx, error) =>
+            console.log("ERROR loading homescreen TemplateList data") // error cb
+        );
+      });
+    } catch (error) {
+      console.log("ERROR LOADING HOMESCREEN TemplateList DATA");
     }
   };
 
-  const testCreateWorkout = () => {
+  const createWorkout = () => {
     const stri = "poop";
     try {
-      db.transaction(
-        (tx) =>
-          tx.executeSql("INSERT INTO Workouts (Name, Exercises) VALUES (?, ?)"),
-        [stri, stri],
-        () => setForceUpdate((prev) => prev + 1),
-        (tx, error) => console.log("ERROR INSERTING WORKOUT")
+      db.transaction((tx) =>
+        tx.executeSql(
+          "INSERT INTO Workouts (Name, Exercises) VALUES (?, ?)",
+          [stri, stri],
+          (tx, result) => setForceUpdate((prev) => prev + 1),
+          (tx, error) => console.log("ERROR INSERTING WORKOUT", error)
+        )
       );
     } catch (error) {
       console.log(error);
@@ -165,13 +224,13 @@ const HomeScreen = ({ navigation }) => {
 
   const deleteData = () => {
     try {
-      db.transaction(
-        (tx) => {
-          tx.executeSql("DELETE FROM Workouts WHERE Name = ?");
-        },
-        [null],
-        () => {},
-        (tx, error) => console.log("ERROR DELETING WORKOUT")
+      db.transaction((tx) =>
+        tx.executeSql(
+          "DELETE FROM Workouts",
+          [],
+          () => {},
+          (tx, error) => console.log("ERROR DELETING WORKOUT")
+        )
       );
     } catch (error) {
       console.log(error);
@@ -215,9 +274,9 @@ const HomeScreen = ({ navigation }) => {
       // const workoutNames = await AsyncStorage.getAllKeys();
       // if (!workoutNames.includes("LEGS-TEMPLATE")) {
       await AsyncStorage.multiSet([
-        ["LEGS-TEMPLATE", JSON.stringify(templateList.current[0])],
-        ["PUSH-TEMPLATE", JSON.stringify(templateList.current[1])],
-        ["PULL-TEMPLATE", JSON.stringify(templateList.current[2])],
+        ["LEGS-TEMPLATE", JSON.stringify(templatePresetList.current[0])],
+        ["PUSH-TEMPLATE", JSON.stringify(templatePresetList.current[1])],
+        ["PULL-TEMPLATE", JSON.stringify(templatePresetList.current[2])],
       ]);
     } catch (error) {
       console.log("could not store template data");
@@ -287,7 +346,7 @@ const HomeScreen = ({ navigation }) => {
     <SafeAreaView style={styles.container}>
       <ScrollView stickyHeaderIndices={[0, 2]}>
         <View style={styles.screenHeader}>
-          <Text style={styles.screenHeaderText} onPress={testCreateWorkout}>
+          <Text style={styles.screenHeaderText} onPress={createWorkout}>
             THE GYM TRACKER
           </Text>
         </View>
@@ -311,9 +370,11 @@ const HomeScreen = ({ navigation }) => {
         {workoutList.map((workout, i) => {
           return (
             <WorkoutComponent
-              key={workout}
+              key={workout.ID}
               navigation={navigation}
-              name={workout}
+              id={workout.ID}
+              name={workout.Name}
+              exercises={workout.Exercises}
               setForceUpdate={setForceUpdate}
             />
           );
@@ -323,8 +384,13 @@ const HomeScreen = ({ navigation }) => {
           <Text style={styles.subHeaderText}>Templates</Text>
         </View>
 
-        {templateNames.current.map((workout, i) => (
-          <TemplateComponent key={i} name={workout} navigation={navigation} />
+        {templateList.current.map((workout, i) => (
+          <TemplateComponent
+            key={i}
+            name={workout.Name}
+            exercises={workout.Exercises}
+            navigation={navigation}
+          />
         ))}
       </ScrollView>
 

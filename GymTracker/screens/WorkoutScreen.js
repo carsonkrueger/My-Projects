@@ -10,21 +10,14 @@ import {
   ScrollView,
 } from "react-native";
 
+import * as SQLite from "expo-sqlite";
+
 import BackComponent from "../components/BackComponent";
 import ExerciseComponent from "../components/ExerciseComponent";
 
 import { Feather } from "@expo/vector-icons";
 
-// const db = SQLite.openDatabase(
-//   {
-//     name: "Main",
-//     location: "default",
-//   },
-//   () => {}, // callback
-//   (error) => {
-//     console.log(error);
-//   }
-// );
+const db = SQLite.openDatabase("GymTracker");
 
 const WorkoutScreen = ({ navigation, route }) => {
   const [states, setStates] = useState({
@@ -46,7 +39,7 @@ const WorkoutScreen = ({ navigation, route }) => {
   const TWENTYTH_SECOND_MS = 50;
 
   useEffect(() => {
-    // loadWorkoutData();
+    loadData();
 
     const intervalId = setInterval(() => {
       setSeconds((prevSeconds) => prevSeconds + 1);
@@ -175,16 +168,17 @@ const WorkoutScreen = ({ navigation, route }) => {
         tx.executeSql(
           "SELECT * FROM Workouts WHERE ID = ?;",
           [WORKOUT_ID.current],
-          (tx, result) => {
+          (tx, result) =>
             setStates({
-              workoutName: result[0],
-              exercisesArr: JSON.parse(result[1]),
-              weights: JSON.parse(result[2]),
-              reps: JSON.parse(result[3]),
-              restTimers: JSON.parse(result[4]),
-              isLocked: JSON.parse(result[5]),
-            });
-          }
+              workoutName: result.rows.item(0).WorkoutName,
+              exercisesArr: JSON.parse(result.rows.item(0).Exercises),
+              weights: JSON.parse(result.rows.item(0).Weights),
+              reps: JSON.parse(result.rows.item(0).Reps),
+              restTimers: JSON.parse(result.rows.item(0).RestTimers),
+              isLocked: JSON.parse(result.rows.item(0).IsLocked),
+            }),
+          (tx, error) =>
+            console.log(WORKOUT_ID, "ERROR LOADING WORKOUT SCREEN DATA", error)
         );
       });
     } catch (error) {
@@ -218,7 +212,7 @@ const WorkoutScreen = ({ navigation, route }) => {
         tx.executeSql(
           "UPDATE Workouts SET WorkoutName = ?, Exercises  = ?, Weights  = ?, Reps  = ?, RestTimers  = ?, IsLocked  = ? WHERE ID = ?",
           [
-            JSON.stringify(states.workoutName),
+            states.workoutName,
             JSON.stringify(states.exercisesArr),
             JSON.stringify(states.weights),
             JSON.stringify(states.reps),

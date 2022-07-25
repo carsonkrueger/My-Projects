@@ -14,7 +14,7 @@ import {
 import { Feather } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const TemplateComponent = ({ navigation, name }) => {
+const TemplateComponent = ({ navigation, name, exercises }) => {
   const handleLongPress = () => {
     if (!isTranslated) {
       setIsTranslated(true);
