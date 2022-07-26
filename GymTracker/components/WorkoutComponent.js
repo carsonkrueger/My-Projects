@@ -28,7 +28,6 @@ const WorkoutComponent = ({
   const [isTranslated, setIsTranslated] = useState(false);
 
   const handleLongPress = () => {
-    console.log(id);
     if (!isTranslated) {
       setIsTranslated(true);
       Animated.timing(translation, {
@@ -123,6 +122,7 @@ const WorkoutComponent = ({
             // loadWorkoutData(name);
             navigation.navigate("WorkoutScreen", {
               id: id,
+              isTemplate: false,
             });
           }}
           onLongPress={handleLongPress}

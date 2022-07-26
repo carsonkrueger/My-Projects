@@ -14,7 +14,7 @@ import {
 import { Feather } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const TemplateComponent = ({ navigation, name, exercises }) => {
+const TemplateComponent = ({ navigation, id, name, exercises }) => {
   const handleLongPress = () => {
     if (!isTranslated) {
       setIsTranslated(true);
@@ -80,7 +80,8 @@ const TemplateComponent = ({ navigation, name, exercises }) => {
           onPress={() => {
             // loadWorkoutData(name);
             navigation.navigate("WorkoutScreen", {
-              name: name,
+              id: id,
+              isTemplate: true,
             });
           }}
           delayLongPress={500}

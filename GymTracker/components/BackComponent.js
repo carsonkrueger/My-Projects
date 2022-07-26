@@ -1,4 +1,3 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useEffect, useRef } from "react";
 import React, {
   StyleSheet,
@@ -8,9 +7,13 @@ import React, {
   Alert,
 } from "react-native";
 
+import * as SQLite from "expo-sqlite";
+
+const db = SQLite.openDatabase("GymTracker");
+
 const BackComponent = ({
   navigation,
-  // storeWorkoutAndLeave,
+  saveNewData,
   workoutName,
   originalWorkoutName,
 }) => {
@@ -55,10 +58,8 @@ const BackComponent = ({
     <View style={styles.container}>
       <TouchableOpacity
         onPress={() => {
-          // checkUniqueWorkoutName();
-          if (isWorkoutUnique()) {
-            // storeWorkoutAndLeave();
-          }
+          saveNewData();
+          navigation.navigate("HomeScreen");
         }}
       >
         <Text style={styles.text}>FINISH</Text>

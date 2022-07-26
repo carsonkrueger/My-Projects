@@ -311,6 +311,7 @@ const HomeScreen = ({ navigation }) => {
         {templateList.map((workout, i) => (
           <TemplateComponent
             key={i}
+            id={workout.ID}
             name={workout.Name}
             exercises={JSON.parse(workout.Exercises)}
             navigation={navigation}
