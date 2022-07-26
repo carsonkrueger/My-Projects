@@ -80,7 +80,7 @@ const TemplateComponent = ({ navigation, name, exercises }) => {
           onPress={() => {
             // loadWorkoutData(name);
             navigation.navigate("WorkoutScreen", {
-              name: name + "-TEMPLATE",
+              name: name,
             });
           }}
           delayLongPress={500}

@@ -122,7 +122,8 @@ const HomeScreen = ({ navigation }) => {
 
   useEffect(() => {
     isFocused && loadData();
-    deleteData();
+    // deleteData();
+    // deleteTemplateData();
   }, [isFocused, forceUpdate]);
 
   const createWorkoutsTable = () => {
@@ -152,7 +153,7 @@ const HomeScreen = ({ navigation }) => {
       console.log(workout.Name);
       db.transaction((tx) =>
         tx.executeSql(
-          "INSERT INTO Templates (ID, Name, Exercises, Weights, Reps, RestTimers, IsLocked) VALUES (?,?,?,?,?,?,?) WHERE NOT EXISTS ( SELECT Name FROM Templates WHERE Name = ? )",
+          "INSERT OR REPLACE INTO Templates (ID, Name, Exercises, Weights, Reps, RestTimers, IsLocked) VALUES (?,?,?,?,?,?,?)", //WHERE NOT EXISTS ( SELECT 1 FROM Templates WHERE Name = ? )",
           [
             i,
             workout.Name,
@@ -161,8 +162,10 @@ const HomeScreen = ({ navigation }) => {
             JSON.stringify(workout.Reps),
             JSON.stringify(workout.RestTimers),
             JSON.stringify(workout.IsLocked),
-            workout.Name,
-          ]
+            // workout.Name,
+          ],
+          null,
+          (tx, error) => console.log("ERROR CREATING TEMPLATE DATA", error)
         )
       );
     });
@@ -194,8 +197,14 @@ const HomeScreen = ({ navigation }) => {
           "SELECT ID, Name, Exercises FROM Templates", // ORDER BY LastPerformed
           null,
           (tx, result) => {
-            templateList.current = result.rows._array;
-            // console.log(result.rows._array);
+            for (let i = 0; i < result.rows.length; i++) {
+              templateList.current.push({
+                ID: result.rows.item(i).ID,
+                Name: result.rows.item(i).Name,
+                Exercises: JSON.parse(result.rows.item(i).Exercises),
+                // Name: result.rows.item(i).Name
+              });
+            }
           },
           (tx, error) =>
             console.log("ERROR loading homescreen TemplateList data") // error cb
@@ -230,6 +239,21 @@ const HomeScreen = ({ navigation }) => {
           [],
           () => {},
           (tx, error) => console.log("ERROR DELETING WORKOUT")
+        )
+      );
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const deleteTemplateData = () => {
+    try {
+      db.transaction((tx) =>
+        tx.executeSql(
+          "DELETE FROM Templates",
+          [],
+          () => {},
+          (tx, error) => console.log("ERROR DELETING Templates")
         )
       );
     } catch (error) {
@@ -383,7 +407,9 @@ const HomeScreen = ({ navigation }) => {
         <View style={styles.subHeaderContainer}>
           <Text style={styles.subHeaderText}>Templates</Text>
         </View>
-
+        {/* {templateList.current.map((workout) => {
+          console.log("yo", workout.Name);
+        })} */}
         {templateList.current.map((workout, i) => (
           <TemplateComponent
             key={i}
