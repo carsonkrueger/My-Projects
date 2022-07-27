@@ -8,30 +8,23 @@ import {
   SafeAreaView,
   ScrollView,
   Dimensions,
+  StatusBar,
 } from "react-native";
 
 import WorkoutComponent from "../components/WorkoutComponent";
 import TemplateComponent from "../components/templateComponent";
-import SQLite from "react-native-sqlite-storage";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+
+import * as SQLite from "expo-sqlite";
+
 import { useIsFocused } from "@react-navigation/native";
 import { Feather } from "@expo/vector-icons";
 
-const db = SQLite.openDatabase(
-  {
-    name: "Main",
-    location: "default",
-  },
-  () => {}, // callback
-  (error) => {
-    console.log(error);
-  }
-);
+const db = SQLite.openDatabase("GymTracker");
 
 const HomeScreen = ({ navigation }) => {
   // [ [ NAME OF WORKOUT, NUM EXERCISES, LAST TIME DID WORKOUT ], ... ]
-  // const [workoutList, setWorkoutList] = useState([["", 0, ""]]);
   const [workoutList, setWorkoutList] = useState([]);
+  const [templateList, setTemplateList] = useState([]);
 
   const [forceUpdate, setForceUpdate] = useState(0);
   const isFocused = useIsFocused();
@@ -39,161 +32,186 @@ const HomeScreen = ({ navigation }) => {
   const windowWidth = useRef(Dimensions.get("window").width);
   const windowHeight = useRef(Dimensions.get("window").height);
 
-  const templateNames = useRef(["LEGS", "PUSH", "PULL"]);
-  const templateList = useRef([
-    [
-      ["SQUAT", "DEADLIFT", "LEG EXTENSIONS", "BARBELL THRUSTS", "CALF RAISES"],
-      [
+  // const templateNames = useRef(["LEGS", "PUSH", "PULL"]);
+  const templatePresetList = useRef([
+    {
+      Name: "LEGS",
+      Exercises: [
+        "SQUAT",
+        "DEADLIFT",
+        "LEG EXTENSIONS",
+        "BARBELL THRUSTS",
+        "CALF RAISES",
+      ],
+      Weights: [
         ["", "", "", ""],
         ["", "", ""],
         ["", "", ""],
         ["", "", ""],
         ["", "", ""],
       ],
-      [
+      Reps: [
         ["", "", "", ""],
         ["", "", ""],
         ["", "", ""],
         ["", "", ""],
         ["", "", ""],
       ],
-      ["180", "150", "120", "120", "60"],
-      false,
-    ],
-    [
-      [
+      RestTimers: ["180", "150", "120", "120", "60"],
+      IsLocked: false,
+    },
+    {
+      Name: "PUSH",
+      Exercises: [
         "BENCH",
         "DUMBELL SH. PRESS",
         "CABLE FLYS",
         "CABLE LATERAL RAISE",
         "TRICEP CABLE KICKBACK",
       ],
-      [
+      Weights: [
         ["", "", ""],
         ["", "", ""],
         ["", "", ""],
         ["", "", ""],
         ["", "", ""],
       ],
-      [
+      Reps: [
         ["", "", ""],
         ["", "", ""],
         ["", "", ""],
         ["", "", ""],
         ["", "", ""],
       ],
-      ["150", "150", "120", "120", "90"],
-      false,
-    ],
-    [
-      [
+      RestTimers: ["150", "150", "120", "120", "90"],
+      IsLocked: false,
+    },
+    {
+      Name: "PULL",
+      Exercises: [
         "PULL UP",
         "PENDLAY ROW",
         "EZ BAR CURL",
         "PREACHER CURL",
         "CABLE FACE PULL",
       ],
-      [
+      Weights: [
         ["", "", ""],
         ["", "", ""],
         ["", "", ""],
         ["", "", ""],
         ["", ""],
       ],
-      [
+      Reps: [
         ["", "", ""],
         ["", "", ""],
         ["", "", ""],
         ["", "", ""],
         ["", ""],
       ],
-      ["150", "150", "120", "120", "60"],
-      false,
-    ],
+      RestTimers: ["150", "150", "120", "120", "60"],
+      IsLocked: false,
+    },
   ]);
+  // const templateList = useRef([]);
 
   useEffect(() => {
-    // storeTemplateData();
-    AsyncStorage.clear();
-    createTable();
+    // resetTables();
+    createWorkoutsTable();
+    createTemplateTable();
+    fillTemplateTable();
+    loadTemplateData();
   }, []);
 
   useEffect(() => {
-    isFocused && loadData();
+    isFocused && loadWorkoutData();
   }, [isFocused, forceUpdate]);
 
-  const createTable = () => {
+  const createWorkoutsTable = () => {
     db.transaction((tx) => {
       tx.executeSql(
-        "CREATE TABLE IF NOT EXISTS" +
-          "Workouts" +
-          "(ID INTEGER PRIMARY KEY AUTOINCREMENT, Name STRING, Exercises STRING, Weights STRING, Reps STRING, RestTimers STRING, IsLocked STRING);"
+        "CREATE TABLE IF NOT EXISTS Workouts (ID INTEGER PRIMARY KEY AUTOINCREMENT, Name STRING NOT NULL, Exercises STRING, Weights STRING, Reps STRING, RestTimers STRING, IsLocked BOOL, LastPerformed DATE);",
+        null,
+        null,
+        (tx, error) => console.log("ERROR")
       );
     });
   };
 
-  const loadData = () => {
+  const createTemplateTable = () => {
+    db.transaction(
+      (tx) => {
+        tx.executeSql(
+          "CREATE TABLE IF NOT EXISTS Templates (ID INTEGER PRIMARY KEY AUTOINCREMENT, Name STRING NOT NULL UNIQUE, Exercises STRING, Weights STRING, Reps STRING, RestTimers STRING, IsLocked BOOL);"
+        );
+      },
+      (tx, error) => console.log("ERROR")
+    );
+  };
+
+  const resetTables = () => {
+    db.transaction((tx) => tx.executeSql("DROP TABLE Workouts"));
+    db.transaction((tx) => tx.executeSql("DROP TABLE Templates"));
+  };
+
+  const fillTemplateTable = () => {
+    templatePresetList.current.map((workout, i) => {
+      db.transaction((tx) =>
+        tx.executeSql(
+          "INSERT OR IGNORE INTO Templates (Name, Exercises, Weights, Reps, RestTimers, IsLocked) VALUES (?,?,?,?,?,?);", //WHERE NOT EXISTS ( SELECT 1 FROM Templates WHERE Name = ? )",
+          [
+            workout.Name,
+            JSON.stringify(workout.Exercises),
+            JSON.stringify(workout.Weights),
+            JSON.stringify(workout.Reps),
+            JSON.stringify(workout.RestTimers),
+            JSON.stringify(workout.IsLocked),
+            // workout.Name,
+          ],
+          null,
+          (tx, error) => console.log("ERROR CREATING TEMPLATE DATA", error)
+        )
+      );
+    });
+  };
+
+  const loadWorkoutData = () => {
+    // workoutList data loading
     try {
       db.transaction((tx) => {
         tx.executeSql(
-          "SELECT Name FROM Workouts;",
-          [], // ORDER BY LastPerformed
+          "SELECT ID, Name, Exercises, LastPerformed FROM Workouts ORDER BY LastPerformed",
+          null,
           (tx, result) => {
-            for (let i = 0; i < result.length; i++) {
-              workoutList.push(result.rows.item(i));
-            }
-          }
+            setWorkoutList(result.rows._array);
+            // console.log(result.rows._array);
+          },
+          (tx, error) =>
+            console.log("ERROR loading homescreen WorkoutList data") // error cb
         );
       });
     } catch (error) {
-      console.log("ERROR LOADING HOMESCREEN DATA");
+      console.log("ERROR LOADING HOMESCREEN WorkoutList DATA");
     }
   };
 
-  const loadHomescreenNames = async () => {
+  const loadTemplateData = () => {
+    // templateList data loading
     try {
-      const workoutNames = await AsyncStorage.getAllKeys();
-
-      // remove from workout list to prevent them from being rendered under "MY WORKOUTS"
-      if (workoutNames.includes("LEGS-TEMPLATE")) {
-        workoutNames.splice(
-          workoutNames.findIndex((workout) => workout === "LEGS-TEMPLATE"),
-          1
+      db.transaction((tx) => {
+        tx.executeSql(
+          "SELECT ID, Name, Exercises FROM Templates", // ORDER BY LastPerformed
+          null,
+          (tx, result) => {
+            setTemplateList(result.rows._array);
+            // console.log(result.rows._array);
+          },
+          (tx, error) =>
+            console.log("ERROR loading homescreen TemplateList data") // error cb
         );
-        workoutNames.splice(
-          workoutNames.findIndex((workout) => workout === "PUSH-TEMPLATE"),
-          1
-        );
-        workoutNames.splice(
-          workoutNames.findIndex((workout) => workout === "PULL-TEMPLATE"),
-          1
-        );
-      }
-
-      if (workoutNames !== null) {
-        setWorkoutList(workoutNames);
-      }
+      });
     } catch (error) {
-      // Error retrieving data
-      console.log("Error retrieving homescreen data");
-      throw error;
-    }
-  };
-
-  const loadHomescreenExercises = async () => {};
-
-  const storeTemplateData = async () => {
-    try {
-      // const workoutNames = await AsyncStorage.getAllKeys();
-      // if (!workoutNames.includes("LEGS-TEMPLATE")) {
-      await AsyncStorage.multiSet([
-        ["LEGS-TEMPLATE", JSON.stringify(templateList.current[0])],
-        ["PUSH-TEMPLATE", JSON.stringify(templateList.current[1])],
-        ["PULL-TEMPLATE", JSON.stringify(templateList.current[2])],
-      ]);
-    } catch (error) {
-      console.log("could not store template data");
-      throw error;
+      console.log("ERROR LOADING HOMESCREEN TemplateList DATA");
     }
   };
 
@@ -203,15 +221,15 @@ const HomeScreen = ({ navigation }) => {
       backgroundColor: "white",
     },
     screenHeader: {
-      paddingTop: 50,
-      backgroundColor: "#2494f0", //"white",
+      paddingTop: 25,
+      // backgroundColor: "#2494f0", //"white",
       paddingBottom: 10,
       borderRadius: 20,
       alignItems: "center",
     },
     screenHeaderText: {
-      fontSize: 20,
-      color: "white", //"#2494f0",
+      fontSize: 22,
+      color: "#2494f0", //"#2494f0",
     },
     subHeaderContainer: {
       width: "100%",
@@ -226,7 +244,7 @@ const HomeScreen = ({ navigation }) => {
     },
     newCreateWorkoutContainer: {
       width: "90%",
-      marginVertical: "2%",
+      marginVertical: "4%",
       marginHorizontal: "5%",
       justifyContent: "center",
       alignItems: "center",
@@ -251,15 +269,16 @@ const HomeScreen = ({ navigation }) => {
     },
     createWorkoutText: {
       color: "white",
-      fontSize: 16,
+      fontSize: 18,
     },
   });
 
   return (
     <SafeAreaView style={styles.container}>
+      <StatusBar backgroundColor={"#2494f0"} />
       <ScrollView stickyHeaderIndices={[0, 2]}>
         <View style={styles.screenHeader}>
-          <Text style={styles.screenHeaderText}>THE GYM TRACKER</Text>
+          <Text style={styles.screenHeaderText}>WORKOUTS</Text>
         </View>
 
         <View style={styles.subHeaderContainer}>
@@ -269,21 +288,27 @@ const HomeScreen = ({ navigation }) => {
         <TouchableOpacity
           onPress={() =>
             navigation.navigate("WorkoutScreen", {
+              id: null,
               name: "",
+              isTemplate: false,
             })
           }
         >
           <View style={styles.newCreateWorkoutContainer}>
-            <Feather name="plus" color="white" size={30} />
+            {/* <Feather name="plus" color="white" size={30} /> */}
+            <Text style={styles.createWorkoutText}>CREATE WORKOUT</Text>
           </View>
         </TouchableOpacity>
 
         {workoutList.map((workout, i) => {
           return (
             <WorkoutComponent
-              key={workout}
+              key={workout.ID}
               navigation={navigation}
-              name={workout}
+              id={workout.ID}
+              name={workout.Name}
+              lastPerformed={workout.LastPerformed}
+              exercises={JSON.parse(workout.Exercises)}
               setForceUpdate={setForceUpdate}
             />
           );
@@ -292,9 +317,17 @@ const HomeScreen = ({ navigation }) => {
         <View style={styles.subHeaderContainer}>
           <Text style={styles.subHeaderText}>Templates</Text>
         </View>
-
-        {templateNames.current.map((workout, i) => (
-          <TemplateComponent key={i} name={workout} navigation={navigation} />
+        {/* {templateList.current.map((workout) => {
+          console.log("yo", workout.Name);
+        })} */}
+        {templateList.map((workout, i) => (
+          <TemplateComponent
+            key={i}
+            id={workout.ID}
+            name={workout.Name}
+            exercises={JSON.parse(workout.Exercises)}
+            navigation={navigation}
+          />
         ))}
       </ScrollView>
 

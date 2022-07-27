@@ -10,24 +10,14 @@ import {
   ScrollView,
 } from "react-native";
 
+import * as SQLite from "expo-sqlite";
+
 import BackComponent from "../components/BackComponent";
 import ExerciseComponent from "../components/ExerciseComponent";
 
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import SQLite from "react-native-sqlite-storage";
-
 import { Feather } from "@expo/vector-icons";
 
-const db = SQLite.openDatabase(
-  {
-    name: "Main",
-    location: "default",
-  },
-  () => {}, // callback
-  (error) => {
-    console.log(error);
-  }
-);
+const db = SQLite.openDatabase("GymTracker");
 
 const WorkoutScreen = ({ navigation, route }) => {
   const [states, setStates] = useState({
@@ -36,20 +26,23 @@ const WorkoutScreen = ({ navigation, route }) => {
     weights: [[""]],
     reps: [[""]],
     restTimers: [""],
-    // isDoneArr: [[false]],
     originalWorkoutName: "",
     prevWeights: [[""]],
     prevReps: [[""]],
   });
 
-  const WORKOUT_ID = useRef(route.params.id);
+  const WORKOUT_ID = useRef(null);
   const [seconds, setSeconds] = useState(0);
   const [isLocked, setIsLocked] = useState(false);
 
+  const date = useRef(new Date());
+
   const TWENTYTH_SECOND_MS = 50;
 
+  // on mount
   useEffect(() => {
-    loadWorkoutData();
+    WORKOUT_ID.current = route.params.id;
+    route.params.isTemplate ? loadTemplateData() : loadWorkoutData();
 
     const intervalId = setInterval(() => {
       setSeconds((prevSeconds) => prevSeconds + 1);
@@ -149,13 +142,6 @@ const WorkoutScreen = ({ navigation, route }) => {
     });
   };
 
-  const setIsDoneArr = (isDoneArr) => {
-    setStates({
-      ...states,
-      isDoneArr,
-    });
-  };
-
   const setWorkoutName = (workoutName) => {
     setStates({
       ...states,
@@ -167,7 +153,7 @@ const WorkoutScreen = ({ navigation, route }) => {
     setIsLocked(!isLocked);
   };
 
-  const loadData = () => {
+  const loadWorkoutData = () => {
     if (WORKOUT_ID.current === null) {
       console.log("workout id is null, cannot load data");
       return;
@@ -180,14 +166,63 @@ const WorkoutScreen = ({ navigation, route }) => {
           [WORKOUT_ID.current],
           (tx, result) => {
             setStates({
-              workoutName: result[0],
-              exercisesArr: JSON.parse(result[1]),
-              weights: JSON.parse(result[2]),
-              reps: JSON.parse(result[3]),
-              restTimers: JSON.parse(result[4]),
-              isLocked: JSON.parse(result[5]),
+              workoutName: result.rows.item(0).Name,
+              exercisesArr: JSON.parse(result.rows.item(0).Exercises),
+              //weights is set to empty values ""
+              weights: JSON.parse(result.rows.item(0).Weights).map((exer) =>
+                exer.map((set) => "")
+              ),
+              //sets is set to empty values ""
+              reps: JSON.parse(result.rows.item(0).Weights).map((exer) =>
+                exer.map((set) => "")
+              ),
+              restTimers: JSON.parse(result.rows.item(0).RestTimers),
+              originalWorkoutName: result.rows.item(0).Name,
+              //prevWeights and prevReps take the weights and reps info
+              prevWeights: JSON.parse(result.rows.item(0).Weights),
+              prevReps: JSON.parse(result.rows.item(0).Reps),
             });
-          }
+            setIsLocked(result.rows.item(0).IsLocked);
+          },
+          (tx, error) =>
+            console.log(WORKOUT_ID, "ERROR LOADING WORKOUT SCREEN DATA", error)
+        );
+      });
+    } catch (error) {
+      console.log("could not load data for workout screen");
+    }
+  };
+
+  const loadTemplateData = () => {
+    if (WORKOUT_ID.current === null) {
+      console.log("workout id is null, cannot load data");
+      return;
+    }
+
+    try {
+      db.transaction((tx) => {
+        tx.executeSql(
+          "SELECT * FROM Templates WHERE ID = ?;",
+          [WORKOUT_ID.current],
+          (tx, result) => {
+            setStates({
+              workoutName: result.rows.item(0).Name,
+              exercisesArr: JSON.parse(result.rows.item(0).Exercises),
+              weights: JSON.parse(result.rows.item(0).Weights).map((exer) =>
+                exer.map((set) => "")
+              ),
+              reps: JSON.parse(result.rows.item(0).Weights).map((exer) =>
+                exer.map((set) => "")
+              ),
+              restTimers: JSON.parse(result.rows.item(0).RestTimers),
+              originalWorkoutName: result.rows.item(0).Name,
+              prevWeights: JSON.parse(result.rows.item(0).Weights),
+              prevReps: JSON.parse(result.rows.item(0).Reps),
+            });
+            setIsLocked(result.rows.item(0).IsLocked);
+          },
+          (tx, error) =>
+            console.log(WORKOUT_ID, "ERROR LOADING WORKOUT SCREEN DATA", error)
         );
       });
     } catch (error) {
@@ -199,15 +234,18 @@ const WorkoutScreen = ({ navigation, route }) => {
     try {
       db.transaction((tx) => {
         tx.executeSql(
-          "INSERT INTO Workouts (Name, Exercises, Weights, Reps, RestTimers, IsLocked) VALUES (?,?,?,?,?,?);",
+          "INSERT INTO Workouts (Name, Exercises, Weights, Reps, RestTimers, IsLocked, LastPerformed) VALUES (?,?,?,?,?,?,?);",
           [
             states.workoutName,
             JSON.stringify(states.exercisesArr),
             JSON.stringify(states.weights),
             JSON.stringify(states.reps),
             JSON.stringify(states.restTimers),
-            JSON.stringify(states.isLocked),
-          ]
+            isLocked,
+            date.current.getMonth() + "-" + date.current.getDate(),
+          ],
+          null,
+          (tx, error) => console.log("COULD NOT SAVE NEW WORKOUT DATA", error)
         );
       });
     } catch (error) {
@@ -219,16 +257,19 @@ const WorkoutScreen = ({ navigation, route }) => {
     try {
       db.transaction((tx) => {
         tx.executeSql(
-          "UPDATE Workouts SET WorkoutName = ?, Exercises  = ?, Weights  = ?, Reps  = ?, RestTimers  = ?, IsLocked  = ? WHERE ID = ?",
+          "UPDATE Workouts SET NAME = ?, Exercises = ?, Weights = ?, Reps = ?, RestTimers = ?, IsLocked = ?, LastPerformed = ? WHERE ID = ?",
           [
-            JSON.stringify(states.workoutName),
+            states.workoutName,
             JSON.stringify(states.exercisesArr),
             JSON.stringify(states.weights),
             JSON.stringify(states.reps),
             JSON.stringify(states.restTimers),
-            JSON.stringify(states.isLocked),
-            WORKOUT_ID,
-          ]
+            isLocked,
+            date.current.getMonth() + "-" + date.current.getDate(),
+            WORKOUT_ID.current,
+          ],
+          null,
+          (tx, error) => console.log("COULD NOT UPDATE WORKOUT", error)
         );
       });
     } catch (error) {
@@ -236,73 +277,16 @@ const WorkoutScreen = ({ navigation, route }) => {
     }
   };
 
-  // const storeWorkoutAndLeave = async () => {
-  //   try {
-  //     await AsyncStorage.setItem(
-  //       states.workoutName.toString(),
-  //       JSON.stringify([
-  //         states.exercisesArr,
-  //         states.weights,
-  //         states.reps,
-  //         states.restTimers,
-  //         // states.isDoneArr,
-  //         isLocked,
-  //       ])
-  //     );
-  //     if (states.originalWorkoutName !== states.workoutName)
-  //       AsyncStorage.removeItem(states.originalWorkoutName);
-  //     navigation.navigate("HomeScreen");
-  //   } catch (error) {
-  //     // Error saving data
-  //     console.log("ERROR SAVING WORKOUT DATA");
-  //     throw error;
-  //   }
-  // };
-
-  // const loadWorkoutData = async () => {
-  //   try {
-  //     console.log("loading workoutscreen data for:", route.params.name);
-  //     const unparsedWorkoutData = await AsyncStorage.getItem(route.params.name);
-
-  //     if (unparsedWorkoutData !== null) {
-  //       // We have data!
-  //       const workoutData = JSON.parse(unparsedWorkoutData);
-  //       let tempWeights = workoutData[1].map((exer) => exer.map((wgt) => ""));
-  //       let tempReps = workoutData[2].map((exer) => exer.map((wgt) => ""));
-
-  //       setStates({
-  //         workoutName: route.params.name.toString(),
-  //         exercisesArr: workoutData[0],
-  //         weights: tempWeights,
-  //         reps: tempReps,
-  //         restTimers: workoutData[3],
-  //         // isDoneArr gets reset to false for every set
-  //         // isDoneArr: workoutData[4].map((exer, i) =>
-  //         //   exer.map((set, i) => false)
-  //         // ),
-  //         originalWorkoutName: route.params.name.toString(),
-  //         prevWeights: workoutData[1],
-  //         prevReps: workoutData[2],
-  //       });
-  //       setIsLocked(workoutData[4]);
-  //     }
-  //   } catch (error) {
-  //     // Error retrieving data
-  //     console.log("ERROR LOADING DATA:", error);
-  //     throw error;
-  //   }
-  // };
-
   const styles = StyleSheet.create({
     container: {
       // Adding justifyContent or alignItems here will cause a bug with scrollView
-      backgroundColor: "#ededed",
+      backgroundColor: "white", //"#ededed",
       flex: 1,
       paddingBottom: "2%",
     },
     screenHeader: {
       flex: 1,
-      marginTop: "14%",
+      marginTop: "5%",
       marginBottom: "3%",
       marginHorizontal: "4%",
       paddingVertical: "3%",
@@ -375,9 +359,12 @@ const WorkoutScreen = ({ navigation, route }) => {
             <View style={styles.backContainer}>
               <BackComponent
                 navigation={navigation}
-                storeWorkoutAndLeave={storeWorkoutAndLeave}
+                saveNewData={saveNewData}
+                updateData={updateData}
                 workoutName={states.workoutName}
+                id={WORKOUT_ID.current}
                 originalWorkoutName={states.originalWorkoutName}
+                isTemplate={route.params.isTemplate}
               />
             </View>
 

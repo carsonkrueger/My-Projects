@@ -1,4 +1,3 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useEffect, useRef } from "react";
 import React, {
   StyleSheet,
@@ -8,56 +7,64 @@ import React, {
   Alert,
 } from "react-native";
 
+import * as SQLite from "expo-sqlite";
+
+const db = SQLite.openDatabase("GymTracker");
+
 const BackComponent = ({
   navigation,
-  storeWorkoutAndLeave,
+  saveNewData,
   workoutName,
+  updateData,
+  id,
   originalWorkoutName,
+  isTemplate,
 }) => {
-  const names = useRef([]);
-  const templateNames = useRef([
-    "LEGS-TEMPLATE",
-    "PUSH-TEMPLATE",
-    "PULL-TEMPLATE",
-  ]);
+  const templateNames = useRef([]);
 
   useEffect(() => {
-    getNames();
-  }, []);
-
-  const getNames = async () => {
-    try {
-      names.current = await AsyncStorage.getAllKeys();
-    } catch (error) {
-      console.log("ERROR GETTING NAMES:", error);
-    }
-  };
+    getTemplateNames();
+  });
 
   const isWorkoutUnique = () => {
-    if (names.current === null) return true;
-    else if (workoutName === "") {
+    // console.log(templateNames);
+    if (workoutName == null || workoutName.trim() === "") {
       Alert.alert("Please change your workout name");
-      return false;
-    } else if (
-      !(
-        workoutName === originalWorkoutName ||
-        !names.current.includes(workoutName)
-      ) ||
-      templateNames.current.includes(workoutName)
-    ) {
-      Alert.alert("Workout names must be unique");
-      return false;
-    }
+      return false; // not unique
+    } //else if () {
+    //   Alert.alert("Workout names must be unique");
+    //   return false; // not unique
+    // }
+    // templateNames.current.map((item) =>
+    //   console.log(workoutName, "yo", item.Name)
+    // );
+    // unique
     return true;
+  };
+
+  const getTemplateNames = async () => {
+    try {
+      await db.transaction(async (tx) => {
+        await tx.executeSql(
+          "SELECT Name FROM Templates",
+          null,
+          (tx, result) => (templateNames.current = result.rows._array),
+          (tx, error) =>
+            console.log("COULD NOT LOAD NAMES IN BACK COMPONENT", error)
+        );
+      });
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
     <View style={styles.container}>
       <TouchableOpacity
         onPress={() => {
-          // checkUniqueWorkoutName();
           if (isWorkoutUnique()) {
-            storeWorkoutAndLeave();
+            id == null || isTemplate ? saveNewData() : updateData();
+            navigation.navigate("HomeScreen");
           }
         }}
       >

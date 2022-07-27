@@ -1,5 +1,7 @@
 import React, { useRef, useState } from "react";
 
+import * as SQLite from "expo-sqlite";
+
 import {
   StyleSheet,
   View,
@@ -7,22 +9,32 @@ import {
   TouchableOpacity,
   Vibration,
   Animated,
+  Dimensions,
 } from "react-native";
 
 // import Animated, { useSharedValue } from "react-native-reanimated";
 
 import { Feather } from "@expo/vector-icons";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const WorkoutComponent = ({ navigation, name, setForceUpdate }) => {
+const db = SQLite.openDatabase("GymTracker");
+
+const WorkoutComponent = ({
+  navigation,
+  id,
+  name,
+  lastPerformed,
+  exercises,
+  setForceUpdate,
+}) => {
   const translation = useRef(new Animated.Value(0)).current;
+  const windowWidth = useRef(Dimensions.get("window").width);
   const [isTranslated, setIsTranslated] = useState(false);
 
   const handleLongPress = () => {
     if (!isTranslated) {
       setIsTranslated(true);
       Animated.timing(translation, {
-        toValue: -60,
+        toValue: -(windowWidth.current / 6),
         duration: 300,
         useNativeDriver: true,
       }).start();
@@ -38,8 +50,20 @@ const WorkoutComponent = ({ navigation, name, setForceUpdate }) => {
     Vibration.vibrate(25);
   };
 
-  const handleDeleteWorkout = () => {
-    AsyncStorage.removeItem(name);
+  const handleDeleteWorkout = async () => {
+    try {
+      await db.transaction(
+        async (tx) =>
+          await tx.executeSql(
+            "DELETE FROM Workouts WHERE ID = ?",
+            [id],
+            () => {},
+            (tx, error) => console.log("ERROR DELETING WORKOUT")
+          )
+      );
+    } catch (error) {
+      console.log(error);
+    }
     setForceUpdate((prevNum) => prevNum + 1);
   };
 
@@ -51,7 +75,6 @@ const WorkoutComponent = ({ navigation, name, setForceUpdate }) => {
     },
     topContainer: {
       flex: 1,
-      flexDirection: "row",
       backgroundColor: "white",
       borderWidth: 1,
       borderColor: "#c9c9c9",
@@ -61,34 +84,50 @@ const WorkoutComponent = ({ navigation, name, setForceUpdate }) => {
     },
     topButton: {
       flex: 1,
+      flexDirection: "row",
     },
     left: {
-      flex: 1,
+      flex: 4,
       paddingLeft: 10,
+      justifyContent: "space-evenly",
     },
     right: {
-      flex: 2,
+      flex: 5,
       paddingRight: 10,
     },
     title: {
-      fontSize: 15,
+      fontSize: 16,
     },
     date: {
       color: "#9c9c9c",
       fontSize: 11,
+      alignItems: "flex-end",
     },
-    preview: {},
+    preview: {
+      color: "#9c9c9c",
+      fontSize: 11,
+      textAlign: "right",
+    },
+    dots: {
+      color: "#9c9c9c",
+      fontSize: 13,
+      textAlign: "right",
+    },
     trashContainer: {
       flex: 1,
       position: "absolute",
       zIndex: -10,
-      marginLeft: "70%",
-      width: "30%",
+      width: "100%",
       height: "100%",
-      paddingTop: "6%",
-      paddingLeft: "17%",
-      borderRadius: 15,
-      backgroundColor: "red",
+      borderWidth: 1,
+      borderColor: "red",
+      borderRadius: 12,
+    },
+    trashButton: {
+      flex: 1,
+      alignItems: "flex-end",
+      justifyContent: "center",
+      paddingRight: "6%",
     },
   });
 
@@ -100,7 +139,8 @@ const WorkoutComponent = ({ navigation, name, setForceUpdate }) => {
           onPress={() => {
             // loadWorkoutData(name);
             navigation.navigate("WorkoutScreen", {
-              name: name,
+              id: id,
+              isTemplate: false,
             });
           }}
           onLongPress={handleLongPress}
@@ -108,20 +148,34 @@ const WorkoutComponent = ({ navigation, name, setForceUpdate }) => {
         >
           <View style={styles.left}>
             <Text style={styles.title}>{name}</Text>
-            <Text style={styles.date}>Last Performed:</Text>
+            <Text style={styles.date}>LAST PERFORMED: {lastPerformed}</Text>
           </View>
-          <View style={styles.right}></View>
+          <View style={styles.right}>
+            {exercises.map((name, i) =>
+              i < 4 ? (
+                <Text key={i} style={styles.preview}>
+                  {name}
+                </Text>
+              ) : i < 5 ? (
+                <Text key={i} style={styles.dots}>
+                  ...
+                </Text>
+              ) : null
+            )}
+          </View>
         </TouchableOpacity>
       </Animated.View>
 
-      <TouchableOpacity
-        style={styles.trashContainer}
-        onPress={handleDeleteWorkout}
-      >
-        <View>
-          <Feather name="trash" color="white" size={22} />
-        </View>
-      </TouchableOpacity>
+      <View style={styles.trashContainer}>
+        <TouchableOpacity
+          style={styles.trashButton}
+          onPress={handleDeleteWorkout}
+        >
+          <View>
+            <Feather name="trash" color="red" size={25} />
+          </View>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };
