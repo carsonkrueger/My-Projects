@@ -8,6 +8,7 @@ import {
   SafeAreaView,
   ScrollView,
   Dimensions,
+  StatusBar,
 } from "react-native";
 
 import WorkoutComponent from "../components/WorkoutComponent";
@@ -129,7 +130,7 @@ const HomeScreen = ({ navigation }) => {
   const createWorkoutsTable = () => {
     db.transaction((tx) => {
       tx.executeSql(
-        "CREATE TABLE IF NOT EXISTS Workouts (ID INTEGER PRIMARY KEY AUTOINCREMENT, Name STRING NOT NULL UNIQUE, Exercises STRING, Weights STRING, Reps STRING, RestTimers STRING, IsLocked BOOL, LastPerformed DATE);",
+        "CREATE TABLE IF NOT EXISTS Workouts (ID INTEGER PRIMARY KEY AUTOINCREMENT, Name STRING NOT NULL, Exercises STRING, Weights STRING, Reps STRING, RestTimers STRING, IsLocked BOOL, LastPerformed DATE);",
         null,
         null,
         (tx, error) => console.log("ERROR")
@@ -220,15 +221,15 @@ const HomeScreen = ({ navigation }) => {
       backgroundColor: "white",
     },
     screenHeader: {
-      paddingTop: 50,
-      backgroundColor: "#2494f0", //"white",
+      paddingTop: 25,
+      // backgroundColor: "#2494f0", //"white",
       paddingBottom: 10,
       borderRadius: 20,
       alignItems: "center",
     },
     screenHeaderText: {
-      fontSize: 20,
-      color: "white", //"#2494f0",
+      fontSize: 22,
+      color: "#2494f0", //"#2494f0",
     },
     subHeaderContainer: {
       width: "100%",
@@ -243,7 +244,7 @@ const HomeScreen = ({ navigation }) => {
     },
     newCreateWorkoutContainer: {
       width: "90%",
-      marginVertical: "2%",
+      marginVertical: "4%",
       marginHorizontal: "5%",
       justifyContent: "center",
       alignItems: "center",
@@ -268,15 +269,16 @@ const HomeScreen = ({ navigation }) => {
     },
     createWorkoutText: {
       color: "white",
-      fontSize: 16,
+      fontSize: 18,
     },
   });
 
   return (
     <SafeAreaView style={styles.container}>
+      <StatusBar backgroundColor={"#2494f0"} />
       <ScrollView stickyHeaderIndices={[0, 2]}>
         <View style={styles.screenHeader}>
-          <Text style={styles.screenHeaderText}>THE GYM TRACKER</Text>
+          <Text style={styles.screenHeaderText}>WORKOUTS</Text>
         </View>
 
         <View style={styles.subHeaderContainer}>
@@ -293,14 +295,15 @@ const HomeScreen = ({ navigation }) => {
           }
         >
           <View style={styles.newCreateWorkoutContainer}>
-            <Feather name="plus" color="white" size={30} />
+            {/* <Feather name="plus" color="white" size={30} /> */}
+            <Text style={styles.createWorkoutText}>CREATE WORKOUT</Text>
           </View>
         </TouchableOpacity>
 
         {workoutList.map((workout, i) => {
           return (
             <WorkoutComponent
-              key={i}
+              key={workout.ID}
               navigation={navigation}
               id={workout.ID}
               name={workout.Name}

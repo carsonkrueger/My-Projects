@@ -28,7 +28,7 @@ const BackComponent = ({
 
   const isWorkoutUnique = () => {
     // console.log(templateNames);
-    if (workoutName == null || workoutName === "") {
+    if (workoutName == null || workoutName.trim() === "") {
       Alert.alert("Please change your workout name");
       return false; // not unique
     } //else if () {

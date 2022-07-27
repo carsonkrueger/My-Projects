@@ -25,15 +25,18 @@ const SetComponent = ({
   const [isDone, setIsDone] = useState(false);
 
   useEffect(() => {
-    if (
-      isDone &&
-      weights[numExercise][numSet] == "" &&
-      reps[numExercise][numSet] == "" &&
-      prevWeights[numExercise][numSet] !== "" &&
-      prevReps[numExercise][numSet] !== ""
-    ) {
-      changeWeightText(prevWeights[numExercise][numSet]);
-      changeRepText(prevReps[numExercise][numSet]);
+    if (isDone) {
+      if (
+        weights[numExercise][numSet] == "" &&
+        prevWeights[numExercise][numSet] !== ""
+      )
+        changeWeightText(prevWeights[numExercise][numSet]);
+
+      if (
+        reps[numExercise][numSet] == "" &&
+        prevReps[numExercise][numSet] !== ""
+      )
+        changeRepText(prevReps[numExercise][numSet]);
     }
   }, [isDone]);
 
@@ -160,6 +163,7 @@ const SetComponent = ({
           value={weights[numExercise][numSet]}
           placeholder={getPrevWeightsText()}
           editable={!isDone} //isDoneArr[numExercise][numSet]}
+          maxLength={4}
           onChangeText={(newText) => {
             changeWeightText(newText);
           }}
@@ -175,6 +179,7 @@ const SetComponent = ({
           value={reps[numExercise][numSet]}
           placeholder={getPrevRepsText()}
           editable={!isDone} //isDoneArr[numExercise][numSet]}
+          maxLength={4}
           onChangeText={(newText) => {
             changeRepText(newText);
           }}

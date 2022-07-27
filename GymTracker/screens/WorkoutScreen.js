@@ -280,13 +280,13 @@ const WorkoutScreen = ({ navigation, route }) => {
   const styles = StyleSheet.create({
     container: {
       // Adding justifyContent or alignItems here will cause a bug with scrollView
-      backgroundColor: "#ededed",
+      backgroundColor: "white", //"#ededed",
       flex: 1,
       paddingBottom: "2%",
     },
     screenHeader: {
       flex: 1,
-      marginTop: "14%",
+      marginTop: "5%",
       marginBottom: "3%",
       marginHorizontal: "4%",
       paddingVertical: "3%",

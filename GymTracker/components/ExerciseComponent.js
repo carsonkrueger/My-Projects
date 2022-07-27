@@ -95,8 +95,8 @@ const ExerciseComponent = ({
     container: {
       flex: 1,
       marginVertical: "2%",
-      // borderColor: "#2494f0",
-      // borderWidth: 1,
+      borderColor: "#bdbdbd",
+      borderWidth: 1,
       borderRadius: 20,
       marginHorizontal: "2%",
       paddingTop: "5%",

@@ -9,6 +9,7 @@ import {
   TouchableOpacity,
   Vibration,
   Animated,
+  Dimensions,
 } from "react-native";
 
 // import Animated, { useSharedValue } from "react-native-reanimated";
@@ -26,15 +27,14 @@ const WorkoutComponent = ({
   setForceUpdate,
 }) => {
   const translation = useRef(new Animated.Value(0)).current;
+  const windowWidth = useRef(Dimensions.get("window").width);
   const [isTranslated, setIsTranslated] = useState(false);
-
-  // console.log(exercises[0]);
 
   const handleLongPress = () => {
     if (!isTranslated) {
       setIsTranslated(true);
       Animated.timing(translation, {
-        toValue: -60,
+        toValue: -(windowWidth.current / 6),
         duration: 300,
         useNativeDriver: true,
       }).start();
@@ -105,7 +105,7 @@ const WorkoutComponent = ({
     },
     preview: {
       color: "#9c9c9c",
-      fontSize: 9,
+      fontSize: 11,
       textAlign: "right",
     },
     dots: {
@@ -119,14 +119,15 @@ const WorkoutComponent = ({
       zIndex: -10,
       width: "100%",
       height: "100%",
+      borderWidth: 1,
+      borderColor: "red",
+      borderRadius: 12,
     },
     trashButton: {
       flex: 1,
       alignItems: "flex-end",
       justifyContent: "center",
       paddingRight: "6%",
-      borderRadius: 10,
-      backgroundColor: "red",
     },
   });
 
@@ -150,16 +151,15 @@ const WorkoutComponent = ({
             <Text style={styles.date}>LAST PERFORMED: {lastPerformed}</Text>
           </View>
           <View style={styles.right}>
-            {/* {console.log(exercises)} */}
             {exercises.map((name, i) =>
-              // console.log(name)
-
               i < 4 ? (
                 <Text key={i} style={styles.preview}>
                   {name}
                 </Text>
               ) : i < 5 ? (
-                <Text style={styles.dots}>...</Text>
+                <Text key={i} style={styles.dots}>
+                  ...
+                </Text>
               ) : null
             )}
           </View>
@@ -172,7 +172,7 @@ const WorkoutComponent = ({
           onPress={handleDeleteWorkout}
         >
           <View>
-            <Feather name="trash" color="white" size={25} />
+            <Feather name="trash" color="red" size={25} />
           </View>
         </TouchableOpacity>
       </View>
