@@ -12,34 +12,8 @@ import {
 // import Animated, { useSharedValue } from "react-native-reanimated";
 
 import { Feather } from "@expo/vector-icons";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const TemplateComponent = ({ navigation, id, name, exercises }) => {
-  const handleLongPress = () => {
-    if (!isTranslated) {
-      setIsTranslated(true);
-      Animated.timing(translation, {
-        toValue: -60,
-        duration: 300,
-        useNativeDriver: true,
-      }).start();
-    } else {
-      setIsTranslated(false);
-      Animated.timing(translation, {
-        toValue: 0,
-        duration: 300,
-        useNativeDriver: true,
-      }).start();
-    }
-
-    Vibration.vibrate(25);
-  };
-
-  const handleDeleteWorkout = () => {
-    AsyncStorage.removeItem(name);
-    setForceUpdate((prevNum) => prevNum + 1);
-  };
-
   const styles = StyleSheet.create({
     container: {
       width: "90%",

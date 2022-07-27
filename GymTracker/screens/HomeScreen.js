@@ -57,7 +57,7 @@ const HomeScreen = ({ navigation }) => {
         ["", "", ""],
       ],
       RestTimers: ["180", "150", "120", "120", "60"],
-      IsLocke: false,
+      IsLocked: false,
     },
     {
       Name: "PUSH",
@@ -115,6 +115,7 @@ const HomeScreen = ({ navigation }) => {
   // const templateList = useRef([]);
 
   useEffect(() => {
+    // resetTables();
     createWorkoutsTable();
     createTemplateTable();
     fillTemplateTable();
@@ -128,7 +129,7 @@ const HomeScreen = ({ navigation }) => {
   const createWorkoutsTable = () => {
     db.transaction((tx) => {
       tx.executeSql(
-        "CREATE TABLE IF NOT EXISTS Workouts (ID INTEGER PRIMARY KEY AUTOINCREMENT, Name STRING NOT NULL UNIQUE, Exercises STRING, Weights STRING, Reps STRING, RestTimers STRING, IsLocked STRING);",
+        "CREATE TABLE IF NOT EXISTS Workouts (ID INTEGER PRIMARY KEY AUTOINCREMENT, Name STRING NOT NULL UNIQUE, Exercises STRING, Weights STRING, Reps STRING, RestTimers STRING, IsLocked BOOL, LastPerformed DATE);",
         null,
         null,
         (tx, error) => console.log("ERROR")
@@ -140,11 +141,16 @@ const HomeScreen = ({ navigation }) => {
     db.transaction(
       (tx) => {
         tx.executeSql(
-          "CREATE TABLE IF NOT EXISTS Templates (ID INTEGER PRIMARY KEY AUTOINCREMENT, Name STRING NOT NULL UNIQUE, Exercises STRING, Weights STRING, Reps STRING, RestTimers STRING, IsLocked STRING);"
+          "CREATE TABLE IF NOT EXISTS Templates (ID INTEGER PRIMARY KEY AUTOINCREMENT, Name STRING NOT NULL UNIQUE, Exercises STRING, Weights STRING, Reps STRING, RestTimers STRING, IsLocked BOOL);"
         );
       },
       (tx, error) => console.log("ERROR")
     );
+  };
+
+  const resetTables = () => {
+    db.transaction((tx) => tx.executeSql("DROP TABLE Workouts"));
+    db.transaction((tx) => tx.executeSql("DROP TABLE Templates"));
   };
 
   const fillTemplateTable = () => {
@@ -173,7 +179,7 @@ const HomeScreen = ({ navigation }) => {
     try {
       db.transaction((tx) => {
         tx.executeSql(
-          "SELECT ID, Name, Exercises FROM Workouts", // ORDER BY LastPerformed
+          "SELECT ID, Name, Exercises, LastPerformed FROM Workouts ORDER BY LastPerformed",
           null,
           (tx, result) => {
             setWorkoutList(result.rows._array);
@@ -280,7 +286,9 @@ const HomeScreen = ({ navigation }) => {
         <TouchableOpacity
           onPress={() =>
             navigation.navigate("WorkoutScreen", {
+              id: null,
               name: "",
+              isTemplate: false,
             })
           }
         >
@@ -292,11 +300,12 @@ const HomeScreen = ({ navigation }) => {
         {workoutList.map((workout, i) => {
           return (
             <WorkoutComponent
-              key={workout.ID}
+              key={i}
               navigation={navigation}
               id={workout.ID}
               name={workout.Name}
-              exercises={workout.Exercises}
+              lastPerformed={workout.LastPerformed}
+              exercises={JSON.parse(workout.Exercises)}
               setForceUpdate={setForceUpdate}
             />
           );

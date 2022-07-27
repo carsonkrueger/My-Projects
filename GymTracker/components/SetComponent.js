@@ -49,14 +49,6 @@ const SetComponent = ({
     setReps(tempReps);
   };
 
-  const changeOnIsDone = () => {
-    let tempIsDone = [...isDoneArr];
-    tempIsDone[numExercise][numSet] = !tempIsDone[numExercise][numSet];
-    setIsDoneArr(tempIsDone);
-
-    Vibration.vibrate(TWENTYTH_SECOND_MS);
-  };
-
   const getPrevWeightsText = () => {
     if (prevWeights.length < numExercise + 1) {
       return "";

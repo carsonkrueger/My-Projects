@@ -26,7 +26,6 @@ const WorkoutScreen = ({ navigation, route }) => {
     weights: [[""]],
     reps: [[""]],
     restTimers: [""],
-    // isDoneArr: [[false]],
     originalWorkoutName: "",
     prevWeights: [[""]],
     prevReps: [[""]],
@@ -36,8 +35,11 @@ const WorkoutScreen = ({ navigation, route }) => {
   const [seconds, setSeconds] = useState(0);
   const [isLocked, setIsLocked] = useState(false);
 
+  const date = useRef(new Date());
+
   const TWENTYTH_SECOND_MS = 50;
 
+  // on mount
   useEffect(() => {
     WORKOUT_ID.current = route.params.id;
     route.params.isTemplate ? loadTemplateData() : loadWorkoutData();
@@ -164,20 +166,23 @@ const WorkoutScreen = ({ navigation, route }) => {
           [WORKOUT_ID.current],
           (tx, result) => {
             setStates({
-              workoutName: result.rows.item(0).WorkoutName,
+              workoutName: result.rows.item(0).Name,
               exercisesArr: JSON.parse(result.rows.item(0).Exercises),
+              //weights is set to empty values ""
               weights: JSON.parse(result.rows.item(0).Weights).map((exer) =>
                 exer.map((set) => "")
               ),
+              //sets is set to empty values ""
               reps: JSON.parse(result.rows.item(0).Weights).map((exer) =>
                 exer.map((set) => "")
               ),
               restTimers: JSON.parse(result.rows.item(0).RestTimers),
-              originalWorkoutName: result.rows.item(0).WorkoutName,
+              originalWorkoutName: result.rows.item(0).Name,
+              //prevWeights and prevReps take the weights and reps info
               prevWeights: JSON.parse(result.rows.item(0).Weights),
               prevReps: JSON.parse(result.rows.item(0).Reps),
             });
-            setIsLocked(JSON.parse(result.rows.item(0).IsLocked));
+            setIsLocked(result.rows.item(0).IsLocked);
           },
           (tx, error) =>
             console.log(WORKOUT_ID, "ERROR LOADING WORKOUT SCREEN DATA", error)
@@ -201,7 +206,7 @@ const WorkoutScreen = ({ navigation, route }) => {
           [WORKOUT_ID.current],
           (tx, result) => {
             setStates({
-              workoutName: result.rows.item(0).WorkoutName,
+              workoutName: result.rows.item(0).Name,
               exercisesArr: JSON.parse(result.rows.item(0).Exercises),
               weights: JSON.parse(result.rows.item(0).Weights).map((exer) =>
                 exer.map((set) => "")
@@ -210,11 +215,11 @@ const WorkoutScreen = ({ navigation, route }) => {
                 exer.map((set) => "")
               ),
               restTimers: JSON.parse(result.rows.item(0).RestTimers),
-              originalWorkoutName: result.rows.item(0).WorkoutName,
+              originalWorkoutName: result.rows.item(0).Name,
               prevWeights: JSON.parse(result.rows.item(0).Weights),
               prevReps: JSON.parse(result.rows.item(0).Reps),
             });
-            setIsLocked(JSON.parse(result.rows.item(0).IsLocked));
+            setIsLocked(result.rows.item(0).IsLocked);
           },
           (tx, error) =>
             console.log(WORKOUT_ID, "ERROR LOADING WORKOUT SCREEN DATA", error)
@@ -229,15 +234,18 @@ const WorkoutScreen = ({ navigation, route }) => {
     try {
       db.transaction((tx) => {
         tx.executeSql(
-          "INSERT OR REPLACE INTO Workouts (Name, Exercises, Weights, Reps, RestTimers, IsLocked) VALUES (?,?,?,?,?,?);",
+          "INSERT INTO Workouts (Name, Exercises, Weights, Reps, RestTimers, IsLocked, LastPerformed) VALUES (?,?,?,?,?,?,?);",
           [
             states.workoutName,
             JSON.stringify(states.exercisesArr),
             JSON.stringify(states.weights),
             JSON.stringify(states.reps),
             JSON.stringify(states.restTimers),
-            JSON.stringify(states.isLocked),
-          ]
+            isLocked,
+            date.current.getMonth() + "-" + date.current.getDate(),
+          ],
+          null,
+          (tx, error) => console.log("COULD NOT SAVE NEW WORKOUT DATA", error)
         );
       });
     } catch (error) {
@@ -249,16 +257,19 @@ const WorkoutScreen = ({ navigation, route }) => {
     try {
       db.transaction((tx) => {
         tx.executeSql(
-          "UPDATE Workouts SET WorkoutName = ?, Exercises  = ?, Weights  = ?, Reps  = ?, RestTimers  = ?, IsLocked  = ? WHERE ID = ?",
+          "UPDATE Workouts SET NAME = ?, Exercises = ?, Weights = ?, Reps = ?, RestTimers = ?, IsLocked = ?, LastPerformed = ? WHERE ID = ?",
           [
             states.workoutName,
             JSON.stringify(states.exercisesArr),
             JSON.stringify(states.weights),
             JSON.stringify(states.reps),
             JSON.stringify(states.restTimers),
-            JSON.stringify(states.isLocked),
-            WORKOUT_ID,
-          ]
+            isLocked,
+            date.current.getMonth() + "-" + date.current.getDate(),
+            WORKOUT_ID.current,
+          ],
+          null,
+          (tx, error) => console.log("COULD NOT UPDATE WORKOUT", error)
         );
       });
     } catch (error) {
@@ -349,8 +360,11 @@ const WorkoutScreen = ({ navigation, route }) => {
               <BackComponent
                 navigation={navigation}
                 saveNewData={saveNewData}
+                updateData={updateData}
                 workoutName={states.workoutName}
+                id={WORKOUT_ID.current}
                 originalWorkoutName={states.originalWorkoutName}
+                isTemplate={route.params.isTemplate}
               />
             </View>
 
