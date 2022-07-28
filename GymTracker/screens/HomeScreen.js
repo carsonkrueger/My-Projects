@@ -149,6 +149,17 @@ const HomeScreen = ({ navigation }) => {
     );
   };
 
+  const createPrevsTable = () => {
+    db.transaction(
+      (tx) => {
+        tx.executeSql(
+          "CREATE TABLE IF NOT EXISTS Prevs (ID INTEGER, Name STRING NOT NULL, Weights STRING, Reps STRING);"
+        );
+      },
+      (tx, error) => console.log("ERROR")
+    );
+  };
+
   const resetTables = () => {
     db.transaction((tx) => tx.executeSql("DROP TABLE Workouts"));
     db.transaction((tx) => tx.executeSql("DROP TABLE Templates"));
@@ -180,7 +191,7 @@ const HomeScreen = ({ navigation }) => {
     try {
       db.transaction((tx) => {
         tx.executeSql(
-          "SELECT ID, Name, Exercises, LastPerformed FROM Workouts ORDER BY LastPerformed",
+          "SELECT ID, Name, Exercises, LastPerformed FROM Workouts ORDER BY LastPerformed DESC",
           null,
           (tx, result) => {
             setWorkoutList(result.rows._array);
@@ -217,8 +228,10 @@ const HomeScreen = ({ navigation }) => {
 
   const styles = StyleSheet.create({
     container: {
-      flex: 1,
       backgroundColor: "white",
+    },
+    scrollContainer: {
+      paddingBottom: "60%",
     },
     screenHeader: {
       paddingTop: 25,
@@ -276,7 +289,10 @@ const HomeScreen = ({ navigation }) => {
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar backgroundColor={"#2494f0"} />
-      <ScrollView stickyHeaderIndices={[0, 2]}>
+      <ScrollView
+        stickyHeaderIndices={[0, 2]}
+        contentContainerStyle={styles.scrollContainer}
+      >
         <View style={styles.screenHeader}>
           <Text style={styles.screenHeaderText}>WORKOUTS</Text>
         </View>
