@@ -11,8 +11,6 @@ import {
 } from "react-native";
 
 import * as SQLite from "expo-sqlite";
-import * as BackgroundFetch from "expo-background-fetch";
-import * as TaskManager from "expo-task-manager";
 
 import BackComponent from "../components/BackComponent";
 import ExerciseComponent from "../components/ExerciseComponent";
@@ -20,17 +18,6 @@ import ExerciseComponent from "../components/ExerciseComponent";
 import { Feather } from "@expo/vector-icons";
 
 const db = SQLite.openDatabase("GymTracker");
-const TASK_NAME = "Timer-Fetch";
-
-TaskManager.defineTask(TASK_NAME, async () => {
-  const now = Date.now();
-
-  console.log(
-    `Got background fetch call at date: ${new Date(now).toISOString()}`
-  );
-
-  return BackgroundFetch.BackgroundFetchResult.NewData;
-});
 
 const WorkoutScreen = ({ navigation, route }) => {
   const [states, setStates] = useState({
@@ -56,7 +43,6 @@ const WorkoutScreen = ({ navigation, route }) => {
   useEffect(() => {
     WORKOUT_ID.current = route.params.id;
     route.params.isTemplate ? loadTemplateData() : loadWorkoutData();
-    registerBackgroundFetchAsync();
 
     const intervalId = setInterval(() => {
       setSeconds((prevSeconds) => prevSeconds + 1);
@@ -64,14 +50,6 @@ const WorkoutScreen = ({ navigation, route }) => {
 
     return () => clearInterval(intervalId);
   }, []);
-
-  async function registerBackgroundFetchAsync() {
-    return BackgroundFetch.registerTaskAsync(TASK_NAME, {
-      minimumInterval: 1,
-      stopOnTerminate: true,
-      startOnBoot: true,
-    });
-  }
 
   const addExercise = () => {
     let exercisesArr = [...states.exercisesArr];
