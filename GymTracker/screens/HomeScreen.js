@@ -15,9 +15,8 @@ import WorkoutComponent from "../components/WorkoutComponent";
 import TemplateComponent from "../components/templateComponent";
 
 import * as SQLite from "expo-sqlite";
-
 import { useIsFocused } from "@react-navigation/native";
-import { Feather } from "@expo/vector-icons";
+import { useFonts } from "expo-font";
 
 const db = SQLite.openDatabase("GymTracker");
 
@@ -31,6 +30,10 @@ const HomeScreen = ({ navigation }) => {
 
   const windowWidth = useRef(Dimensions.get("window").width);
   const windowHeight = useRef(Dimensions.get("window").height);
+
+  const [loaded] = useFonts({
+    RobotoCondensedRegular: require("../assets/fonts/RobotoCondensed-Regular.ttf"),
+  });
 
   // const templateNames = useRef(["LEGS", "PUSH", "PULL"]);
   const templatePresetList = useRef([
@@ -243,6 +246,7 @@ const HomeScreen = ({ navigation }) => {
     screenHeaderText: {
       fontSize: 22,
       color: "#2494f0", //"#2494f0",
+      fontFamily: "RobotoCondensedRegular",
     },
     subHeaderContainer: {
       width: "100%",
@@ -250,6 +254,7 @@ const HomeScreen = ({ navigation }) => {
       paddingVertical: "2%",
     },
     subHeaderText: {
+      fontFamily: "RobotoCondensedRegular",
       paddingTop: "3%",
       paddingLeft: "5%",
       fontSize: 15,
@@ -281,8 +286,9 @@ const HomeScreen = ({ navigation }) => {
       marginLeft: windowWidth.current / 2 - 85,
     },
     createWorkoutText: {
+      fontFamily: "RobotoCondensedRegular",
       color: "white",
-      fontSize: 18,
+      fontSize: 20,
     },
   });
 

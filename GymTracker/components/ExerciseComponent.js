@@ -9,6 +9,7 @@ import {
 } from "react-native";
 // import { useFonts, Bebas_Neue } from "@expo-google-fonts/inter";
 import { MaterialIcons, Feather } from "@expo/vector-icons";
+import { useFonts } from "expo-font";
 
 import SetComponent from "./SetComponent";
 
@@ -36,6 +37,10 @@ const ExerciseComponent = ({
 
   const [doTimer, setDoTimer] = useState(false);
   const [countdownTime, setCountdownTime] = useState(0);
+
+  const [loaded] = useFonts({
+    RobotoCondensedRegular: require("../assets/fonts/RobotoCondensed-Regular.ttf"),
+  });
 
   const changeExerciseName = (name) => {
     let tempExerciseArr = [...exercisesArr];
@@ -109,6 +114,7 @@ const ExerciseComponent = ({
       paddingBottom: 10,
     },
     titleText: {
+      fontFamily: "RobotoCondensedRegular",
       flex: 22,
       fontSize: 16,
       // fontFamily: "Bebas Neue",
@@ -133,6 +139,7 @@ const ExerciseComponent = ({
     },
     timerTimeContainer: {},
     timerText: {
+      fontFamily: "RobotoCondensedRegular",
       color: doTimer ? "white" : isLocked ? "#2494f0" : "black",
       fontSize: 16,
       textAlign: "center",
@@ -152,19 +159,23 @@ const ExerciseComponent = ({
       width: "100%",
     },
     setHead: {
+      fontFamily: "RobotoCondensedRegular",
       fontSize: 10,
       flex: 0.6,
       alignItems: "center",
     },
     prevHead: {
+      fontFamily: "RobotoCondensedRegular",
       flex: 1,
       alignItems: "center",
     },
     weightHead: {
+      fontFamily: "RobotoCondensedRegular",
       flex: 1,
       alignItems: "center",
     },
     repHead: {
+      fontFamily: "RobotoCondensedRegular",
       flex: 1,
       alignItems: "center",
     },
@@ -172,6 +183,7 @@ const ExerciseComponent = ({
       flex: 0.7,
     },
     whiteText: {
+      fontFamily: "RobotoCondensedRegular",
       fontSize: 14,
       color: "black",
     },

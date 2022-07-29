@@ -16,6 +16,7 @@ import BackComponent from "../components/BackComponent";
 import ExerciseComponent from "../components/ExerciseComponent";
 
 import { Feather } from "@expo/vector-icons";
+import { useFonts } from "expo-font";
 
 const db = SQLite.openDatabase("GymTracker");
 
@@ -37,7 +38,9 @@ const WorkoutScreen = ({ navigation, route }) => {
 
   const date = useRef(new Date());
 
-  const TWENTYTH_SECOND_MS = 50;
+  const [loaded] = useFonts({
+    RobotoCondensedRegular: require("../assets/fonts/RobotoCondensed-Regular.ttf"),
+  });
 
   // on mount
   useEffect(() => {
@@ -300,6 +303,7 @@ const WorkoutScreen = ({ navigation, route }) => {
       paddingLeft: "6%",
     },
     screenTitleText: {
+      fontFamily: "RobotoCondensedRegular",
       fontSize: 18,
       color: "white", //"#2494f0",
     },
@@ -319,6 +323,7 @@ const WorkoutScreen = ({ navigation, route }) => {
       flex: 1,
     },
     notesText: {
+      fontFamily: "RobotoCondensedRegular",
       flex: 5,
       borderRadius: 5,
       backgroundColor: "#dedede",
@@ -336,6 +341,7 @@ const WorkoutScreen = ({ navigation, route }) => {
       borderRadius: 30,
     },
     addExerciseText: {
+      fontFamily: "RobotoCondensedRegular",
       fontSize: 18,
       color: "white",
     },
