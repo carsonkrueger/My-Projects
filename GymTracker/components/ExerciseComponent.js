@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useRef } from "react";
 import {
   TouchableOpacity,
   View,
@@ -33,14 +33,10 @@ const ExerciseComponent = ({
   isLocked,
 }) => {
   // const [isDoneArr, setIsDoneArr] = useState([false]);
-  const TWENTYTH_SECOND_MS = 50;
 
   const [doTimer, setDoTimer] = useState(false);
-  const [countdownTime, setCountdownTime] = useState(0);
-
-  const [loaded] = useFonts({
-    RobotoCondensedRegular: require("../assets/fonts/RobotoCondensed-Regular.ttf"),
-  });
+  const countdownTime = useRef(new Date().getTime());
+  // console.log((seconds - countdownTime.current) / 1000);
 
   const changeExerciseName = (name) => {
     let tempExerciseArr = [...exercisesArr];
@@ -54,11 +50,11 @@ const ExerciseComponent = ({
     setRestTimers(tempRestTimers);
   };
 
-  const flipDoTimer = (numExercise) => {
+  const flipDoTimer = () => {
     // console.log("FLIP! doTimer:", doTimer);
     setDoTimer(!doTimer);
 
-    if (!doTimer) setCountdownTime(seconds);
+    if (!doTimer) countdownTime.current = new Date().getTime();
   };
 
   const AddSet = () => {
@@ -95,6 +91,11 @@ const ExerciseComponent = ({
 
     // Vibration.vibrate(TWENTYTH_SECOND_MS);
   };
+
+  const [loaded] = useFonts({
+    RobotoCondensedRegular: require("../assets/fonts/RobotoCondensed-Regular.ttf"),
+  });
+  if (!loaded) return null;
 
   const styles = StyleSheet.create({
     container: {
@@ -230,9 +231,10 @@ const ExerciseComponent = ({
               placeholder="0s"
               value={
                 doTimer
-                  ? (
+                  ? Math.trunc(
                       restTimers[numExercise] -
-                      (seconds - countdownTime)
+                        (seconds - countdownTime.current) / 1000 -
+                        1
                     ).toString()
                   : restTimers[numExercise]
               }

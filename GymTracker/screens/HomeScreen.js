@@ -31,11 +31,6 @@ const HomeScreen = ({ navigation }) => {
   const windowWidth = useRef(Dimensions.get("window").width);
   const windowHeight = useRef(Dimensions.get("window").height);
 
-  const [loaded] = useFonts({
-    RobotoCondensedRegular: require("../assets/fonts/RobotoCondensed-Regular.ttf"),
-  });
-
-  // const templateNames = useRef(["LEGS", "PUSH", "PULL"]);
   const templatePresetList = useRef([
     {
       Name: "LEGS",
@@ -116,19 +111,6 @@ const HomeScreen = ({ navigation }) => {
       IsLocked: false,
     },
   ]);
-  // const templateList = useRef([]);
-
-  useEffect(() => {
-    // resetTables();
-    createWorkoutsTable();
-    createTemplateTable();
-    fillTemplateTable();
-    loadTemplateData();
-  }, []);
-
-  useEffect(() => {
-    isFocused && loadWorkoutData();
-  }, [isFocused, forceUpdate]);
 
   const createWorkoutsTable = () => {
     db.transaction((tx) => {
@@ -229,6 +211,23 @@ const HomeScreen = ({ navigation }) => {
     }
   };
 
+  useEffect(() => {
+    // resetTables();
+    createWorkoutsTable();
+    createTemplateTable();
+    fillTemplateTable();
+    loadTemplateData();
+  }, []);
+
+  useEffect(() => {
+    isFocused && loadWorkoutData();
+  }, [isFocused, forceUpdate]);
+
+  const [fontLoaded] = useFonts({
+    RobotoCondensedRegular: require("../assets/fonts/RobotoCondensed-Regular.ttf"),
+  });
+  if (!fontLoaded) return null;
+
   const styles = StyleSheet.create({
     container: {
       backgroundColor: "white",
@@ -244,9 +243,9 @@ const HomeScreen = ({ navigation }) => {
       alignItems: "center",
     },
     screenHeaderText: {
+      fontFamily: "RobotoCondensedRegular",
       fontSize: 22,
       color: "#2494f0", //"#2494f0",
-      fontFamily: "RobotoCondensedRegular",
     },
     subHeaderContainer: {
       width: "100%",

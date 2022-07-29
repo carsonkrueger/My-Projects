@@ -8,6 +8,7 @@ import React, {
 } from "react-native";
 
 import * as SQLite from "expo-sqlite";
+import { useFonts } from "expo-font";
 
 const db = SQLite.openDatabase("GymTracker");
 
@@ -17,7 +18,7 @@ const BackComponent = ({
   workoutName,
   updateData,
   id,
-  originalWorkoutName,
+  // originalWorkoutName,
   isTemplate,
 }) => {
   const templateNames = useRef([]);
@@ -58,6 +59,24 @@ const BackComponent = ({
     }
   };
 
+  const [fontLoaded] = useFonts({
+    RobotoCondensedRegular: require("../assets/fonts/RobotoCondensed-Regular.ttf"),
+  });
+  if (!fontLoaded) return null;
+
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      alignItems: "flex-end",
+      justifyContent: "center",
+    },
+    text: {
+      color: "white", //"#2494f0",
+      fontSize: 18,
+      fontFamily: "RobotoCondensedRegular",
+    },
+  });
+
   return (
     <View style={styles.container}>
       <TouchableOpacity
@@ -73,17 +92,5 @@ const BackComponent = ({
     </View>
   );
 };
-
-styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: "flex-end",
-    justifyContent: "center",
-  },
-  text: {
-    color: "white", //"#2494f0",
-    fontSize: 18,
-  },
-});
 
 export default BackComponent;

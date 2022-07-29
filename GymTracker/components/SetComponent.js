@@ -7,7 +7,8 @@ import {
   TextInput,
   Vibration,
 } from "react-native";
-import { AntDesign, Feather } from "@expo/vector-icons";
+import { Feather } from "@expo/vector-icons";
+import { useFonts } from "expo-font";
 
 const SetComponent = ({
   numSet,
@@ -23,22 +24,6 @@ const SetComponent = ({
 }) => {
   const TWENTYTH_SECOND_MS = 50;
   const [isDone, setIsDone] = useState(false);
-
-  useEffect(() => {
-    if (isDone) {
-      if (
-        weights[numExercise][numSet] == "" &&
-        prevWeights[numExercise][numSet] !== ""
-      )
-        changeWeightText(prevWeights[numExercise][numSet]);
-
-      if (
-        reps[numExercise][numSet] == "" &&
-        prevReps[numExercise][numSet] !== ""
-      )
-        changeRepText(prevReps[numExercise][numSet]);
-    }
-  }, [isDone]);
 
   const changeWeightText = (weight) => {
     let tempWeights = [...weights];
@@ -72,6 +57,27 @@ const SetComponent = ({
     }
   };
 
+  useEffect(() => {
+    if (isDone) {
+      if (
+        weights[numExercise][numSet] == "" &&
+        prevWeights[numExercise][numSet] !== ""
+      )
+        changeWeightText(prevWeights[numExercise][numSet]);
+
+      if (
+        reps[numExercise][numSet] == "" &&
+        prevReps[numExercise][numSet] !== ""
+      )
+        changeRepText(prevReps[numExercise][numSet]);
+    }
+  }, [isDone]);
+
+  const [loaded] = useFonts({
+    RobotoCondensedRegular: require("../assets/fonts/RobotoCondensed-Regular.ttf"),
+  });
+  if (!loaded) return null;
+
   const styles = StyleSheet.create({
     container: {
       flex: 1,
@@ -91,6 +97,7 @@ const SetComponent = ({
       justifyContent: "center",
     },
     setText: {
+      fontFamily: "RobotoCondensedRegular",
       color: /*isDone[numSet] ? null :*/ "#2494f0",
       fontSize: 17,
     },
@@ -100,6 +107,7 @@ const SetComponent = ({
       justifyContent: "center",
     },
     prevText: {
+      fontFamily: "RobotoCondensedRegular",
       color: /*isDone[numSet] ? null :*/ "#2494f0",
       fontSize: 14,
     },
@@ -108,6 +116,7 @@ const SetComponent = ({
       alignItems: "center",
     },
     weightText: {
+      fontFamily: "RobotoCondensedRegular",
       fontSize: 16,
       backgroundColor: isDone /*isDoneArr[numExercise][numSet]*/
         ? null
@@ -123,6 +132,7 @@ const SetComponent = ({
       fontSize: 16,
     },
     repText: {
+      fontFamily: "RobotoCondensedRegular",
       fontSize: 16,
       backgroundColor: isDone /*isDoneArr[numExercise][numSet]*/
         ? null

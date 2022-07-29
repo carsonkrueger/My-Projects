@@ -1,19 +1,17 @@
 import React, { useRef, useState } from "react";
 
-import {
-  StyleSheet,
-  View,
-  Text,
-  TouchableOpacity,
-  Vibration,
-  Animated,
-} from "react-native";
+import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
 
 // import Animated, { useSharedValue } from "react-native-reanimated";
 
-import { Feather } from "@expo/vector-icons";
+import { useFonts } from "expo-font";
 
 const TemplateComponent = ({ navigation, id, name, exercises }) => {
+  const [fontLoaded] = useFonts({
+    RobotoCondensedRegular: require("../assets/fonts/RobotoCondensed-Regular.ttf"),
+  });
+  if (!fontLoaded) return null;
+
   const styles = StyleSheet.create({
     container: {
       width: "90%",
@@ -22,7 +20,6 @@ const TemplateComponent = ({ navigation, id, name, exercises }) => {
     },
     topContainer: {
       flex: 1,
-      flexDirection: "row",
       backgroundColor: "white",
       borderWidth: 1,
       borderColor: "#c9c9c9",
@@ -31,10 +28,12 @@ const TemplateComponent = ({ navigation, id, name, exercises }) => {
     },
     topButton: {
       flex: 1,
+      flexDirection: "row",
     },
     left: {
       flex: 1,
       paddingLeft: 10,
+      justifyContent: "center",
     },
     right: {
       flex: 2,
@@ -42,8 +41,20 @@ const TemplateComponent = ({ navigation, id, name, exercises }) => {
     },
     title: {
       fontSize: 15,
+      fontFamily: "RobotoCondensedRegular",
     },
-    preview: {},
+    preview: {
+      color: "#9c9c9c",
+      fontSize: 11,
+      textAlign: "right",
+      fontFamily: "RobotoCondensedRegular",
+    },
+    dots: {
+      color: "#9c9c9c",
+      fontSize: 13,
+      textAlign: "right",
+      fontFamily: "RobotoCondensedRegular",
+    },
   });
 
   return (
@@ -63,7 +74,19 @@ const TemplateComponent = ({ navigation, id, name, exercises }) => {
           <View style={styles.left}>
             <Text style={styles.title}>{name}</Text>
           </View>
-          <View style={styles.right}></View>
+          <View style={styles.right}>
+            {exercises.map((name, i) =>
+              i < 4 ? (
+                <Text key={i} style={styles.preview}>
+                  {name}
+                </Text>
+              ) : i < 5 ? (
+                <Text key={i} style={styles.dots}>
+                  ...
+                </Text>
+              ) : null
+            )}
+          </View>
         </TouchableOpacity>
       </View>
     </View>

@@ -27,32 +27,18 @@ const WorkoutScreen = ({ navigation, route }) => {
     weights: [[""]],
     reps: [[""]],
     restTimers: [""],
-    originalWorkoutName: "",
+  });
+
+  const prevWeightReps = useRef({
     prevWeights: [[""]],
     prevReps: [[""]],
   });
 
   const WORKOUT_ID = useRef(null);
-  const [seconds, setSeconds] = useState(0);
+  const [seconds, setSeconds] = useState(new Date().getTime());
   const [isLocked, setIsLocked] = useState(false);
 
   const date = useRef(new Date());
-
-  const [loaded] = useFonts({
-    RobotoCondensedRegular: require("../assets/fonts/RobotoCondensed-Regular.ttf"),
-  });
-
-  // on mount
-  useEffect(() => {
-    WORKOUT_ID.current = route.params.id;
-    route.params.isTemplate ? loadTemplateData() : loadWorkoutData();
-
-    const intervalId = setInterval(() => {
-      setSeconds((prevSeconds) => prevSeconds + 1);
-    }, 1000);
-
-    return () => clearInterval(intervalId);
-  }, []);
 
   const addExercise = () => {
     let exercisesArr = [...states.exercisesArr];
@@ -180,11 +166,12 @@ const WorkoutScreen = ({ navigation, route }) => {
                 exer.map((set) => "")
               ),
               restTimers: JSON.parse(result.rows.item(0).RestTimers),
-              originalWorkoutName: result.rows.item(0).Name,
+            });
+            prevWeightReps.current = {
               //prevWeights and prevReps take the weights and reps info
               prevWeights: JSON.parse(result.rows.item(0).Weights),
               prevReps: JSON.parse(result.rows.item(0).Reps),
-            });
+            };
             setIsLocked(result.rows.item(0).IsLocked);
           },
           (tx, error) =>
@@ -280,6 +267,23 @@ const WorkoutScreen = ({ navigation, route }) => {
     }
   };
 
+  // on mount
+  useEffect(() => {
+    WORKOUT_ID.current = route.params.id;
+    route.params.isTemplate ? loadTemplateData() : loadWorkoutData();
+
+    const intervalId = setInterval(() => {
+      setSeconds(new Date().getTime());
+    }, 1000);
+
+    return () => clearInterval(intervalId);
+  }, []);
+
+  const [fontLoaded] = useFonts({
+    RobotoCondensedRegular: require("../assets/fonts/RobotoCondensed-Regular.ttf"),
+  });
+  if (!fontLoaded) return null;
+
   const styles = StyleSheet.create({
     container: {
       // Adding justifyContent or alignItems here will cause a bug with scrollView
@@ -374,7 +378,7 @@ const WorkoutScreen = ({ navigation, route }) => {
                 updateData={updateData}
                 workoutName={states.workoutName}
                 id={WORKOUT_ID.current}
-                originalWorkoutName={states.originalWorkoutName}
+                // originalWorkoutName={states.originalWorkoutName}
                 isTemplate={route.params.isTemplate}
               />
             </View>
@@ -411,10 +415,10 @@ const WorkoutScreen = ({ navigation, route }) => {
               delExercise={deleteExercise}
               exercisesArr={states.exercisesArr}
               setExercisesArr={setExercisesArr}
-              prevWeights={states.prevWeights}
+              prevWeights={prevWeightReps.current.prevWeights}
               weights={states.weights}
               setWeights={setWeights}
-              prevReps={states.prevReps}
+              prevReps={prevWeightReps.current.prevReps}
               reps={states.reps}
               setReps={setReps}
               // isDoneArr={states.isDoneArr}

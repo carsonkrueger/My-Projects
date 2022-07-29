@@ -15,6 +15,7 @@ import {
 // import Animated, { useSharedValue } from "react-native-reanimated";
 
 import { Feather } from "@expo/vector-icons";
+import { useFonts } from "expo-font";
 
 const db = SQLite.openDatabase("GymTracker");
 
@@ -67,6 +68,11 @@ const WorkoutComponent = ({
     setForceUpdate((prevNum) => prevNum + 1);
   };
 
+  const [fontLoaded] = useFonts({
+    RobotoCondensedRegular: require("../assets/fonts/RobotoCondensed-Regular.ttf"),
+  });
+  if (!fontLoaded) return null;
+
   const styles = StyleSheet.create({
     container: {
       width: "90%",
@@ -97,21 +103,25 @@ const WorkoutComponent = ({
     },
     title: {
       fontSize: 16,
+      fontFamily: "RobotoCondensedRegular",
     },
     date: {
       color: "#9c9c9c",
       fontSize: 11,
       alignItems: "flex-end",
+      fontFamily: "RobotoCondensedRegular",
     },
     preview: {
       color: "#9c9c9c",
       fontSize: 11,
       textAlign: "right",
+      fontFamily: "RobotoCondensedRegular",
     },
     dots: {
       color: "#9c9c9c",
       fontSize: 13,
       textAlign: "right",
+      fontFamily: "RobotoCondensedRegular",
     },
     trashContainer: {
       flex: 1,
