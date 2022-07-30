@@ -1,11 +1,11 @@
 import React from "react";
 
-import { Text, View } from "react-native";
+import { FlatList, Text, View } from "react-native";
 
 const PrevScreen = () => {
-  render(
+  return (
     <View>
-      <Text>Hi</Text>
+      <FlatList />
     </View>
   );
 };

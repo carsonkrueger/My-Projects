@@ -10,6 +10,7 @@ import {
 import { Feather } from "@expo/vector-icons";
 
 const SetComponent = ({
+  navigation,
   numSet,
   numExercise,
   prevWeights,
@@ -151,13 +152,16 @@ const SetComponent = ({
       </View>
 
       {/*PREV*/}
-      <View style={styles.prevContainer}>
+      <TouchableOpacity
+        style={styles.prevContainer}
+        onPress={() => navigation.navigate("PrevScreen")}
+      >
         <Text style={styles.prevText}>
           {getPrevRepsText() !== "" && getPrevWeightsText() !== ""
             ? getPrevWeightsText() + " x " + getPrevRepsText()
             : "---"}
         </Text>
-      </View>
+      </TouchableOpacity>
 
       {/*WEIGHT*/}
       <View style={styles.weightContainer}>

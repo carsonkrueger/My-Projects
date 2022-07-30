@@ -13,6 +13,7 @@ import { MaterialIcons, Feather } from "@expo/vector-icons";
 import SetComponent from "./SetComponent";
 
 const ExerciseComponent = ({
+  navigation,
   name,
   numExercise,
   restTimers,
@@ -27,8 +28,6 @@ const ExerciseComponent = ({
   prevReps,
   reps,
   setReps,
-  // isDoneArr,
-  // setIsDoneArr,
   isLocked,
 }) => {
   // const [isDoneArr, setIsDoneArr] = useState([false]);
@@ -239,15 +238,6 @@ const ExerciseComponent = ({
                 changeRestTime(newNum);
               }}
             />
-
-            {/* {doTimer && (
-              <Text style={styles.timerText}>
-                {(
-                  restTimers[numExercise] -
-                  (seconds - countdownTime)
-                ).toString()}
-              </Text>
-            )} */}
           </View>
         </TouchableOpacity>
 
@@ -284,6 +274,7 @@ const ExerciseComponent = ({
       {weights[numExercise].map((weight, i) => {
         return (
           <SetComponent
+            navigation={navigation}
             key={i}
             numSet={i}
             numExercise={numExercise}
@@ -293,8 +284,6 @@ const ExerciseComponent = ({
             prevReps={prevReps}
             reps={reps}
             setReps={setReps}
-            // isDoneArr={isDoneArr}
-            // setIsDoneArr={setIsDoneArr}
           />
         );
       })}

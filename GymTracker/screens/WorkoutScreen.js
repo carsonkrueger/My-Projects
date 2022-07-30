@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-
+import reactDom from "react-dom";
 import {
   View,
   Text,
@@ -8,6 +8,7 @@ import {
   TextInput,
   SafeAreaView,
   ScrollView,
+  FlatList,
 } from "react-native";
 
 import * as SQLite from "expo-sqlite";
@@ -17,7 +18,6 @@ import BackComponent from "../components/BackComponent";
 import ExerciseComponent from "../components/ExerciseComponent";
 
 import { Feather } from "@expo/vector-icons";
-import { loadAsync, useFonts } from "expo-font";
 
 const db = SQLite.openDatabase("GymTracker");
 
@@ -145,15 +145,15 @@ const WorkoutScreen = ({ navigation, route }) => {
     setIsLocked(!isLocked);
   };
 
-  const loadWorkoutData = () => {
+  const loadWorkoutData = async () => {
     if (WORKOUT_ID.current === null) {
       console.log("workout id is null, cannot load data");
       return;
     }
 
     try {
-      db.transaction((tx) => {
-        tx.executeSql(
+      await db.transaction(async (tx) => {
+        await tx.executeSql(
           "SELECT * FROM Workouts WHERE ID = ?;",
           [WORKOUT_ID.current],
           (tx, result) => {
@@ -277,7 +277,9 @@ const WorkoutScreen = ({ navigation, route }) => {
     async function prepare() {
       try {
         WORKOUT_ID.current = route.params.id;
-        route.params.isTemplate ? await loadTemplateData() : loadWorkoutData();
+        route.params.isTemplate
+          ? await loadTemplateData()
+          : await loadWorkoutData();
       } catch (e) {
         console.warn(e);
       } finally {
@@ -294,7 +296,9 @@ const WorkoutScreen = ({ navigation, route }) => {
   }, []);
 
   const onLayoutRootView = useCallback(async () => {
-    if (appIsReady) await SplashScreen.hideAsync();
+    if (appIsReady) {
+      await SplashScreen.hideAsync();
+    }
   }, [appIsReady]);
 
   if (!appIsReady) return null;
@@ -368,57 +372,98 @@ const WorkoutScreen = ({ navigation, route }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView
+      {/* <ScrollView
         stickyHeaderIndices={[0]}
         contentContainerStyle={styles.scrollContainer}
-      >
-        <View>
-          <View style={styles.screenHeader}>
-            <View style={styles.screenTitleContainer}>
-              <TextInput
-                style={styles.screenTitleText}
-                placeholder="WORKOUT NAME"
-                placeholderTextColor="#90c6f5"
-                onChangeText={(newText) => setWorkoutName(newText)}
-                autoCapitalize="characters"
-                value={states.workoutName}
-                editable={!isLocked}
-              ></TextInput>
-            </View>
+      > */}
+      <FlatList
+        stickyHeaderIndices={[0]}
+        contentContainerStyle={styles.scrollContainer}
+        data={states.exercisesArr}
+        ListHeaderComponent={
+          <View>
+            <View style={styles.screenHeader}>
+              <View style={styles.screenTitleContainer}>
+                <TextInput
+                  style={styles.screenTitleText}
+                  placeholder="WORKOUT NAME"
+                  placeholderTextColor="#90c6f5"
+                  onChangeText={(newText) => setWorkoutName(newText)}
+                  autoCapitalize="characters"
+                  value={states.workoutName}
+                  editable={!isLocked}
+                ></TextInput>
+              </View>
 
-            <View style={styles.backContainer}>
-              <BackComponent
-                navigation={navigation}
-                saveNewData={saveNewData}
-                updateData={updateData}
-                workoutName={states.workoutName}
-                id={WORKOUT_ID.current}
-                // originalWorkoutName={states.originalWorkoutName}
-                isTemplate={route.params.isTemplate}
-              />
-            </View>
-
-            <View style={styles.lockContainer}>
-              <TouchableOpacity onPress={switchLock}>
-                <Feather
-                  name={isLocked ? "lock" : "unlock"}
-                  color="white"
-                  size={24}
+              <View style={styles.backContainer}>
+                <BackComponent
+                  navigation={navigation}
+                  saveNewData={saveNewData}
+                  updateData={updateData}
+                  workoutName={states.workoutName}
+                  id={WORKOUT_ID.current}
+                  // originalWorkoutName={states.originalWorkoutName}
+                  isTemplate={route.params.isTemplate}
                 />
-              </TouchableOpacity>
+              </View>
+
+              <View style={styles.lockContainer}>
+                <TouchableOpacity onPress={switchLock}>
+                  <Feather
+                    name={isLocked ? "lock" : "unlock"}
+                    color="white"
+                    size={24}
+                  />
+                </TouchableOpacity>
+              </View>
             </View>
           </View>
-        </View>
+        }
+        renderItem={({ item, index, seperators }) => (
+          <ExerciseComponent
+            key={index}
+            navigation={navigation}
+            name={item}
+            numExercise={index}
+            restTimers={states.restTimers}
+            setRestTimers={setRestTimers}
+            seconds={seconds}
+            delExercise={deleteExercise}
+            exercisesArr={states.exercisesArr}
+            setExercisesArr={setExercisesArr}
+            prevWeights={prevWeightReps.current.prevWeights}
+            weights={states.weights}
+            setWeights={setWeights}
+            prevReps={prevWeightReps.current.prevReps}
+            reps={states.reps}
+            setReps={setReps}
+            // isDoneArr={states.isDoneArr}
+            // setIsDoneArr={setIsDoneArr}
+            isLocked={isLocked}
+          />
+        )}
+        ListFooterComponent={
+          <View>
+            {!isLocked && (
+              <TouchableOpacity
+                style={styles.addExerciseContainer}
+                onPress={addExercise}
+              >
+                <Text style={styles.addExerciseText}>ADD EXERCISE</Text>
+              </TouchableOpacity>
+            )}
+          </View>
+        }
+      ></FlatList>
 
-        {/* <View style={styles.notesContainer}>
+      {/* --------<View style={styles.notesContainer}>
           <Text style={styles.notesTitle} multiline={true}>
             NOTES
           </Text>
           <TextInput style={styles.notesText}></TextInput>
-        </View> */}
+        </View>------- */}
 
-        {states.exercisesArr.map((exercise, i) => {
-          // console.log("\n\n", i, "-->", exercise);
+      {/* {states.exercisesArr.map((exercise, i) => {
           return (
             <ExerciseComponent
               key={i}
@@ -441,17 +486,17 @@ const WorkoutScreen = ({ navigation, route }) => {
               isLocked={isLocked}
             />
           );
-        })}
+        })} */}
 
-        {!isLocked && (
+      {/* {!isLocked && (
           <TouchableOpacity
             style={styles.addExerciseContainer}
             onPress={addExercise}
           >
             <Text style={styles.addExerciseText}>ADD EXERCISE</Text>
           </TouchableOpacity>
-        )}
-      </ScrollView>
+        )} */}
+      {/* </ScrollView> */}
     </SafeAreaView>
   );
 };
