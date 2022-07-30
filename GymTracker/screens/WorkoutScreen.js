@@ -11,6 +11,7 @@ import {
 } from "react-native";
 
 import * as SQLite from "expo-sqlite";
+import * as SplashScreen from "expo-splash-screen";
 
 import BackComponent from "../components/BackComponent";
 import ExerciseComponent from "../components/ExerciseComponent";
@@ -19,6 +20,7 @@ import { Feather } from "@expo/vector-icons";
 import { useFonts } from "expo-font";
 
 const db = SQLite.openDatabase("GymTracker");
+SplashScreen.preventAutoHideAsync();
 
 const WorkoutScreen = ({ navigation, route }) => {
   const [states, setStates] = useState({
