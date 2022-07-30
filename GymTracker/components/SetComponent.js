@@ -8,7 +8,6 @@ import {
   Vibration,
 } from "react-native";
 import { Feather } from "@expo/vector-icons";
-import { useFonts } from "expo-font";
 
 const SetComponent = ({
   numSet,
@@ -72,11 +71,6 @@ const SetComponent = ({
         changeRepText(prevReps[numExercise][numSet]);
     }
   }, [isDone]);
-
-  const [loaded] = useFonts({
-    RobotoCondensedRegular: require("../assets/fonts/RobotoCondensed-Regular.ttf"),
-  });
-  if (!loaded) return null;
 
   const styles = StyleSheet.create({
     container: {

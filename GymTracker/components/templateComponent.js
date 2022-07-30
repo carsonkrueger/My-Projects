@@ -1,17 +1,8 @@
-import React, { useRef, useState } from "react";
+import React from "react";
 
 import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
 
-// import Animated, { useSharedValue } from "react-native-reanimated";
-
-import { useFonts } from "expo-font";
-
 const TemplateComponent = ({ navigation, id, name, exercises }) => {
-  const [fontLoaded] = useFonts({
-    RobotoCondensedRegular: require("../assets/fonts/RobotoCondensed-Regular.ttf"),
-  });
-  if (!fontLoaded) return null;
-
   const styles = StyleSheet.create({
     container: {
       width: "90%",

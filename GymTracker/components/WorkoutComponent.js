@@ -15,7 +15,6 @@ import {
 // import Animated, { useSharedValue } from "react-native-reanimated";
 
 import { Feather } from "@expo/vector-icons";
-import { useFonts } from "expo-font";
 
 const db = SQLite.openDatabase("GymTracker");
 
@@ -67,11 +66,6 @@ const WorkoutComponent = ({
     }
     setForceUpdate((prevNum) => prevNum + 1);
   };
-
-  const [fontLoaded] = useFonts({
-    RobotoCondensedRegular: require("../assets/fonts/RobotoCondensed-Regular.ttf"),
-  });
-  if (!fontLoaded) return null;
 
   const styles = StyleSheet.create({
     container: {

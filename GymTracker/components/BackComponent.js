@@ -8,7 +8,6 @@ import React, {
 } from "react-native";
 
 import * as SQLite from "expo-sqlite";
-import { useFonts } from "expo-font";
 
 const db = SQLite.openDatabase("GymTracker");
 
@@ -58,11 +57,6 @@ const BackComponent = ({
       console.log(error);
     }
   };
-
-  const [fontLoaded] = useFonts({
-    RobotoCondensedRegular: require("../assets/fonts/RobotoCondensed-Regular.ttf"),
-  });
-  if (!fontLoaded) return null;
 
   const styles = StyleSheet.create({
     container: {

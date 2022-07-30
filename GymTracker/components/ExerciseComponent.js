@@ -9,7 +9,6 @@ import {
 } from "react-native";
 // import { useFonts, Bebas_Neue } from "@expo-google-fonts/inter";
 import { MaterialIcons, Feather } from "@expo/vector-icons";
-import { useFonts } from "expo-font";
 
 import SetComponent from "./SetComponent";
 
@@ -91,11 +90,6 @@ const ExerciseComponent = ({
 
     // Vibration.vibrate(TWENTYTH_SECOND_MS);
   };
-
-  const [loaded] = useFonts({
-    RobotoCondensedRegular: require("../assets/fonts/RobotoCondensed-Regular.ttf"),
-  });
-  if (!loaded) return null;
 
   const styles = StyleSheet.create({
     container: {

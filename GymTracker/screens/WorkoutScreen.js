@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 
 import {
   View,
@@ -17,12 +17,13 @@ import BackComponent from "../components/BackComponent";
 import ExerciseComponent from "../components/ExerciseComponent";
 
 import { Feather } from "@expo/vector-icons";
-import { useFonts } from "expo-font";
+import { loadAsync, useFonts } from "expo-font";
 
 const db = SQLite.openDatabase("GymTracker");
-SplashScreen.preventAutoHideAsync();
 
 const WorkoutScreen = ({ navigation, route }) => {
+  const [appIsReady, setAppIsReady] = useState(false);
+
   const [states, setStates] = useState({
     workoutName: "",
     exercisesArr: [""],
@@ -185,15 +186,15 @@ const WorkoutScreen = ({ navigation, route }) => {
     }
   };
 
-  const loadTemplateData = () => {
+  const loadTemplateData = async () => {
     if (WORKOUT_ID.current === null) {
-      console.log("workout id is null, cannot load data");
+      // No data to load, new workout
       return;
     }
 
     try {
-      db.transaction((tx) => {
-        tx.executeSql(
+      await db.transaction(async (tx) => {
+        await tx.executeSql(
           "SELECT * FROM Templates WHERE ID = ?;",
           [WORKOUT_ID.current],
           (tx, result) => {
@@ -271,8 +272,19 @@ const WorkoutScreen = ({ navigation, route }) => {
 
   // on mount
   useEffect(() => {
-    WORKOUT_ID.current = route.params.id;
-    route.params.isTemplate ? loadTemplateData() : loadWorkoutData();
+    SplashScreen.preventAutoHideAsync();
+
+    async function prepare() {
+      try {
+        WORKOUT_ID.current = route.params.id;
+        route.params.isTemplate ? await loadTemplateData() : loadWorkoutData();
+      } catch (e) {
+        console.warn(e);
+      } finally {
+        setAppIsReady(true);
+      }
+    }
+    prepare();
 
     const intervalId = setInterval(() => {
       setSeconds(new Date().getTime());
@@ -281,10 +293,11 @@ const WorkoutScreen = ({ navigation, route }) => {
     return () => clearInterval(intervalId);
   }, []);
 
-  const [fontLoaded] = useFonts({
-    RobotoCondensedRegular: require("../assets/fonts/RobotoCondensed-Regular.ttf"),
-  });
-  if (!fontLoaded) return null;
+  const onLayoutRootView = useCallback(async () => {
+    if (appIsReady) await SplashScreen.hideAsync();
+  }, [appIsReady]);
+
+  if (!appIsReady) return null;
 
   const styles = StyleSheet.create({
     container: {
