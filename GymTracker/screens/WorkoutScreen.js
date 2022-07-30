@@ -225,6 +225,7 @@ const WorkoutScreen = ({ navigation, route }) => {
 
   const saveNewData = () => {
     try {
+      // savePrevData();
       db.transaction((tx) => {
         tx.executeSql(
           "INSERT INTO Workouts (Name, Exercises, Weights, Reps, RestTimers, IsLocked, LastPerformed) VALUES (?,?,?,?,?,?,?);",
@@ -248,6 +249,7 @@ const WorkoutScreen = ({ navigation, route }) => {
 
   const updateData = () => {
     try {
+      // savePrevData();
       db.transaction((tx) => {
         tx.executeSql(
           "UPDATE Workouts SET NAME = ?, Exercises = ?, Weights = ?, Reps = ?, RestTimers = ?, IsLocked = ?, LastPerformed = ? WHERE ID = ?",
@@ -268,6 +270,35 @@ const WorkoutScreen = ({ navigation, route }) => {
     } catch (error) {
       console.log("ERROR UPDATING WORKOUT SCREEN DATA", error);
     }
+  };
+
+  const savePrevData = () => {
+    states.exercisesArr.forEach((exerName, i) => {
+      // Do not save it weights and reps are empty
+      // if (
+      //   !states.weights[i].includes("") &&
+      //   !states.reps[i].includes("")
+      // )
+      //   return;
+      try {
+        db.transaction((tx) =>
+          tx.executeSql(
+            "INSERT INTO Prevs (ID, Name, Weights, Reps, LastPerformed) VALUES (?,?,?,?,?);",
+            [
+              WORKOUT_ID,
+              exerName,
+              JSON.stringify(states.weights[i]),
+              JSON.stringify(states.reps[i]),
+              date.current.getMonth() + "-" + date.current.getDate(),
+            ],
+            null,
+            (tx, error) => console.log(error)
+          )
+        );
+      } catch (error) {
+        console.log("error saving prev data", error);
+      }
+    });
   };
 
   // on mount
@@ -419,7 +450,7 @@ const WorkoutScreen = ({ navigation, route }) => {
             </View>
           </View>
         }
-        renderItem={({ item, index, seperators }) => (
+        renderItem={({ item, index }) => (
           <ExerciseComponent
             key={index}
             navigation={navigation}

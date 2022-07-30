@@ -275,6 +275,7 @@ const ExerciseComponent = ({
         return (
           <SetComponent
             navigation={navigation}
+            exerciseName={name}
             key={i}
             numSet={i}
             numExercise={numExercise}

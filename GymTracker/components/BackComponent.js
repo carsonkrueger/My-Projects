@@ -20,42 +20,13 @@ const BackComponent = ({
   // originalWorkoutName,
   isTemplate,
 }) => {
-  const templateNames = useRef([]);
-
-  useEffect(() => {
-    getTemplateNames();
-  });
-
   const isWorkoutUnique = () => {
     // console.log(templateNames);
     if (workoutName == null || workoutName.trim() === "") {
       Alert.alert("Please change your workout name");
       return false; // not unique
-    } //else if () {
-    //   Alert.alert("Workout names must be unique");
-    //   return false; // not unique
-    // }
-    // templateNames.current.map((item) =>
-    //   console.log(workoutName, "yo", item.Name)
-    // );
-    // unique
-    return true;
-  };
-
-  const getTemplateNames = async () => {
-    try {
-      await db.transaction(async (tx) => {
-        await tx.executeSql(
-          "SELECT Name FROM Templates",
-          null,
-          (tx, result) => (templateNames.current = result.rows._array),
-          (tx, error) =>
-            console.log("COULD NOT LOAD NAMES IN BACK COMPONENT", error)
-        );
-      });
-    } catch (error) {
-      console.log(error);
     }
+    return true;
   };
 
   const styles = StyleSheet.create({

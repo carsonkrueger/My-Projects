@@ -138,7 +138,10 @@ const HomeScreen = ({ navigation }) => {
     db.transaction(
       (tx) => {
         tx.executeSql(
-          "CREATE TABLE IF NOT EXISTS Prevs (ID INTEGER, Name STRING NOT NULL, Weights STRING, Reps STRING);"
+          "CREATE TABLE IF NOT EXISTS Prevs (ID INTEGER, Name STRING NOT NULL, Weights STRING, Reps STRING, LastPerformed DATE);",
+          null,
+          null,
+          (tx, error) => console.log("Could not make table Prevs", error)
         );
       },
       (tx, error) => console.log("ERROR")
@@ -148,6 +151,7 @@ const HomeScreen = ({ navigation }) => {
   const resetTables = () => {
     db.transaction((tx) => tx.executeSql("DROP TABLE Workouts"));
     db.transaction((tx) => tx.executeSql("DROP TABLE Templates"));
+    db.transaction((tx) => tx.executeSql("DROP TABLE Prevs"));
   };
 
   const fillTemplateTable = () => {
@@ -217,6 +221,7 @@ const HomeScreen = ({ navigation }) => {
     createTemplateTable();
     fillTemplateTable();
     loadTemplateData();
+    createPrevsTable();
   }, []);
 
   useEffect(() => {
