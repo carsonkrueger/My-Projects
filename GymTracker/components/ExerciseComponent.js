@@ -174,7 +174,7 @@ const ExerciseComponent = ({
       alignItems: "center",
     },
     emptyHead: {
-      flex: 0.7,
+      flex: 0.6,
     },
     whiteText: {
       fontFamily: "RobotoCondensedRegular",

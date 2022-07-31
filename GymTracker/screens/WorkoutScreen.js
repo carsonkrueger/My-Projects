@@ -245,6 +245,7 @@ const WorkoutScreen = ({ navigation, route }) => {
     } catch (error) {
       console.log("ERROR SAVING WORKOUT SCREEN DATA", error);
     }
+    savePrevData();
   };
 
   const updateData = () => {
@@ -270,35 +271,37 @@ const WorkoutScreen = ({ navigation, route }) => {
     } catch (error) {
       console.log("ERROR UPDATING WORKOUT SCREEN DATA", error);
     }
+    savePrevData();
   };
 
   const savePrevData = () => {
-    states.exercisesArr.forEach((exerName, i) => {
-      // Do not save it weights and reps are empty
-      // if (
-      //   !states.weights[i].includes("") &&
-      //   !states.reps[i].includes("")
-      // )
-      //   return;
-      try {
-        db.transaction((tx) =>
-          tx.executeSql(
-            "INSERT INTO Prevs (ID, Name, Weights, Reps, LastPerformed) VALUES (?,?,?,?,?);",
-            [
-              WORKOUT_ID,
-              exerName,
-              JSON.stringify(states.weights[i]),
-              JSON.stringify(states.reps[i]),
-              date.current.getMonth() + "-" + date.current.getDate(),
-            ],
-            null,
-            (tx, error) => console.log(error)
-          )
-        );
-      } catch (error) {
-        console.log("error saving prev data", error);
-      }
-    });
+    // states.exercisesArr.forEach((exerName, i) => {
+    // Do not save it weights and reps are empty
+    // if (
+    //   !states.weights[i].includes("") &&
+    //   !states.reps[i].includes("")
+    // )
+    //   return;
+    try {
+      db.transaction((tx) =>
+        tx.executeSql(
+          "INSERT INTO Prevs (ID, Name, Weights, Reps, LastPerformed) VALUES (?,?,?,?,?);",
+          [
+            WORKOUT_ID,
+            state.exercisesArr[0],
+            JSON.stringify(states.weights[0]),
+            JSON.stringify(states.reps[0]),
+            date.current.getMonth() + "-" + date.current.getDate(),
+          ],
+          null,
+          (tx, error) => console.log("ERROR", error)
+        )
+      );
+    } catch (error) {
+      console.log("error saving prev data", error);
+    }
+    // });
+    navigation.navigate("HomeScreen");
   };
 
   // on mount

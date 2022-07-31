@@ -48,7 +48,6 @@ const BackComponent = ({
         onPress={() => {
           if (isWorkoutUnique()) {
             id == null || isTemplate ? saveNewData() : updateData();
-            navigation.navigate("HomeScreen");
           }
         }}
       >

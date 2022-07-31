@@ -139,7 +139,7 @@ const SetComponent = ({
       color: "black",
     },
     checkContainer: {
-      flex: 0.7,
+      flex: 0.6,
       alignItems: "center",
       justifyContent: "center",
     },
@@ -205,7 +205,7 @@ const SetComponent = ({
             Vibration.vibrate(TWENTYTH_SECOND_MS);
           }}
         >
-          <Feather name="check-square" size={25} color={"#2494f0"} />
+          <Feather name="check" size={25} color={"#2494f0"} />
         </TouchableOpacity>
       </View>
     </View>
