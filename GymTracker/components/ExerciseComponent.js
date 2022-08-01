@@ -14,80 +14,29 @@ import SetComponent from "./SetComponent";
 
 const ExerciseComponent = ({
   navigation,
+  addSet,
+  deleteSet,
   name,
   numExercise,
-  restTimers,
-  setRestTimers,
+  workoutInfo,
+  setRestTimer,
   seconds,
   delExercise,
-  exercisesArr,
-  setExercisesArr,
+  setExercise,
   prevWeights,
-  weights,
   setWeights,
   prevReps,
-  reps,
   setReps,
   isLocked,
 }) => {
-  // const [isDoneArr, setIsDoneArr] = useState([false]);
-
   const [doTimer, setDoTimer] = useState(false);
   const countdownTime = useRef(new Date().getTime());
-  // console.log((seconds - countdownTime.current) / 1000);
-
-  const changeExerciseName = (name) => {
-    let tempExerciseArr = [...exercisesArr];
-    tempExerciseArr[numExercise] = name;
-    setExercisesArr(tempExerciseArr);
-  };
-
-  const changeRestTime = (num) => {
-    let tempRestTimers = [...restTimers];
-    tempRestTimers[numExercise] = num;
-    setRestTimers(tempRestTimers);
-  };
 
   const flipDoTimer = () => {
     // console.log("FLIP! doTimer:", doTimer);
     setDoTimer(!doTimer);
 
     if (!doTimer) countdownTime.current = new Date().getTime();
-  };
-
-  const AddSet = () => {
-    let tempReps = [...reps];
-    tempReps[numExercise].push("");
-    setReps(tempReps);
-
-    let tempWeights = [...weights];
-    tempWeights[numExercise].push("");
-    setWeights(tempWeights);
-
-    // let tempIsDone = [...isDoneArr];
-    // tempIsDone[numExercise].push(false);
-    // setIsDoneArr(tempIsDone);
-
-    // Vibration.vibrate(TWENTYTH_SECOND_MS);
-  };
-
-  const DeleteSet = () => {
-    // Do not delete the first set
-    if (weights[numExercise].length <= 1) return;
-
-    let tempWeights = [...weights];
-    tempWeights[numExercise].pop();
-    setWeights(tempWeights);
-
-    let tempReps = [...reps];
-    tempReps[numExercise].pop();
-    setReps(tempReps);
-
-    // let tempIsDone = [...isDoneArr];
-    // tempIsDone[numExercise].pop();
-    // setIsDoneArr(tempIsDone);
-
-    // Vibration.vibrate(TWENTYTH_SECOND_MS);
   };
 
   const styles = StyleSheet.create({
@@ -205,7 +154,7 @@ const ExerciseComponent = ({
           editable={!isLocked}
           autoCapitalize="characters"
           onChangeText={(newText) => {
-            changeExerciseName(newText);
+            setExercise(newText, numExercise);
           }}
         />
 
@@ -225,17 +174,17 @@ const ExerciseComponent = ({
               value={
                 doTimer
                   ? Math.trunc(
-                      restTimers[numExercise] -
+                      workoutInfo.restTimer -
                         (seconds - countdownTime.current) / 1000 -
                         1
                     ).toString()
-                  : restTimers[numExercise]
+                  : workoutInfo.restTimer
               }
               maxLength={3}
               keyboardType="numeric"
               editable={!doTimer && !isLocked}
               onChangeText={(newNum) => {
-                changeRestTime(newNum);
+                setRestTimer(newNum, numExercise);
               }}
             />
           </View>
@@ -271,19 +220,18 @@ const ExerciseComponent = ({
         <View style={styles.emptyHead}>{/* Empty header */}</View>
       </View>
 
-      {weights[numExercise].map((weight, i) => {
+      {workoutInfo.weights.map((weight, i) => {
         return (
           <SetComponent
-            navigation={navigation}
-            exerciseName={name}
             key={i}
+            navigation={navigation}
+            weights={workoutInfo.weights}
+            reps={workoutInfo.reps}
             numSet={i}
             numExercise={numExercise}
             prevWeights={prevWeights}
-            weights={weights}
             setWeights={setWeights}
             prevReps={prevReps}
-            reps={reps}
             setReps={setReps}
           />
         );
@@ -291,11 +239,11 @@ const ExerciseComponent = ({
 
       {!isLocked && (
         <View style={styles.addDelSetContainer}>
-          <TouchableOpacity onPress={DeleteSet}>
+          <TouchableOpacity onPress={() => deleteSet(numExercise)}>
             <Feather name="minus" color="#2494f0" size={22} />
           </TouchableOpacity>
 
-          <TouchableOpacity onPress={AddSet}>
+          <TouchableOpacity onPress={() => addSet(numExercise)}>
             <Feather name="plus" color="#2494f0" size={22} />
           </TouchableOpacity>
         </View>

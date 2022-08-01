@@ -12,7 +12,6 @@ import * as SQLite from "expo-sqlite";
 const db = SQLite.openDatabase("GymTracker");
 
 const BackComponent = ({
-  navigation,
   saveNewData,
   workoutName,
   updateData,

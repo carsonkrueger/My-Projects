@@ -11,32 +11,17 @@ import { Feather } from "@expo/vector-icons";
 
 const SetComponent = ({
   navigation,
-  exerciseName,
+  weights,
+  reps,
   numSet,
   numExercise,
   prevWeights,
-  weights,
   setWeights,
   prevReps,
-  reps,
   setReps,
-  // isDoneArr,
-  // setIsDoneArr,
 }) => {
   const TWENTYTH_SECOND_MS = 50;
   const [isDone, setIsDone] = useState(false);
-
-  const changeWeightText = (weight) => {
-    let tempWeights = [...weights];
-    tempWeights[numExercise][numSet] = weight;
-    setWeights(tempWeights);
-  };
-
-  const changeRepText = (rep) => {
-    let tempReps = [...reps];
-    tempReps[numExercise][numSet] = rep;
-    setReps(tempReps);
-  };
 
   const getPrevWeightsText = () => {
     if (prevWeights.length < numExercise + 1) {
@@ -60,17 +45,11 @@ const SetComponent = ({
 
   useEffect(() => {
     if (isDone) {
-      if (
-        weights[numExercise][numSet] == "" &&
-        prevWeights[numExercise][numSet] !== ""
-      )
-        changeWeightText(prevWeights[numExercise][numSet]);
+      if (weights[numSet] == "" && prevWeights[numExercise][numSet] !== "")
+        setWeights(prevWeights[numExercise][numSet], numExercise, numSet);
 
-      if (
-        reps[numExercise][numSet] == "" &&
-        prevReps[numExercise][numSet] !== ""
-      )
-        changeRepText(prevReps[numExercise][numSet]);
+      if (reps[numSet] == "" && prevReps[numExercise][numSet] !== "")
+        setReps(prevReps[numExercise][numSet], numExercise, numSet);
     }
   }, [isDone]);
 
@@ -171,12 +150,12 @@ const SetComponent = ({
         <TextInput
           style={styles.weightText}
           keyboardType="number-pad"
-          value={weights[numExercise][numSet]}
+          value={weights[numSet]}
           placeholder={getPrevWeightsText()}
           editable={!isDone} //isDoneArr[numExercise][numSet]}
           maxLength={4}
           onChangeText={(newText) => {
-            changeWeightText(newText);
+            setWeights(newText, numExercise, numSet);
           }}
           // editable={() => isDone ? false : true}
         ></TextInput>
@@ -187,12 +166,12 @@ const SetComponent = ({
         <TextInput
           style={styles.repText}
           keyboardType="number-pad" /*editable={() => isDone ? false : true}*/
-          value={reps[numExercise][numSet]}
+          value={reps[numSet]}
           placeholder={getPrevRepsText()}
           editable={!isDone} //isDoneArr[numExercise][numSet]}
           maxLength={4}
           onChangeText={(newText) => {
-            changeRepText(newText);
+            setReps(newText, numExercise, numSet);
           }}
         ></TextInput>
       </View>

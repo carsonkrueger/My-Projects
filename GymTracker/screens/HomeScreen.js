@@ -22,7 +22,7 @@ const db = SQLite.openDatabase("GymTracker");
 
 const HomeScreen = ({ navigation }) => {
   // [ [ NAME OF WORKOUT, NUM EXERCISES, LAST TIME DID WORKOUT ], ... ]
-  const [workoutList, setWorkoutList] = useState([]);
+  const [workoutList, setWorkoutList] = useState([{}]);
   const [templateList, setTemplateList] = useState([]);
 
   const [forceUpdate, setForceUpdate] = useState(0);
@@ -115,7 +115,7 @@ const HomeScreen = ({ navigation }) => {
   const createWorkoutsTable = () => {
     db.transaction((tx) => {
       tx.executeSql(
-        "CREATE TABLE IF NOT EXISTS Workouts (ID INTEGER PRIMARY KEY AUTOINCREMENT, Name STRING NOT NULL, Exercises STRING, Weights STRING, Reps STRING, RestTimers STRING, IsLocked BOOL, LastPerformed DATE);",
+        "CREATE TABLE IF NOT EXISTS Workouts (ID INTEGER PRIMARY KEY AUTOINCREMENT, Name STRING NOT NULL, WorkoutInfo STRING, IsLocked BOOL, LastPerformed DATE);",
         null,
         null,
         (tx, error) => console.log("ERROR")
@@ -180,11 +180,18 @@ const HomeScreen = ({ navigation }) => {
     try {
       db.transaction((tx) => {
         tx.executeSql(
-          "SELECT ID, Name, Exercises, LastPerformed FROM Workouts ORDER BY LastPerformed DESC",
+          "SELECT ID, Name, WorkoutInfo, LastPerformed FROM Workouts ORDER BY LastPerformed DESC",
           null,
           (tx, result) => {
-            setWorkoutList(result.rows._array);
-            // console.log(result.rows._array);
+            console.log(result.rows._array);
+            let temp = [];
+            let tempWorkoutInfo = JSON.parse(result.rows._array.workoutInfo);
+            tempWorkoutInfo.forEach((exer) => temp.push(exer.Name));
+            setWorkoutList({
+              id: result.rows._array.ID,
+              workoutName: result.rows._array.Name,
+              exercises: temp,
+            });
           },
           (tx, error) =>
             console.log("ERROR loading homescreen WorkoutList data") // error cb
@@ -334,7 +341,9 @@ const HomeScreen = ({ navigation }) => {
               id={workout.ID}
               name={workout.Name}
               lastPerformed={workout.LastPerformed}
-              exercises={JSON.parse(workout.Exercises)}
+              exercises={[
+                JSON.parse(workout.workoutInfo).map((exer) => exer.exercise),
+              ]}
               setForceUpdate={setForceUpdate}
             />
           );
@@ -343,9 +352,7 @@ const HomeScreen = ({ navigation }) => {
         <View style={styles.subHeaderContainer}>
           <Text style={styles.subHeaderText}>Templates</Text>
         </View>
-        {/* {templateList.current.map((workout) => {
-          console.log("yo", workout.Name);
-        })} */}
+
         {templateList.map((workout, i) => (
           <TemplateComponent
             key={i}
@@ -356,17 +363,6 @@ const HomeScreen = ({ navigation }) => {
           />
         ))}
       </ScrollView>
-
-      {/* <TouchableOpacity
-        style={styles.createWorkoutButton}
-        onPress={() =>
-          navigation.navigate("WorkoutScreen", {
-            name: "",
-          })
-        }
-      >
-        <Text style={styles.createWorkoutText}>CREATE WORKOUT</Text>
-      </TouchableOpacity> */}
     </SafeAreaView>
   );
 };

@@ -155,7 +155,7 @@ const WorkoutComponent = ({
             <Text style={styles.date}>LAST PERFORMED: {lastPerformed}</Text>
           </View>
           <View style={styles.right}>
-            {exercises.map((name, i) =>
+            {/* {exercises.map((name, i) =>
               i < 4 ? (
                 <Text key={i} style={styles.preview}>
                   {name}
@@ -165,7 +165,7 @@ const WorkoutComponent = ({
                   ...
                 </Text>
               ) : null
-            )}
+            )} */}
           </View>
         </TouchableOpacity>
       </Animated.View>

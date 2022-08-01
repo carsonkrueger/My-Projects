@@ -23,14 +23,15 @@ const db = SQLite.openDatabase("GymTracker");
 
 const WorkoutScreen = ({ navigation, route }) => {
   const [appIsReady, setAppIsReady] = useState(false);
-
-  const [states, setStates] = useState({
-    workoutName: "",
-    exercisesArr: [""],
-    weights: [[""]],
-    reps: [[""]],
-    restTimers: [""],
+  const initialState = useRef({
+    exercise: "",
+    weights: [""],
+    reps: [""],
+    restTimer: "",
   });
+
+  const [states, setStates] = useState([initialState.current]);
+  const [workoutName, setWorkoutName] = useState("");
 
   const prevWeightReps = useRef({
     prevWeights: [[""]],
@@ -44,101 +45,72 @@ const WorkoutScreen = ({ navigation, route }) => {
   const date = useRef(new Date());
 
   const addExercise = () => {
-    let exercisesArr = [...states.exercisesArr];
-    exercisesArr.push("");
-
-    let weights = [...states.weights];
-    weights.push([""]);
-
-    let reps = [...states.reps];
-    reps.push([""]);
-
-    let restTimers = [...states.restTimers];
-    restTimers.push("");
-
-    // let isDoneArr = [...states.isDoneArr];
-    // isDoneArr.push([false]);
-
-    setStates({
-      ...states,
-      exercisesArr,
-      weights,
-      reps,
-      restTimers,
-      // isDoneArr,
+    let temp = [...states];
+    // temp.push(Object.assign({}, initialState.current));
+    temp.push({
+      exercise: "",
+      weights: [""],
+      reps: [""],
+      restTimer: "",
     });
+    setStates(temp);
   };
 
   const deleteExercise = (idx) => {
-    if (states.exercisesArr.length <= 1) {
-      setStates({
-        ...states,
-        exercisesArr: [""],
-        weights: [[""]],
-        reps: [[""]],
-        restTimers: [""],
-        // isDoneArr: [[false]],
-      });
+    if (states.length <= 1) {
+      setStates({ ...initialState.current });
     } else {
-      let exercisesArr = [...states.exercisesArr];
-      exercisesArr.splice(idx, 1);
-
-      let weights = [...states.weights];
-      weights.splice(idx, 1);
-
-      let reps = [...states.reps];
-      reps.splice(idx, 1);
-
-      let restTimers = [...states.restTimers];
-      restTimers.splice(idx, 1);
-
-      // let isDoneArr = [...states.isDoneArr];
-      // isDoneArr.splice(idx, 1);
-
-      setStates({
-        ...states,
-        exercisesArr,
-        weights,
-        reps,
-        restTimers,
-        // isDoneArr,
-      });
+      let temp = [...states];
+      temp.splice(idx, 1);
+      setStates(temp);
     }
   };
 
-  const setExercisesArr = (exercisesArr) => {
-    setStates({
-      ...states,
-      exercisesArr,
-    });
+  const setExercise = (name, numExercise) => {
+    let temp = [...states];
+    temp[numExercise].exercise = name;
+    setStates(temp);
   };
 
-  const setWeights = (weights) => {
-    setStates({
-      ...states,
-      weights,
-    });
+  const setWeights = (weight, numExercise, numSet) => {
+    let temp = [...states];
+    temp[numExercise].weights[numSet] = weight;
+    setStates(temp);
   };
 
-  const setReps = (reps) => {
-    setStates({
-      ...states,
-      reps,
-    });
+  const setReps = (rep, numExercise, numSet) => {
+    let temp = [...states];
+    temp[numExercise].reps[numSet] = rep;
+    setStates(temp);
   };
 
-  const setRestTimers = (restTimers) => {
-    setStates({
-      ...states,
-      restTimers,
-    });
+  const addSet = (numExercise) => {
+    console.log("yo", states[numExercise].weights);
+    let temp = [...states];
+
+    temp[numExercise].weights.push("");
+    temp[numExercise].reps.push("");
+    setStates(temp);
   };
 
-  const setWorkoutName = (workoutName) => {
-    setStates({
-      ...states,
-      workoutName,
-    });
+  const deleteSet = (numExercise) => {
+    let temp = [...states];
+
+    if (temp[numExercise].weights.length <= 1) {
+      temp[numExercise].weights = [""];
+      temp[numExercise].reps = [""];
+    } else {
+      temp[numExercise].weights.pop();
+      temp[numExercise].reps.pop();
+    }
+
+    setStates(temp);
+  };
+
+  const setRestTimer = (time, numExercise) => {
+    let temp = [...states];
+    temp[numExercise].restTimer = time;
+    setStates(temp);
   };
 
   const switchLock = () => {
@@ -157,25 +129,20 @@ const WorkoutScreen = ({ navigation, route }) => {
           "SELECT * FROM Workouts WHERE ID = ?;",
           [WORKOUT_ID.current],
           (tx, result) => {
+            let temp = JSON.parse(result.rows.item(0).workoutInfo);
             setStates({
-              workoutName: result.rows.item(0).Name,
-              exercisesArr: JSON.parse(result.rows.item(0).Exercises),
-              //weights is set to empty values ""
-              weights: JSON.parse(result.rows.item(0).Weights).map((exer) =>
-                exer.map((set) => "")
-              ),
-              //sets is set to empty values ""
-              reps: JSON.parse(result.rows.item(0).Weights).map((exer) =>
-                exer.map((set) => "")
-              ),
-              restTimers: JSON.parse(result.rows.item(0).RestTimers),
+              exercise: temp.exercise,
+              weights: temp.weights,
+              reps: temp.reps,
+              restTimer: temp.restTimer,
             });
+            setWorkoutName(result.rows.item(0).Name);
+            setIsLocked(result.rows.item(0).IsLocked);
             prevWeightReps.current = {
               //prevWeights and prevReps take the weights and reps info
               prevWeights: JSON.parse(result.rows.item(0).Weights),
               prevReps: JSON.parse(result.rows.item(0).Reps),
             };
-            setIsLocked(result.rows.item(0).IsLocked);
           },
           (tx, error) =>
             console.log(WORKOUT_ID, "ERROR LOADING WORKOUT SCREEN DATA", error)
@@ -228,13 +195,10 @@ const WorkoutScreen = ({ navigation, route }) => {
       // savePrevData();
       db.transaction((tx) => {
         tx.executeSql(
-          "INSERT INTO Workouts (Name, Exercises, Weights, Reps, RestTimers, IsLocked, LastPerformed) VALUES (?,?,?,?,?,?,?);",
+          "INSERT INTO Workouts (Name, WorkoutInfo, IsLocked, LastPerformed) VALUES (?,?,?,?);",
           [
-            states.workoutName,
-            JSON.stringify(states.exercisesArr),
-            JSON.stringify(states.weights),
-            JSON.stringify(states.reps),
-            JSON.stringify(states.restTimers),
+            workoutName,
+            JSON.stringify(states),
             isLocked,
             date.current.getMonth() + "-" + date.current.getDate(),
           ],
@@ -245,7 +209,7 @@ const WorkoutScreen = ({ navigation, route }) => {
     } catch (error) {
       console.log("ERROR SAVING WORKOUT SCREEN DATA", error);
     }
-    savePrevData();
+    // savePrevData();
   };
 
   const updateData = () => {
@@ -253,13 +217,10 @@ const WorkoutScreen = ({ navigation, route }) => {
       // savePrevData();
       db.transaction((tx) => {
         tx.executeSql(
-          "UPDATE Workouts SET NAME = ?, Exercises = ?, Weights = ?, Reps = ?, RestTimers = ?, IsLocked = ?, LastPerformed = ? WHERE ID = ?",
+          "UPDATE Workouts SET NAME = ?, WorkoutInfo = ?, IsLocked = ?, LastPerformed = ? WHERE ID = ?",
           [
             states.workoutName,
-            JSON.stringify(states.exercisesArr),
-            JSON.stringify(states.weights),
-            JSON.stringify(states.reps),
-            JSON.stringify(states.restTimers),
+            JSON.stringify(states),
             isLocked,
             date.current.getMonth() + "-" + date.current.getDate(),
             WORKOUT_ID.current,
@@ -271,7 +232,7 @@ const WorkoutScreen = ({ navigation, route }) => {
     } catch (error) {
       console.log("ERROR UPDATING WORKOUT SCREEN DATA", error);
     }
-    savePrevData();
+    // savePrevData();
   };
 
   const savePrevData = () => {
@@ -288,8 +249,8 @@ const WorkoutScreen = ({ navigation, route }) => {
           "INSERT INTO Prevs (ID, Name, Weights, Reps, LastPerformed) VALUES (?,?,?,?,?);",
           [
             WORKOUT_ID,
-            state.exercisesArr[0],
-            JSON.stringify(states.weights[0]),
+            states.exercisesArr[0],
+            JSON.stringify(states.weights),
             JSON.stringify(states.reps[0]),
             date.current.getMonth() + "-" + date.current.getDate(),
           ],
@@ -413,7 +374,7 @@ const WorkoutScreen = ({ navigation, route }) => {
       <FlatList
         stickyHeaderIndices={[0]}
         contentContainerStyle={styles.scrollContainer}
-        data={states.exercisesArr}
+        data={states}
         ListHeaderComponent={
           <View>
             <View style={styles.screenHeader}>
@@ -424,7 +385,7 @@ const WorkoutScreen = ({ navigation, route }) => {
                   placeholderTextColor="#90c6f5"
                   onChangeText={(newText) => setWorkoutName(newText)}
                   autoCapitalize="characters"
-                  value={states.workoutName}
+                  value={workoutName}
                   editable={!isLocked}
                 ></TextInput>
               </View>
@@ -434,7 +395,7 @@ const WorkoutScreen = ({ navigation, route }) => {
                   navigation={navigation}
                   saveNewData={saveNewData}
                   updateData={updateData}
-                  workoutName={states.workoutName}
+                  workoutName={workoutName}
                   id={WORKOUT_ID.current}
                   // originalWorkoutName={states.originalWorkoutName}
                   isTemplate={route.params.isTemplate}
@@ -457,22 +418,18 @@ const WorkoutScreen = ({ navigation, route }) => {
           <ExerciseComponent
             key={index}
             navigation={navigation}
-            name={item}
+            workoutInfo={item}
             numExercise={index}
-            restTimers={states.restTimers}
-            setRestTimers={setRestTimers}
+            addSet={addSet}
+            deleteSet={deleteSet}
+            setRestTimer={setRestTimer}
             seconds={seconds}
             delExercise={deleteExercise}
-            exercisesArr={states.exercisesArr}
-            setExercisesArr={setExercisesArr}
+            setExercise={setExercise}
             prevWeights={prevWeightReps.current.prevWeights}
-            weights={states.weights}
             setWeights={setWeights}
             prevReps={prevWeightReps.current.prevReps}
-            reps={states.reps}
             setReps={setReps}
-            // isDoneArr={states.isDoneArr}
-            // setIsDoneArr={setIsDoneArr}
             isLocked={isLocked}
           />
         )}
@@ -489,48 +446,6 @@ const WorkoutScreen = ({ navigation, route }) => {
           </View>
         }
       ></FlatList>
-
-      {/* --------<View style={styles.notesContainer}>
-          <Text style={styles.notesTitle} multiline={true}>
-            NOTES
-          </Text>
-          <TextInput style={styles.notesText}></TextInput>
-        </View>------- */}
-
-      {/* {states.exercisesArr.map((exercise, i) => {
-          return (
-            <ExerciseComponent
-              key={i}
-              name={exercise}
-              numExercise={i}
-              restTimers={states.restTimers}
-              setRestTimers={setRestTimers}
-              seconds={seconds}
-              delExercise={deleteExercise}
-              exercisesArr={states.exercisesArr}
-              setExercisesArr={setExercisesArr}
-              prevWeights={prevWeightReps.current.prevWeights}
-              weights={states.weights}
-              setWeights={setWeights}
-              prevReps={prevWeightReps.current.prevReps}
-              reps={states.reps}
-              setReps={setReps}
-              // isDoneArr={states.isDoneArr}
-              // setIsDoneArr={setIsDoneArr}
-              isLocked={isLocked}
-            />
-          );
-        })} */}
-
-      {/* {!isLocked && (
-          <TouchableOpacity
-            style={styles.addExerciseContainer}
-            onPress={addExercise}
-          >
-            <Text style={styles.addExerciseText}>ADD EXERCISE</Text>
-          </TouchableOpacity>
-        )} */}
-      {/* </ScrollView> */}
     </SafeAreaView>
   );
 };
