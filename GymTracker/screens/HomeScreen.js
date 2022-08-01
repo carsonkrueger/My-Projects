@@ -22,7 +22,7 @@ const db = SQLite.openDatabase("GymTracker");
 
 const HomeScreen = ({ navigation }) => {
   // [ [ NAME OF WORKOUT, NUM EXERCISES, LAST TIME DID WORKOUT ], ... ]
-  const [workoutList, setWorkoutList] = useState([{}]);
+  const [workoutList, setWorkoutList] = useState([]);
   const [templateList, setTemplateList] = useState([]);
 
   const [forceUpdate, setForceUpdate] = useState(0);
@@ -183,15 +183,9 @@ const HomeScreen = ({ navigation }) => {
           "SELECT ID, Name, WorkoutInfo, LastPerformed FROM Workouts ORDER BY LastPerformed DESC",
           null,
           (tx, result) => {
-            console.log(result.rows._array);
-            let temp = [];
-            let tempWorkoutInfo = JSON.parse(result.rows._array.workoutInfo);
-            tempWorkoutInfo.forEach((exer) => temp.push(exer.Name));
-            setWorkoutList({
-              id: result.rows._array.ID,
-              workoutName: result.rows._array.Name,
-              exercises: temp,
-            });
+            let tempExer = [];
+            result.rows._array.forEach((workout) => tempExer.push(workout));
+            setWorkoutList(tempExer);
           },
           (tx, error) =>
             console.log("ERROR loading homescreen WorkoutList data") // error cb
@@ -332,7 +326,7 @@ const HomeScreen = ({ navigation }) => {
             <Text style={styles.createWorkoutText}>CREATE WORKOUT</Text>
           </View>
         </TouchableOpacity>
-
+        {/* {console.log(workoutList[0])} */}
         {workoutList.map((workout, i) => {
           return (
             <WorkoutComponent
@@ -341,9 +335,7 @@ const HomeScreen = ({ navigation }) => {
               id={workout.ID}
               name={workout.Name}
               lastPerformed={workout.LastPerformed}
-              exercises={[
-                JSON.parse(workout.workoutInfo).map((exer) => exer.exercise),
-              ]}
+              workoutInfo={JSON.parse(workout.WorkoutInfo)}
               setForceUpdate={setForceUpdate}
             />
           );

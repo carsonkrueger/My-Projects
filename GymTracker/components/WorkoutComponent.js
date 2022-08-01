@@ -23,7 +23,7 @@ const WorkoutComponent = ({
   id,
   name,
   lastPerformed,
-  exercises,
+  workoutInfo,
   setForceUpdate,
 }) => {
   const translation = useRef(new Animated.Value(0)).current;
@@ -155,10 +155,10 @@ const WorkoutComponent = ({
             <Text style={styles.date}>LAST PERFORMED: {lastPerformed}</Text>
           </View>
           <View style={styles.right}>
-            {exercises.map((name, i) =>
+            {workoutInfo.map((exer, i) =>
               i < 4 ? (
                 <Text key={i} style={styles.preview}>
-                  {name}
+                  {exer.exercise}
                 </Text>
               ) : i < 5 ? (
                 <Text key={i} style={styles.dots}>

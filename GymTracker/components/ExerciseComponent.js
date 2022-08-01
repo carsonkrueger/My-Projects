@@ -16,7 +16,6 @@ const ExerciseComponent = ({
   navigation,
   addSet,
   deleteSet,
-  name,
   numExercise,
   workoutInfo,
   setRestTimer,
@@ -149,7 +148,7 @@ const ExerciseComponent = ({
           style={styles.titleText}
           placeholder="EXERCISE NAME"
           placeholderTextColor="#90c6f5"
-          value={name}
+          value={workoutInfo.exercise}
           maxLength={20}
           editable={!isLocked}
           autoCapitalize="characters"
@@ -219,7 +218,7 @@ const ExerciseComponent = ({
         </View>
         <View style={styles.emptyHead}>{/* Empty header */}</View>
       </View>
-
+      {/* {console.log(prevWeights)} */}
       {workoutInfo.weights.map((weight, i) => {
         return (
           <SetComponent
@@ -229,9 +228,9 @@ const ExerciseComponent = ({
             reps={workoutInfo.reps}
             numSet={i}
             numExercise={numExercise}
-            prevWeights={prevWeights}
+            prevWeights={prevWeights.weights[i]}
             setWeights={setWeights}
-            prevReps={prevReps}
+            prevReps={prevReps.reps[i]}
             setReps={setReps}
           />
         );

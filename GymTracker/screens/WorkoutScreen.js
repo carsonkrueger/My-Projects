@@ -33,10 +33,7 @@ const WorkoutScreen = ({ navigation, route }) => {
   const [states, setStates] = useState([initialState.current]);
   const [workoutName, setWorkoutName] = useState("");
 
-  const prevWeightReps = useRef({
-    prevWeights: [[""]],
-    prevReps: [[""]],
-  });
+  const prevWeightReps = useRef([]);
 
   const WORKOUT_ID = useRef(null);
   const [seconds, setSeconds] = useState(new Date().getTime());
@@ -126,23 +123,18 @@ const WorkoutScreen = ({ navigation, route }) => {
     try {
       await db.transaction(async (tx) => {
         await tx.executeSql(
-          "SELECT * FROM Workouts WHERE ID = ?;",
+          "SELECT Name, WorkoutInfo, Islocked FROM Workouts WHERE ID = ?;",
           [WORKOUT_ID.current],
           (tx, result) => {
-            let temp = JSON.parse(result.rows.item(0).workoutInfo);
-            setStates({
-              exercise: temp.exercise,
-              weights: temp.weights,
-              reps: temp.reps,
-              restTimer: temp.restTimer,
-            });
+            let tempWorkoutInfo = JSON.parse(result.rows.item(0).WorkoutInfo);
+            setStates(tempWorkoutInfo);
             setWorkoutName(result.rows.item(0).Name);
             setIsLocked(result.rows.item(0).IsLocked);
-            prevWeightReps.current = {
+            prevWeightReps.current =
               //prevWeights and prevReps take the weights and reps info
-              prevWeights: JSON.parse(result.rows.item(0).Weights),
-              prevReps: JSON.parse(result.rows.item(0).Reps),
-            };
+              tempWorkoutInfo.map((exer) => {
+                Object.create({ weights: exer.weights, reps: exer.reps });
+              });
           },
           (tx, error) =>
             console.log(WORKOUT_ID, "ERROR LOADING WORKOUT SCREEN DATA", error)
@@ -217,9 +209,9 @@ const WorkoutScreen = ({ navigation, route }) => {
       // savePrevData();
       db.transaction((tx) => {
         tx.executeSql(
-          "UPDATE Workouts SET NAME = ?, WorkoutInfo = ?, IsLocked = ?, LastPerformed = ? WHERE ID = ?",
+          "UPDATE Workouts SET Name = ?, WorkoutInfo = ?, IsLocked = ?, LastPerformed = ? WHERE ID = ?",
           [
-            states.workoutName,
+            workoutName,
             JSON.stringify(states),
             isLocked,
             date.current.getMonth() + "-" + date.current.getDate(),
@@ -426,9 +418,9 @@ const WorkoutScreen = ({ navigation, route }) => {
             seconds={seconds}
             delExercise={deleteExercise}
             setExercise={setExercise}
-            prevWeights={prevWeightReps.current.prevWeights}
+            prevWeights={prevWeightReps.current[index]}
             setWeights={setWeights}
-            prevReps={prevWeightReps.current.prevReps}
+            prevReps={prevWeightReps.current[index]}
             setReps={setReps}
             isLocked={isLocked}
           />
@@ -445,7 +437,9 @@ const WorkoutScreen = ({ navigation, route }) => {
             )}
           </View>
         }
-      ></FlatList>
+      >
+        {console.log(prevWeightReps.current)}
+      </FlatList>
     </SafeAreaView>
   );
 };
