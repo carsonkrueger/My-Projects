@@ -15,41 +15,41 @@ const SetComponent = ({
   reps,
   numSet,
   numExercise,
-  prevWeights,
+  prevWeight,
   setWeights,
-  prevReps,
+  prevRep,
   setReps,
 }) => {
   const TWENTYTH_SECOND_MS = 50;
   const [isDone, setIsDone] = useState(false);
 
-  const getPrevWeightsText = () => {
-    if (prevWeights.length < numExercise + 1) {
-      return "";
-    } else if (prevWeights[numExercise].length < numSet + 1) {
-      return "";
-    } else {
-      return prevWeights[numExercise][numSet].toString();
-    }
-  };
+  // const getPrevWeightsText = () => {
+  //   if (prevWeights.length < numExercise + 1) {
+  //     return "";
+  //   } else if (prevWeights[numExercise].length < numSet + 1) {
+  //     return "";
+  //   } else {
+  //     return prevWeights[numExercise][numSet].toString();
+  //   }
+  // };
 
-  const getPrevRepsText = () => {
-    if (prevReps.length < numExercise + 1) {
-      return "";
-    } else if (prevReps[numExercise].length < numSet + 1) {
-      return "";
-    } else {
-      return prevReps[numExercise][numSet].toString();
-    }
-  };
+  // const getPrevRepsText = () => {
+  //   if (prevReps.length < numExercise + 1) {
+  //     return "";
+  //   } else if (prevReps[numExercise].length < numSet + 1) {
+  //     return "";
+  //   } else {
+  //     return prevReps[numExercise][numSet].toString();
+  //   }
+  // };
 
   useEffect(() => {
     if (isDone) {
-      if (weights[numSet] == "" && prevWeights[numExercise][numSet] !== "")
-        setWeights(prevWeights[numExercise][numSet], numExercise, numSet);
+      if (weights[numSet] == "" && prevWeight !== "")
+        setWeights(prevWeight, numExercise, numSet);
 
-      if (reps[numSet] == "" && prevReps[numExercise][numSet] !== "")
-        setReps(prevReps[numExercise][numSet], numExercise, numSet);
+      if (reps[numSet] == "" && prevRep !== "")
+        setReps(prevRep, numExercise, numSet);
     }
   }, [isDone]);
 
@@ -139,8 +139,8 @@ const SetComponent = ({
         }
       >
         <Text style={styles.prevText}>
-          {getPrevRepsText() !== "" && getPrevWeightsText() !== ""
-            ? getPrevWeightsText() + " x " + getPrevRepsText()
+          {prevRep !== "" || prevWeight !== ""
+            ? prevWeight + " x " + prevRep
             : "---"}
         </Text>
       </TouchableOpacity>
@@ -151,7 +151,7 @@ const SetComponent = ({
           style={styles.weightText}
           keyboardType="number-pad"
           value={weights[numSet]}
-          placeholder={getPrevWeightsText()}
+          placeholder={prevWeight}
           editable={!isDone} //isDoneArr[numExercise][numSet]}
           maxLength={4}
           onChangeText={(newText) => {
@@ -167,7 +167,7 @@ const SetComponent = ({
           style={styles.repText}
           keyboardType="number-pad" /*editable={() => isDone ? false : true}*/
           value={reps[numSet]}
-          placeholder={getPrevRepsText()}
+          placeholder={prevRep}
           editable={!isDone} //isDoneArr[numExercise][numSet]}
           maxLength={4}
           onChangeText={(newText) => {

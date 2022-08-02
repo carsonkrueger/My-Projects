@@ -228,9 +228,9 @@ const ExerciseComponent = ({
             reps={workoutInfo.reps}
             numSet={i}
             numExercise={numExercise}
-            prevWeights={prevWeights.weights[i]}
+            prevWeight={prevWeights.length < i + 1 ? prevWeights[i] : ""}
             setWeights={setWeights}
-            prevReps={prevReps.reps[i]}
+            prevRep={prevReps.length < i + 1 ? prevWeights[i] : ""}
             setReps={setReps}
           />
         );

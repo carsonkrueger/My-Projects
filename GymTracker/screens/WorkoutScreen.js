@@ -1,4 +1,10 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import reactDom from "react-dom";
 import {
   View,
@@ -33,7 +39,7 @@ const WorkoutScreen = ({ navigation, route }) => {
   const [states, setStates] = useState([initialState.current]);
   const [workoutName, setWorkoutName] = useState("");
 
-  const prevWeightReps = useRef([]);
+  const prevWeightReps = useRef([{ weights: [""] }]);
 
   const WORKOUT_ID = useRef(null);
   const [seconds, setSeconds] = useState(new Date().getTime());
@@ -127,14 +133,23 @@ const WorkoutScreen = ({ navigation, route }) => {
           [WORKOUT_ID.current],
           (tx, result) => {
             let tempWorkoutInfo = JSON.parse(result.rows.item(0).WorkoutInfo);
+
+            for (let i = 0; i < tempWorkoutInfo.length; i++) {
+              prevWeightReps.current.push({
+                weights: tempWorkoutInfo[i].weights,
+                reps: tempWorkoutInfo[i].reps,
+              });
+              tempWorkoutInfo[i].weights = new Array(
+                tempWorkoutInfo[i].weights.length
+              ).fill("");
+              tempWorkoutInfo[i].reps = new Array(
+                tempWorkoutInfo[i].reps.length
+              ).fill("");
+            }
+
             setStates(tempWorkoutInfo);
             setWorkoutName(result.rows.item(0).Name);
             setIsLocked(result.rows.item(0).IsLocked);
-            prevWeightReps.current =
-              //prevWeights and prevReps take the weights and reps info
-              tempWorkoutInfo.map((exer) => {
-                Object.create({ weights: exer.weights, reps: exer.reps });
-              });
           },
           (tx, error) =>
             console.log(WORKOUT_ID, "ERROR LOADING WORKOUT SCREEN DATA", error)
@@ -418,9 +433,17 @@ const WorkoutScreen = ({ navigation, route }) => {
             seconds={seconds}
             delExercise={deleteExercise}
             setExercise={setExercise}
-            prevWeights={prevWeightReps.current[index]}
+            prevWeights={
+              prevWeightReps.current.length < index + 1
+                ? prevWeightReps.current[index].weights
+                : [""]
+            }
             setWeights={setWeights}
-            prevReps={prevWeightReps.current[index]}
+            prevReps={
+              prevWeightReps.current.length < index + 1
+                ? prevWeightReps.current[index].reps
+                : [""]
+            }
             setReps={setReps}
             isLocked={isLocked}
           />
