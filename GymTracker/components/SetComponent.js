@@ -10,7 +10,6 @@ import {
 import { Feather } from "@expo/vector-icons";
 
 const SetComponent = ({
-  navigation,
   weights,
   reps,
   numSet,
@@ -132,18 +131,13 @@ const SetComponent = ({
       </View>
 
       {/*PREV*/}
-      <TouchableOpacity
-        style={styles.prevContainer}
-        onPress={() =>
-          navigation.navigate("PrevScreen", { exerciseName: exerciseName })
-        }
-      >
+      <View style={styles.prevContainer}>
         <Text style={styles.prevText}>
           {prevRep !== "" || prevWeight !== ""
             ? prevWeight + " x " + prevRep
             : "---"}
         </Text>
-      </TouchableOpacity>
+      </View>
 
       {/*WEIGHT*/}
       <View style={styles.weightContainer}>
@@ -157,6 +151,8 @@ const SetComponent = ({
           onChangeText={(newText) => {
             setWeights(newText, numExercise, numSet);
           }}
+          multiline={true}
+          numberOfLines={1}
           // editable={() => isDone ? false : true}
         ></TextInput>
       </View>
@@ -173,6 +169,8 @@ const SetComponent = ({
           onChangeText={(newText) => {
             setReps(newText, numExercise, numSet);
           }}
+          multiline={true}
+          numberOfLines={1}
         ></TextInput>
       </View>
 

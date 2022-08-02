@@ -111,6 +111,113 @@ const HomeScreen = ({ navigation }) => {
       IsLocked: false,
     },
   ]);
+  const templateWorkouts = useRef([
+    {
+      workoutName: "PULL",
+      workoutInfo: [
+        {
+          exercise: "LAT PULL DOWN",
+          weights: ["", "", ""],
+          reps: ["12", "12", "12"],
+          restTimer: "120",
+        },
+        {
+          exercise: "BARBELL ROWS",
+          weights: ["", "", ""],
+          reps: ["10", "10", "10"],
+          restTimer: "120",
+        },
+        {
+          exercise: "EZ BAR CURLS",
+          weights: ["", "", ""],
+          reps: ["12", "12", "12"],
+          restTimer: "120",
+        },
+        {
+          exercise: "PREACHER CURLS",
+          weights: ["", "", ""],
+          reps: ["15", "15", "15"],
+          restTimer: "120",
+        },
+        {
+          exercise: "CABLE FACE PULL",
+          weights: ["", "", ""],
+          reps: ["15", "15", "15"],
+          restTimer: "30",
+        },
+      ],
+    },
+    {
+      workoutName: "PUSH",
+      workoutInfo: [
+        {
+          exercise: "BENCH PRESS",
+          weights: ["", "", ""],
+          reps: ["8", "8", "8"],
+          restTimer: "150",
+        },
+        {
+          exercise: "DB. SH. PRESS",
+          weights: ["", "", ""],
+          reps: ["10", "10", "10"],
+          restTimer: "120",
+        },
+        {
+          exercise: "CHEST FLY",
+          weights: ["", "", ""],
+          reps: ["12", "12", "12"],
+          restTimer: "120",
+        },
+        {
+          exercise: "DB. LATERAL RAISES",
+          weights: ["", "", ""],
+          reps: ["15", "15", "15"],
+          restTimer: "90",
+        },
+        {
+          exercise: "TRICEPT KICKBACKS",
+          weights: ["", "", ""],
+          reps: ["15", "15", "15"],
+          restTimer: "90",
+        },
+      ],
+    },
+    {
+      workoutName: "LEGS",
+      workoutInfo: [
+        {
+          exercise: "HACK SQUAT",
+          weights: ["", "", "", ""],
+          reps: ["8", "8", "8", "8"],
+          restTimer: "180",
+        },
+        {
+          exercise: "DEADLIFT",
+          weights: ["", ""],
+          reps: ["10", "10"],
+          restTimer: "150",
+        },
+        {
+          exercise: "LEG EXTENSIONS",
+          weights: ["", "", ""],
+          reps: ["12", "12", "12"],
+          restTimer: "90",
+        },
+        {
+          exercise: "BARBELL THRUSTS",
+          weights: ["", "", ""],
+          reps: ["12", "12", "12"],
+          restTimer: "90",
+        },
+        {
+          exercise: "CALF RAISES",
+          weights: ["", "", ""],
+          reps: ["15", "15", "15"],
+          restTimer: "75",
+        },
+      ],
+    },
+  ]);
 
   const createWorkoutsTable = () => {
     db.transaction((tx) => {
@@ -127,7 +234,7 @@ const HomeScreen = ({ navigation }) => {
     db.transaction(
       (tx) => {
         tx.executeSql(
-          "CREATE TABLE IF NOT EXISTS Templates (ID INTEGER PRIMARY KEY AUTOINCREMENT, Name STRING NOT NULL UNIQUE, Exercises STRING, Weights STRING, Reps STRING, RestTimers STRING, IsLocked BOOL);"
+          "CREATE TABLE IF NOT EXISTS Templates (ID INTEGER PRIMARY KEY AUTOINCREMENT, Name STRING NOT NULL UNIQUE, WorkoutInfo STRING, IsLocked BOOL);"
         );
       },
       (tx, error) => console.log("ERROR")
@@ -148,6 +255,23 @@ const HomeScreen = ({ navigation }) => {
     );
   };
 
+  const printPrevData = () => {
+    try {
+      db.transaction((tx) =>
+        tx.executeSql(
+          "SELECT * FROM Prevs",
+          null,
+          (tx, result) => {
+            console.log("PREVS ----->", result.rows._array);
+          },
+          (tx, error) => console.log("ERROR PRINTING PREV DATA", error)
+        )
+      );
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const resetTables = () => {
     db.transaction((tx) => tx.executeSql("DROP TABLE Workouts"));
     db.transaction((tx) => tx.executeSql("DROP TABLE Templates"));
@@ -155,24 +279,20 @@ const HomeScreen = ({ navigation }) => {
   };
 
   const fillTemplateTable = () => {
-    templatePresetList.current.map((workout, i) => {
+    for (let i = 0; i < templateWorkouts.current.length; i++) {
       db.transaction((tx) =>
         tx.executeSql(
-          "INSERT OR IGNORE INTO Templates (Name, Exercises, Weights, Reps, RestTimers, IsLocked) VALUES (?,?,?,?,?,?);", //WHERE NOT EXISTS ( SELECT 1 FROM Templates WHERE Name = ? )",
+          "INSERT OR IGNORE INTO Templates (Name, WorkoutInfo, IsLocked) VALUES (?,?,?);", //WHERE NOT EXISTS ( SELECT 1 FROM Templates WHERE Name = ? )",
           [
-            workout.Name,
-            JSON.stringify(workout.Exercises),
-            JSON.stringify(workout.Weights),
-            JSON.stringify(workout.Reps),
-            JSON.stringify(workout.RestTimers),
-            JSON.stringify(workout.IsLocked),
-            // workout.Name,
+            templateWorkouts.current[i].workoutName,
+            JSON.stringify(templateWorkouts.current[i].workoutInfo),
+            false, // IsLocked
           ],
           null,
           (tx, error) => console.log("ERROR CREATING TEMPLATE DATA", error)
         )
       );
-    });
+    }
   };
 
   const loadWorkoutData = () => {
@@ -220,9 +340,12 @@ const HomeScreen = ({ navigation }) => {
     // resetTables();
     createWorkoutsTable();
     createTemplateTable();
+
     fillTemplateTable();
-    loadTemplateData();
+    // loadTemplateData();
+
     createPrevsTable();
+    printPrevData();
   }, []);
 
   useEffect(() => {
@@ -345,12 +468,11 @@ const HomeScreen = ({ navigation }) => {
           <Text style={styles.subHeaderText}>Templates</Text>
         </View>
 
-        {templateList.map((workout, i) => (
+        {templateWorkouts.current.map((workout, i) => (
           <TemplateComponent
             key={i}
-            id={workout.ID}
-            name={workout.Name}
-            exercises={JSON.parse(workout.Exercises)}
+            name={workout.workoutName}
+            workoutInfo={workout.workoutInfo}
             navigation={navigation}
           />
         ))}

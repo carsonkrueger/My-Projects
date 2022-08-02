@@ -10,14 +10,14 @@ const db = SQLite.openDatabase("GymTracker");
 
 const PrevScreen = ({ route }) => {
   const [prevList, setPrevList] = useState([]);
-  // console.log(prevList);
+  console.log(route.params.exercise);
 
   const loadData = () => {
     try {
       db.transaction((tx) =>
         tx.executeSql(
           "SELECT * FROM Prevs WHERE Name = ? ORDER BY LastPerformed DESC",
-          [route.params.exerciseName],
+          [route.params.exercise],
           (tx, result) => {
             console.log("----", result.rows._array);
             setPrevList(result.rows._array);

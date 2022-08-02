@@ -39,7 +39,7 @@ const WorkoutScreen = ({ navigation, route }) => {
   const [states, setStates] = useState([initialState.current]);
   const [workoutName, setWorkoutName] = useState("");
 
-  const prevWeightReps = useRef([{ weights: [""] }]);
+  const prevWeightReps = useRef([]);
 
   const WORKOUT_ID = useRef(null);
   const [seconds, setSeconds] = useState(new Date().getTime());
@@ -146,7 +146,7 @@ const WorkoutScreen = ({ navigation, route }) => {
                 tempWorkoutInfo[i].reps.length
               ).fill("");
             }
-
+            // console.log(prevWeightReps.current);
             setStates(tempWorkoutInfo);
             setWorkoutName(result.rows.item(0).Name);
             setIsLocked(result.rows.item(0).IsLocked);
@@ -161,35 +161,22 @@ const WorkoutScreen = ({ navigation, route }) => {
   };
 
   const loadTemplateData = async () => {
-    if (WORKOUT_ID.current === null) {
-      // No data to load, new workout
-      return;
-    }
-
     try {
       await db.transaction(async (tx) => {
         await tx.executeSql(
-          "SELECT * FROM Templates WHERE ID = ?;",
-          [WORKOUT_ID.current],
+          "SELECT * FROM Templates WHERE Name = ?;",
+          [route.params.name],
           (tx, result) => {
-            setStates({
-              workoutName: result.rows.item(0).Name,
-              exercisesArr: JSON.parse(result.rows.item(0).Exercises),
-              weights: JSON.parse(result.rows.item(0).Weights).map((exer) =>
-                exer.map((set) => "")
-              ),
-              reps: JSON.parse(result.rows.item(0).Weights).map((exer) =>
-                exer.map((set) => "")
-              ),
-              restTimers: JSON.parse(result.rows.item(0).RestTimers),
-              originalWorkoutName: result.rows.item(0).Name,
-              prevWeights: JSON.parse(result.rows.item(0).Weights),
-              prevReps: JSON.parse(result.rows.item(0).Reps),
-            });
+            setStates(JSON.parse(result.rows.item(0).WorkoutInfo));
+            setWorkoutName(result.rows.item(0).Name);
             setIsLocked(result.rows.item(0).IsLocked);
           },
           (tx, error) =>
-            console.log(WORKOUT_ID, "ERROR LOADING WORKOUT SCREEN DATA", error)
+            console.log(
+              WORKOUT_ID,
+              "ERROR LOADING TEMPLATE WORKOUT SCREEN DATA",
+              error
+            )
         );
       });
     } catch (error) {
@@ -216,7 +203,8 @@ const WorkoutScreen = ({ navigation, route }) => {
     } catch (error) {
       console.log("ERROR SAVING WORKOUT SCREEN DATA", error);
     }
-    // savePrevData();
+    // navigation.navigate("HomeScreen");
+    savePrevData();
   };
 
   const updateData = () => {
@@ -239,7 +227,8 @@ const WorkoutScreen = ({ navigation, route }) => {
     } catch (error) {
       console.log("ERROR UPDATING WORKOUT SCREEN DATA", error);
     }
-    // savePrevData();
+    // navigation.navigate("HomeScreen");
+    savePrevData();
   };
 
   const savePrevData = () => {
@@ -250,26 +239,29 @@ const WorkoutScreen = ({ navigation, route }) => {
     //   !states.reps[i].includes("")
     // )
     //   return;
-    try {
-      db.transaction((tx) =>
-        tx.executeSql(
-          "INSERT INTO Prevs (ID, Name, Weights, Reps, LastPerformed) VALUES (?,?,?,?,?);",
-          [
-            WORKOUT_ID,
-            states.exercisesArr[0],
-            JSON.stringify(states.weights),
-            JSON.stringify(states.reps[0]),
-            date.current.getMonth() + "-" + date.current.getDate(),
-          ],
-          null,
-          (tx, error) => console.log("ERROR", error)
-        )
-      );
-    } catch (error) {
-      console.log("error saving prev data", error);
+    for (let i = 0; i < states.length; i++) {
+      console.log(states[i].reps, "\n ----->");
+      try {
+        db.transaction((tx) =>
+          tx.executeSql(
+            "INSERT INTO Prevs (ID, Name, Weights, Reps, LastPerformed) VALUES (?,?,?,?,?);",
+            [
+              WORKOUT_ID,
+              states[i].exercise,
+              JSON.stringify(states[i].weights),
+              JSON.stringify(states[i].reps),
+              date.current.getMonth() + "-" + date.current.getDate(),
+            ],
+            null,
+            (tx, error) => console.log("ERROR", error)
+          )
+        );
+      } catch (error) {
+        console.log("error saving prev data", error);
+      }
+      // });
+      navigation.navigate("HomeScreen");
     }
-    // });
-    navigation.navigate("HomeScreen");
   };
 
   // on mount
@@ -290,11 +282,11 @@ const WorkoutScreen = ({ navigation, route }) => {
     }
     prepare();
 
-    const intervalId = setInterval(() => {
-      setSeconds(new Date().getTime());
-    }, 1000);
+    // const intervalId = setInterval(() => {
+    //   setSeconds(new Date().getTime());
+    // }, 1000);
 
-    return () => clearInterval(intervalId);
+    // return () => clearInterval(intervalId);
   }, []);
 
   const onLayoutRootView = useCallback(async () => {
@@ -434,13 +426,13 @@ const WorkoutScreen = ({ navigation, route }) => {
             delExercise={deleteExercise}
             setExercise={setExercise}
             prevWeights={
-              prevWeightReps.current.length < index + 1
+              index < prevWeightReps.current.length
                 ? prevWeightReps.current[index].weights
                 : [""]
             }
             setWeights={setWeights}
             prevReps={
-              prevWeightReps.current.length < index + 1
+              index < prevWeightReps.current.length
                 ? prevWeightReps.current[index].reps
                 : [""]
             }
@@ -460,9 +452,7 @@ const WorkoutScreen = ({ navigation, route }) => {
             )}
           </View>
         }
-      >
-        {console.log(prevWeightReps.current)}
-      </FlatList>
+      ></FlatList>
     </SafeAreaView>
   );
 };

@@ -111,6 +111,14 @@ const ExerciseComponent = ({
       flex: 1,
       alignItems: "center",
     },
+    prevText: {
+      paddingHorizontal: 10,
+      fontFamily: "RobotoCondensedRegular",
+      fontSize: 14,
+      color: "white",
+      backgroundColor: "#2494f0",
+      borderRadius: 8,
+    },
     weightHead: {
       fontFamily: "RobotoCondensedRegular",
       flex: 1,
@@ -124,7 +132,7 @@ const ExerciseComponent = ({
     emptyHead: {
       flex: 0.6,
     },
-    whiteText: {
+    blackText: {
       fontFamily: "RobotoCondensedRegular",
       fontSize: 14,
       color: "black",
@@ -185,6 +193,8 @@ const ExerciseComponent = ({
               onChangeText={(newNum) => {
                 setRestTimer(newNum, numExercise);
               }}
+              multiline={true}
+              numberOfLines={1}
             />
           </View>
         </TouchableOpacity>
@@ -205,20 +215,26 @@ const ExerciseComponent = ({
 
       <View style={styles.headers}>
         <View style={styles.setHead}>
-          <Text style={styles.whiteText}>SET</Text>
+          <Text style={styles.blackText}>SET</Text>
         </View>
-        <View style={styles.prevHead}>
-          <Text style={styles.whiteText}>PREV</Text>
-        </View>
+        <TouchableOpacity
+          style={styles.prevHead}
+          onPress={() =>
+            navigation.navigate("PrevScreen", {
+              exercise: workoutInfo.exercise,
+            })
+          }
+        >
+          <Text style={styles.prevText}>PREV</Text>
+        </TouchableOpacity>
         <View style={styles.weightHead}>
-          <Text style={styles.whiteText}>WEIGHT</Text>
+          <Text style={styles.blackText}>WEIGHT</Text>
         </View>
         <View style={styles.repHead}>
-          <Text style={styles.whiteText}>REPS</Text>
+          <Text style={styles.blackText}>REPS</Text>
         </View>
         <View style={styles.emptyHead}>{/* Empty header */}</View>
       </View>
-      {/* {console.log(prevWeights)} */}
       {workoutInfo.weights.map((weight, i) => {
         return (
           <SetComponent
@@ -228,9 +244,9 @@ const ExerciseComponent = ({
             reps={workoutInfo.reps}
             numSet={i}
             numExercise={numExercise}
-            prevWeight={prevWeights.length < i + 1 ? prevWeights[i] : ""}
+            prevWeight={i < prevWeights.length ? prevWeights[i] : ""}
             setWeights={setWeights}
-            prevRep={prevReps.length < i + 1 ? prevWeights[i] : ""}
+            prevRep={i < prevReps.length ? prevReps[i] : ""}
             setReps={setReps}
           />
         );

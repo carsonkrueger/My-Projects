@@ -2,7 +2,7 @@ import React from "react";
 
 import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
 
-const TemplateComponent = ({ navigation, id, name, exercises }) => {
+const TemplateComponent = ({ navigation, name, workoutInfo }) => {
   const styles = StyleSheet.create({
     container: {
       width: "90%",
@@ -56,7 +56,8 @@ const TemplateComponent = ({ navigation, id, name, exercises }) => {
           onPress={() => {
             // loadWorkoutData(name);
             navigation.navigate("WorkoutScreen", {
-              id: id,
+              id: null,
+              name: name,
               isTemplate: true,
             });
           }}
@@ -66,10 +67,10 @@ const TemplateComponent = ({ navigation, id, name, exercises }) => {
             <Text style={styles.title}>{name}</Text>
           </View>
           <View style={styles.right}>
-            {exercises.map((name, i) =>
+            {workoutInfo.map((exer, i) =>
               i < 4 ? (
                 <Text key={i} style={styles.preview}>
-                  {name}
+                  {exer.exercise}
                 </Text>
               ) : i < 5 ? (
                 <Text key={i} style={styles.dots}>
