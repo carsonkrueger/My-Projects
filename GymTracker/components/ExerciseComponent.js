@@ -233,11 +233,11 @@ const ExerciseComponent = ({
         </View>
         <TouchableOpacity
           style={styles.prevHead}
-          onPress={() =>
-            navigation.navigate("PrevScreen", {
-              exercise: workoutInfo.exercise,
-            })
-          }
+          // onPress={() =>
+          //   navigation.navigate("PrevScreen", {
+          //     exercise: workoutInfo.exercise,
+          //   })
+          // }
         >
           <Text style={styles.prevText}>PREV</Text>
         </TouchableOpacity>

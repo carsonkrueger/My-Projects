@@ -20,7 +20,7 @@ import { Feather } from "@expo/vector-icons";
 const db = SQLite.openDatabase("GymTracker");
 
 const WorkoutScreen = ({ navigation, route }) => {
-  const [appIsReady, setAppIsReady] = useState(false);
+  // const [appIsReady, setAppIsReady] = useState(false);
   const initialState = useRef({
     exercise: "",
     weights: [""],
@@ -28,7 +28,7 @@ const WorkoutScreen = ({ navigation, route }) => {
     restTimer: "",
   });
 
-  const [states, setStates] = useState([initialState.current]);
+  const [states, setStates] = useState([]);
   const [workoutName, setWorkoutName] = useState("");
 
   const prevWeightReps = useRef([]);
@@ -52,7 +52,14 @@ const WorkoutScreen = ({ navigation, route }) => {
 
   const deleteExercise = (idx) => {
     if (states.length <= 1) {
-      setStates({ ...initialState.current });
+      setStates([
+        {
+          exercise: "",
+          weights: [""],
+          reps: [""],
+          restTimer: "",
+        },
+      ]);
     } else {
       let temp = [...states];
       temp.splice(idx, 1);
@@ -79,7 +86,6 @@ const WorkoutScreen = ({ navigation, route }) => {
   };
 
   const addSet = (numExercise) => {
-    console.log("yo", states[numExercise].weights);
     let temp = [...states];
 
     temp[numExercise].weights.push("");
@@ -113,7 +119,8 @@ const WorkoutScreen = ({ navigation, route }) => {
 
   const loadWorkoutData = async () => {
     if (WORKOUT_ID.current === null) {
-      console.log("workout id is null, cannot load data");
+      // create new workout for null id
+      setStates([initialState.current]);
       return;
     }
 
@@ -202,7 +209,7 @@ const WorkoutScreen = ({ navigation, route }) => {
             isLocked,
             date.current.getMonth() + "-" + date.current.getDate(),
           ],
-          () => savePrevData(),
+          () => navigation.navigate("HomeScreen"),
           (tx, error) => console.log("COULD NOT SAVE NEW WORKOUT DATA", error)
         );
       });
@@ -225,7 +232,8 @@ const WorkoutScreen = ({ navigation, route }) => {
             date.current.getMonth() + "-" + date.current.getDate(),
             WORKOUT_ID.current,
           ],
-          () => savePrevData(),
+          () => navigation.navigate("HomeScreen"),
+          // () => savePrevData(),
           (tx, error) => console.log("COULD NOT UPDATE WORKOUT", error)
         );
       });
@@ -286,30 +294,33 @@ const WorkoutScreen = ({ navigation, route }) => {
 
   // on mount
   useEffect(() => {
-    SplashScreen.preventAutoHideAsync();
+    // SplashScreen.preventAutoHideAsync();
 
-    async function prepare() {
-      try {
-        WORKOUT_ID.current = route.params.id;
-        route.params.isTemplate
-          ? await loadTemplateData()
-          : await loadWorkoutData();
-      } catch (e) {
-        console.warn(e);
-      } finally {
-        setAppIsReady(true);
-      }
-    }
-    prepare();
+    WORKOUT_ID.current = route.params.id;
+    route.params.isTemplate ? loadTemplateData() : loadWorkoutData();
+
+    // async function prepare() {
+    //   try {
+    //     WORKOUT_ID.current = route.params.id;
+    //     route.params.isTemplate
+    //       ? await loadTemplateData()
+    //       : await loadWorkoutData();
+    //   } catch (e) {
+    //     console.warn(e);
+    //   } finally {
+    //     setAppIsReady(true);
+    //   }
+    // }
+    // prepare();
   }, []);
 
-  useCallback(async () => {
-    if (appIsReady) {
-      await SplashScreen.hideAsync();
-    }
-  }, [appIsReady]);
+  // useCallback(async () => {
+  //   if (appIsReady) {
+  //     await SplashScreen.hideAsync();
+  //   }
+  // }, [appIsReady]);
 
-  if (!appIsReady) return null;
+  // if (!appIsReady) return null;
 
   const styles = StyleSheet.create({
     container: {

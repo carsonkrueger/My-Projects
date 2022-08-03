@@ -23,7 +23,7 @@ const db = SQLite.openDatabase("GymTracker");
 const HomeScreen = ({ navigation }) => {
   // [ [ NAME OF WORKOUT, NUM EXERCISES, LAST TIME DID WORKOUT ], ... ]
   const [workoutList, setWorkoutList] = useState([]);
-  const [templateList, setTemplateList] = useState([]);
+  // const [templateList, setTemplateList] = useState([]);
 
   const [forceUpdate, setForceUpdate] = useState(0);
   const isFocused = useIsFocused();
@@ -175,41 +175,6 @@ const HomeScreen = ({ navigation }) => {
     );
   };
 
-  const printPrevData = () => {
-    try {
-      db.transaction((tx) =>
-        tx.executeSql(
-          "SELECT * FROM Prevs",
-          null,
-          (tx, result) => {
-            console.log("PREVS ----->", result.rows._array);
-          },
-          (tx, error) => console.log("ERROR PRINTING PREV DATA", error)
-        )
-      );
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const insertIntoPrevs = () => {
-    try {
-      db.transaction((tx) =>
-        tx.executeSql(
-          "INSERT INTO Prevs (Name) VALUES (?);",
-          ["YAYAYAYA"],
-          null,
-          // (tx, result) => {
-          //   console.log("TEMPLATES ----->", result.rows._array);
-          // },
-          (tx, error) => console.log("ERROR PRINTING PREV DATA", error)
-        )
-      );
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
   const resetTables = () => {
     db.transaction((tx) => tx.executeSql("DROP TABLE Workouts"));
     db.transaction((tx) => tx.executeSql("DROP TABLE Templates"));
@@ -254,25 +219,25 @@ const HomeScreen = ({ navigation }) => {
     }
   };
 
-  const loadTemplateData = () => {
-    // templateList data loading
-    try {
-      db.transaction((tx) => {
-        tx.executeSql(
-          "SELECT ID, Name, Exercises FROM Templates", // ORDER BY LastPerformed
-          null,
-          (tx, result) => {
-            setTemplateList(result.rows._array);
-            // console.log(result.rows._array);
-          },
-          (tx, error) =>
-            console.log("ERROR loading homescreen TemplateList data") // error cb
-        );
-      });
-    } catch (error) {
-      console.log("ERROR LOADING HOMESCREEN TemplateList DATA");
-    }
-  };
+  // const loadTemplateData = () => {
+  //   // templateList data loading
+  //   try {
+  //     db.transaction((tx) => {
+  //       tx.executeSql(
+  //         "SELECT ID, Name, Exercises FROM Templates", // ORDER BY LastPerformed
+  //         null,
+  //         (tx, result) => {
+  //           setTemplateList(result.rows._array);
+  //           // console.log(result.rows._array);
+  //         },
+  //         (tx, error) =>
+  //           console.log("ERROR loading homescreen TemplateList data") // error cb
+  //       );
+  //     });
+  //   } catch (error) {
+  //     console.log("ERROR LOADING HOMESCREEN TemplateList DATA");
+  //   }
+  // };
 
   useEffect(() => {
     // resetTables();
@@ -280,7 +245,6 @@ const HomeScreen = ({ navigation }) => {
     createTemplateTable();
 
     fillTemplateTable();
-    // loadTemplateData();
     createPrevsTable();
     // insertIntoPrevs();
     // printPrevData();
