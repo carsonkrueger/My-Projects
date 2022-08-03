@@ -9,8 +9,6 @@ import React, {
 
 import * as SQLite from "expo-sqlite";
 
-const db = SQLite.openDatabase("GymTracker");
-
 const BackComponent = ({
   saveNewData,
   workoutName,

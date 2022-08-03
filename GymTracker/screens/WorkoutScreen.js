@@ -1,11 +1,4 @@
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
-import reactDom from "react-dom";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   View,
   Text,
@@ -13,7 +6,6 @@ import {
   StyleSheet,
   TextInput,
   SafeAreaView,
-  ScrollView,
   FlatList,
 } from "react-native";
 
@@ -167,7 +159,22 @@ const WorkoutScreen = ({ navigation, route }) => {
           "SELECT * FROM Templates WHERE Name = ?;",
           [route.params.name],
           (tx, result) => {
-            setStates(JSON.parse(result.rows.item(0).WorkoutInfo));
+            let tempWorkoutInfo = JSON.parse(result.rows.item(0).WorkoutInfo);
+
+            for (let i = 0; i < tempWorkoutInfo.length; i++) {
+              prevWeightReps.current.push({
+                weights: tempWorkoutInfo[i].weights,
+                reps: tempWorkoutInfo[i].reps,
+              });
+              tempWorkoutInfo[i].weights = new Array(
+                tempWorkoutInfo[i].weights.length
+              ).fill("");
+              tempWorkoutInfo[i].reps = new Array(
+                tempWorkoutInfo[i].reps.length
+              ).fill("");
+            }
+
+            setStates(tempWorkoutInfo);
             setWorkoutName(result.rows.item(0).Name);
             setIsLocked(result.rows.item(0).IsLocked);
           },
@@ -220,7 +227,9 @@ const WorkoutScreen = ({ navigation, route }) => {
             date.current.getMonth() + "-" + date.current.getDate(),
             WORKOUT_ID.current,
           ],
-          null,
+          (tx, result) => {
+            savePrevData();
+          },
           (tx, error) => console.log("COULD NOT UPDATE WORKOUT", error)
         );
       });
@@ -228,7 +237,6 @@ const WorkoutScreen = ({ navigation, route }) => {
       console.log("ERROR UPDATING WORKOUT SCREEN DATA", error);
     }
     // navigation.navigate("HomeScreen");
-    savePrevData();
   };
 
   const savePrevData = () => {
@@ -261,6 +269,41 @@ const WorkoutScreen = ({ navigation, route }) => {
       }
       // });
       navigation.navigate("HomeScreen");
+    }
+  };
+
+  const printPrevData = () => {
+    try {
+      db.transaction((tx) =>
+        tx.executeSql(
+          "SELECT * FROM Prevs",
+          null,
+          (tx, result) => {
+            console.log("PREVS ----->", result.rows._array);
+          },
+          (tx, error) => console.log("ERROR PRINTING PREV DATA", error)
+        )
+      );
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const insertIntoPrevs = () => {
+    try {
+      db.transaction((tx) =>
+        tx.executeSql(
+          "INSERT INTO Prevs (Name) VALUES (?);",
+          ["OOOPPPPOOO"],
+          null,
+          // (tx, result) => {
+          //   console.log("TEMPLATES ----->", result.rows._array);
+          // },
+          (tx, error) => console.log("ERROR PRINTING PREV DATA", error)
+        )
+      );
+    } catch (error) {
+      console.log(error);
     }
   };
 

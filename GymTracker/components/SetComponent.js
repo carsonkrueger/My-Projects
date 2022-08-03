@@ -133,7 +133,7 @@ const SetComponent = ({
       {/*PREV*/}
       <View style={styles.prevContainer}>
         <Text style={styles.prevText}>
-          {prevRep !== "" || prevWeight !== ""
+          {prevRep !== "" && prevWeight !== ""
             ? prevWeight + " x " + prevRep
             : "---"}
         </Text>

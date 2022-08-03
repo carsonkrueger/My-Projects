@@ -31,86 +31,6 @@ const HomeScreen = ({ navigation }) => {
   const windowWidth = useRef(Dimensions.get("window").width);
   const windowHeight = useRef(Dimensions.get("window").height);
 
-  const templatePresetList = useRef([
-    {
-      Name: "LEGS",
-      Exercises: [
-        "SQUAT",
-        "DEADLIFT",
-        "LEG EXTENSIONS",
-        "BARBELL THRUSTS",
-        "CALF RAISES",
-      ],
-      Weights: [
-        ["", "", "", ""],
-        ["", "", ""],
-        ["", "", ""],
-        ["", "", ""],
-        ["", "", ""],
-      ],
-      Reps: [
-        ["", "", "", ""],
-        ["", "", ""],
-        ["", "", ""],
-        ["", "", ""],
-        ["", "", ""],
-      ],
-      RestTimers: ["180", "150", "120", "120", "60"],
-      IsLocked: false,
-    },
-    {
-      Name: "PUSH",
-      Exercises: [
-        "BENCH",
-        "DUMBELL SH. PRESS",
-        "CABLE FLYS",
-        "CABLE LATERAL RAISE",
-        "TRICEP CABLE KICKBACK",
-      ],
-      Weights: [
-        ["", "", ""],
-        ["", "", ""],
-        ["", "", ""],
-        ["", "", ""],
-        ["", "", ""],
-      ],
-      Reps: [
-        ["", "", ""],
-        ["", "", ""],
-        ["", "", ""],
-        ["", "", ""],
-        ["", "", ""],
-      ],
-      RestTimers: ["150", "150", "120", "120", "90"],
-      IsLocked: false,
-    },
-    {
-      Name: "PULL",
-      Exercises: [
-        "PULL UP",
-        "PENDLAY ROW",
-        "EZ BAR CURL",
-        "PREACHER CURL",
-        "CABLE FACE PULL",
-      ],
-      Weights: [
-        ["", "", ""],
-        ["", "", ""],
-        ["", "", ""],
-        ["", "", ""],
-        ["", ""],
-      ],
-      Reps: [
-        ["", "", ""],
-        ["", "", ""],
-        ["", "", ""],
-        ["", "", ""],
-        ["", ""],
-      ],
-      RestTimers: ["150", "150", "120", "120", "60"],
-      IsLocked: false,
-    },
-  ]);
   const templateWorkouts = useRef([
     {
       workoutName: "PULL",
@@ -163,7 +83,7 @@ const HomeScreen = ({ navigation }) => {
           restTimer: "120",
         },
         {
-          exercise: "CHEST FLY",
+          exercise: "CHEST FLYS",
           weights: ["", "", ""],
           reps: ["12", "12", "12"],
           restTimer: "120",
@@ -175,7 +95,7 @@ const HomeScreen = ({ navigation }) => {
           restTimer: "90",
         },
         {
-          exercise: "TRICEPT KICKBACKS",
+          exercise: "TRICEP KICKBACKS",
           weights: ["", "", ""],
           reps: ["15", "15", "15"],
           restTimer: "90",
@@ -272,6 +192,24 @@ const HomeScreen = ({ navigation }) => {
     }
   };
 
+  const insertIntoPrevs = () => {
+    try {
+      db.transaction((tx) =>
+        tx.executeSql(
+          "INSERT INTO Prevs (Name) VALUES (?);",
+          ["YAYAYAYA"],
+          null,
+          // (tx, result) => {
+          //   console.log("TEMPLATES ----->", result.rows._array);
+          // },
+          (tx, error) => console.log("ERROR PRINTING PREV DATA", error)
+        )
+      );
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const resetTables = () => {
     db.transaction((tx) => tx.executeSql("DROP TABLE Workouts"));
     db.transaction((tx) => tx.executeSql("DROP TABLE Templates"));
@@ -343,9 +281,9 @@ const HomeScreen = ({ navigation }) => {
 
     fillTemplateTable();
     // loadTemplateData();
-
     createPrevsTable();
-    printPrevData();
+    // insertIntoPrevs();
+    // printPrevData();
   }, []);
 
   useEffect(() => {
