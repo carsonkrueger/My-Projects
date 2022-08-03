@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
   TouchableOpacity,
   View,
@@ -19,7 +19,6 @@ const ExerciseComponent = ({
   numExercise,
   workoutInfo,
   setRestTimer,
-  seconds,
   delExercise,
   setExercise,
   prevWeights,
@@ -37,6 +36,21 @@ const ExerciseComponent = ({
 
     if (!doTimer) countdownTime.current = new Date().getTime();
   };
+  const [sec, setSec] = useState(new Date().getTime());
+  const intervalId = useRef();
+
+  useEffect(() => {
+    if (doTimer) {
+      setSec(new Date().getTime());
+      intervalId.current = setInterval(() => {
+        setSec(new Date().getTime());
+      }, 1000);
+    } else {
+      clearInterval(intervalId.current);
+    }
+
+    return () => clearInterval(intervalId.current);
+  }, [doTimer]);
 
   const styles = StyleSheet.create({
     container: {
@@ -182,7 +196,7 @@ const ExerciseComponent = ({
                 doTimer
                   ? Math.trunc(
                       workoutInfo.restTimer -
-                        (seconds - countdownTime.current) / 1000 -
+                        (sec - countdownTime.current) / 1000 +
                         1
                     ).toString()
                   : workoutInfo.restTimer

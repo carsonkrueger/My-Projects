@@ -34,7 +34,6 @@ const WorkoutScreen = ({ navigation, route }) => {
   const prevWeightReps = useRef([]);
 
   const WORKOUT_ID = useRef(null);
-  const [seconds, setSeconds] = useState(new Date().getTime());
   const [isLocked, setIsLocked] = useState(false);
 
   const date = useRef(new Date());
@@ -191,11 +190,11 @@ const WorkoutScreen = ({ navigation, route }) => {
     }
   };
 
-  const saveNewData = () => {
+  const saveNewData = async () => {
     try {
       // savePrevData();
-      db.transaction((tx) => {
-        tx.executeSql(
+      await db.transaction(async (tx) => {
+        await tx.executeSql(
           "INSERT INTO Workouts (Name, WorkoutInfo, IsLocked, LastPerformed) VALUES (?,?,?,?);",
           [
             workoutName,
@@ -203,7 +202,7 @@ const WorkoutScreen = ({ navigation, route }) => {
             isLocked,
             date.current.getMonth() + "-" + date.current.getDate(),
           ],
-          null,
+          () => savePrevData(),
           (tx, error) => console.log("COULD NOT SAVE NEW WORKOUT DATA", error)
         );
       });
@@ -211,14 +210,13 @@ const WorkoutScreen = ({ navigation, route }) => {
       console.log("ERROR SAVING WORKOUT SCREEN DATA", error);
     }
     // navigation.navigate("HomeScreen");
-    savePrevData();
   };
 
-  const updateData = () => {
+  const updateData = async () => {
     try {
       // savePrevData();
-      db.transaction((tx) => {
-        tx.executeSql(
+      await db.transaction(async (tx) => {
+        await tx.executeSql(
           "UPDATE Workouts SET Name = ?, WorkoutInfo = ?, IsLocked = ?, LastPerformed = ? WHERE ID = ?",
           [
             workoutName,
@@ -227,9 +225,7 @@ const WorkoutScreen = ({ navigation, route }) => {
             date.current.getMonth() + "-" + date.current.getDate(),
             WORKOUT_ID.current,
           ],
-          (tx, result) => {
-            savePrevData();
-          },
+          () => savePrevData(),
           (tx, error) => console.log("COULD NOT UPDATE WORKOUT", error)
         );
       });
@@ -248,7 +244,6 @@ const WorkoutScreen = ({ navigation, route }) => {
     // )
     //   return;
     for (let i = 0; i < states.length; i++) {
-      console.log(states[i].reps, "\n ----->");
       try {
         db.transaction((tx) =>
           tx.executeSql(
@@ -289,24 +284,6 @@ const WorkoutScreen = ({ navigation, route }) => {
     }
   };
 
-  const insertIntoPrevs = () => {
-    try {
-      db.transaction((tx) =>
-        tx.executeSql(
-          "INSERT INTO Prevs (Name) VALUES (?);",
-          ["OOOPPPPOOO"],
-          null,
-          // (tx, result) => {
-          //   console.log("TEMPLATES ----->", result.rows._array);
-          // },
-          (tx, error) => console.log("ERROR PRINTING PREV DATA", error)
-        )
-      );
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
   // on mount
   useEffect(() => {
     SplashScreen.preventAutoHideAsync();
@@ -324,15 +301,9 @@ const WorkoutScreen = ({ navigation, route }) => {
       }
     }
     prepare();
-
-    // const intervalId = setInterval(() => {
-    //   setSeconds(new Date().getTime());
-    // }, 1000);
-
-    // return () => clearInterval(intervalId);
   }, []);
 
-  const onLayoutRootView = useCallback(async () => {
+  useCallback(async () => {
     if (appIsReady) {
       await SplashScreen.hideAsync();
     }
@@ -465,7 +436,6 @@ const WorkoutScreen = ({ navigation, route }) => {
             addSet={addSet}
             deleteSet={deleteSet}
             setRestTimer={setRestTimer}
-            seconds={seconds}
             delExercise={deleteExercise}
             setExercise={setExercise}
             prevWeights={
