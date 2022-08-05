@@ -342,18 +342,20 @@ const WorkoutScreen = ({ navigation, route }) => {
       backgroundColor: "#2494f0",
     },
     screenTitleContainer: {
-      paddingLeft: "6%",
+      flex: 6,
     },
     screenTitleText: {
       fontFamily: "RobotoCondensedRegular",
+      marginLeft: "7%",
       fontSize: 18,
       color: "white", //"#2494f0",
     },
     backContainer: {
-      flex: 1,
+      flex: 1.8,
     },
     lockContainer: {
-      paddingHorizontal: 15,
+      alignItems: "center",
+      flex: 1.4,
     },
     notesContainer: {
       flexDirection: "row",

@@ -1,13 +1,13 @@
 {
   "expo": {
-    "name": "GymTracker",
-    "slug": "GymTracker",
+    "name": "REPR",
+    "slug": "REPR",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/weight_1.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./assets/weight_2_splash.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
