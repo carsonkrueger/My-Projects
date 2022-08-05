@@ -42,8 +42,10 @@ const ExerciseComponent = ({
   useEffect(() => {
     if (doTimer) {
       setSec(new Date().getTime());
+
       intervalId.current = setInterval(() => {
         setSec(new Date().getTime());
+        // if (sec <= -999) flipDoTimer();
       }, 1000);
     } else {
       clearInterval(intervalId.current);
@@ -201,7 +203,7 @@ const ExerciseComponent = ({
                     ).toString()
                   : workoutInfo.restTimer
               }
-              maxLength={3}
+              maxLength={4}
               keyboardType="numeric"
               editable={!doTimer && !isLocked}
               onChangeText={(newNum) => {
@@ -231,13 +233,14 @@ const ExerciseComponent = ({
         <View style={styles.setHead}>
           <Text style={styles.blackText}>SET</Text>
         </View>
+        {/* PREV HEAD */}
         <TouchableOpacity
           style={styles.prevHead}
-          // onPress={() =>
-          //   navigation.navigate("PrevScreen", {
-          //     exercise: workoutInfo.exercise,
-          //   })
-          // }
+          onPress={() =>
+            navigation.navigate("PrevScreen", {
+              exercise: workoutInfo.exercise,
+            })
+          }
         >
           <Text style={styles.prevText}>PREV</Text>
         </TouchableOpacity>

@@ -1,21 +1,19 @@
 import React from "react";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, View, Text } from "react-native";
 
-const PrevComponent = ({ index, name }) => {
+const PrevComponent = ({ info, index }) => {
   const styles = StyleSheet.create({
     container: {
       flex: 1,
       backgroundColor: index % 2 === 1 ? "#FFF" : "#ededed",
-      margin: "2%",
+      margin: "4%",
+      borderRadius: 5,
     },
   });
 
   return (
     <View style={styles.container}>
-      <Text>
-        {index}
-        {name}
-      </Text>
+      <Text>Date: {info.LastPerformed}</Text>
     </View>
   );
 };

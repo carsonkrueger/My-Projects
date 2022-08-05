@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 
 import { FlatList, StyleSheet, Text, View } from "react-native";
 
@@ -9,13 +9,19 @@ import PrevComponent from "../components/PrevComponent";
 const db = SQLite.openDatabase("GymTracker");
 
 const PrevScreen = ({ route }) => {
-  const [prevList, setPrevList] = useState([]);
-  console.log(route.params.exercise);
+  const initialState = useRef({
+    name: "",
+    weights: [""],
+    reps: [""],
+    lastPerformed: "",
+  });
+  const [prevList, setPrevList] = useState([initialState.current]);
 
   const loadData = () => {
     try {
       db.transaction((tx) =>
         tx.executeSql(
+          // (ID, Name, Weights, Reps, LastPerformed)
           "SELECT * FROM Prevs WHERE Name = ? ORDER BY LastPerformed DESC",
           [route.params.exercise],
           (tx, result) => {
@@ -40,12 +46,17 @@ const PrevScreen = ({ route }) => {
       backgroundColor: "#FFF",
     },
   });
+
   return (
-    <View>
+    <View style={styles.container}>
+      {/* {console.log("---->", prevList)} */}
+      <View>
+        <Text>{route.params.exercise}</Text>
+      </View>
       <FlatList
         data={prevList}
         renderItem={({ item, index }) => (
-          <PrevComponent index={index} name={item[index].Name} />
+          <PrevComponent info={item} index={index} />
         )}
       />
     </View>

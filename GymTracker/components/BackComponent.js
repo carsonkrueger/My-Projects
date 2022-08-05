@@ -11,10 +11,11 @@ import * as SQLite from "expo-sqlite";
 
 const BackComponent = ({
   saveNewData,
-  workoutName,
   updateData,
+  savePrevData,
+  workoutName,
   id,
-  // originalWorkoutName,
+  navigation,
   isTemplate,
 }) => {
   const isWorkoutUnique = () => {
@@ -42,9 +43,10 @@ const BackComponent = ({
   return (
     <View style={styles.container}>
       <TouchableOpacity
-        onPress={() => {
+        onPress={async () => {
           if (isWorkoutUnique()) {
             id == null || isTemplate ? saveNewData() : updateData();
+            await savePrevData();
           }
         }}
       >

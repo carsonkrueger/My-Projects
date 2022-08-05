@@ -209,6 +209,7 @@ const WorkoutScreen = ({ navigation, route }) => {
             isLocked,
             date.current.getMonth() + "-" + date.current.getDate(),
           ],
+          // null,
           () => navigation.navigate("HomeScreen"),
           (tx, error) => console.log("COULD NOT SAVE NEW WORKOUT DATA", error)
         );
@@ -232,8 +233,8 @@ const WorkoutScreen = ({ navigation, route }) => {
             date.current.getMonth() + "-" + date.current.getDate(),
             WORKOUT_ID.current,
           ],
+          // null,
           () => navigation.navigate("HomeScreen"),
-          // () => savePrevData(),
           (tx, error) => console.log("COULD NOT UPDATE WORKOUT", error)
         );
       });
@@ -243,7 +244,7 @@ const WorkoutScreen = ({ navigation, route }) => {
     // navigation.navigate("HomeScreen");
   };
 
-  const savePrevData = () => {
+  const savePrevData = async () => {
     // states.exercisesArr.forEach((exerName, i) => {
     // Do not save it weights and reps are empty
     // if (
@@ -252,20 +253,29 @@ const WorkoutScreen = ({ navigation, route }) => {
     // )
     //   return;
     for (let i = 0; i < states.length; i++) {
+      // console.log([
+      //   WORKOUT_ID,
+      //   states[i].exercise,
+      //   JSON.stringify(states[i].weights),
+      //   JSON.stringify(states[i].reps),
+      //   date.current.getMonth() + "-" + date.current.getDate(),
+      // ]);
       try {
-        db.transaction((tx) =>
-          tx.executeSql(
-            "INSERT INTO Prevs (ID, Name, Weights, Reps, LastPerformed) VALUES (?,?,?,?,?);",
-            [
-              WORKOUT_ID,
-              states[i].exercise,
-              JSON.stringify(states[i].weights),
-              JSON.stringify(states[i].reps),
-              date.current.getMonth() + "-" + date.current.getDate(),
-            ],
-            null,
-            (tx, error) => console.log("ERROR", error)
-          )
+        await db.transaction(
+          async (tx) =>
+            await tx.executeSql(
+              "INSERT INTO Prevs (ID, Name, Weights, Reps, LastPerformed) VALUES (?,?,?,?,?);",
+              [
+                WORKOUT_ID.current,
+                states[i].exercise,
+                JSON.stringify(states[i].weights),
+                JSON.stringify(states[i].reps),
+                date.current.getMonth() + "-" + date.current.getDate(),
+              ],
+              null,
+              // () => navigation.navigate("HomeScreen"),
+              (tx, error) => console.log("ERROR", error)
+            )
         );
       } catch (error) {
         console.log("error saving prev data", error);
@@ -421,6 +431,7 @@ const WorkoutScreen = ({ navigation, route }) => {
                   navigation={navigation}
                   saveNewData={saveNewData}
                   updateData={updateData}
+                  savePrevData={savePrevData}
                   workoutName={workoutName}
                   id={WORKOUT_ID.current}
                   // originalWorkoutName={states.originalWorkoutName}
