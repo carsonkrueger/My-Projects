@@ -1,14 +1,21 @@
 import React, { useEffect, useState, useRef } from "react";
 
-import { FlatList, StyleSheet, Text, View } from "react-native";
+import {
+  FlatList,
+  StyleSheet,
+  Text,
+  View,
+  TouchableOpacity,
+} from "react-native";
 
 import * as SQLite from "expo-sqlite";
 
 import PrevComponent from "../components/PrevComponent";
+import { Feather } from "@expo/vector-icons";
 
 const db = SQLite.openDatabase("GymTracker");
 
-const PrevScreen = ({ route }) => {
+const PrevScreen = ({ navigation, route }) => {
   const initialState = useRef({
     name: "",
     weights: [""],
@@ -16,6 +23,34 @@ const PrevScreen = ({ route }) => {
     lastPerformed: "",
   });
   const [prevList, setPrevList] = useState([initialState.current]);
+  const dateList = useRef([{ month: "", day: "" }]);
+
+  const curMonthInt = useRef("null");
+  const months = useRef([
+    "JANUARY",
+    "FEBRUARY",
+    "MARCH",
+    "APRIL",
+    "MAY",
+    "JUNE",
+    "JULY",
+    "AUGUST",
+    "SEPTEMBER",
+    "OCTOBER",
+    "NOVEMBER",
+    "DECEMBER",
+  ]);
+
+  const getDates = (lastPerformed) => {
+    const [monthInt, dayInt] = lastPerformed.split("-");
+
+    if (curMonthInt.current !== months.current[monthInt - 1]) {
+      curMonthInt.current = months.current[monthInt - 1];
+      return { month: months.current[monthInt - 1], day: dayInt };
+    }
+
+    return { month: "", day: dayInt };
+  };
 
   const loadData = () => {
     try {
@@ -25,8 +60,21 @@ const PrevScreen = ({ route }) => {
           "SELECT * FROM Prevs WHERE Name = ? ORDER BY LastPerformed DESC",
           [route.params.exercise],
           (tx, result) => {
-            console.log("----", result.rows._array);
-            setPrevList(result.rows._array);
+            let tempPrevList = [];
+            let tempDateList = [];
+            for (let i = 0; i < result.rows.length; i++) {
+              tempPrevList.push({
+                // name: result.rows.item(i).Name,
+                weights: JSON.parse(result.rows.item(i).Weights),
+                reps: JSON.parse(result.rows.item(i).Reps),
+                // lastPerformed: result.rows.item(i).LastPerformed,
+              });
+
+              tempDateList.push(getDates(result.rows.item(i).LastPerformed));
+            }
+
+            dateList.current = tempDateList;
+            setPrevList(tempPrevList);
           },
           (tx, error) => console.log("Could not load prev data", error)
         )
@@ -43,20 +91,55 @@ const PrevScreen = ({ route }) => {
   const styles = StyleSheet.create({
     container: {
       flex: 1,
-      backgroundColor: "#FFF",
+      backgroundColor: "#FFFFFF",
+    },
+    scrollContainer: {
+      paddingBottom: "60%",
+    },
+    titleContainer: {
+      marginTop: "4%",
+      marginHorizontal: "5%",
+      padding: "2.5%",
+      backgroundColor: "#2494f0",
+      borderRadius: 7,
+      flexDirection: "row",
+      alignItems: "center",
+    },
+    backArrow: {
+      flex: 0.08,
+    },
+    titleText: {
+      flex: 0.92,
+      textAlign: "center",
+      color: "white",
+      fontSize: 18,
+      fontFamily: "RobotoCondensedRegular",
     },
   });
 
   return (
     <View style={styles.container}>
-      {/* {console.log("---->", prevList)} */}
-      <View>
-        <Text>{route.params.exercise}</Text>
-      </View>
       <FlatList
         data={prevList}
+        stickyHeaderIndices={[0]}
+        ListHeaderComponent={
+          <View style={styles.titleContainer}>
+            <TouchableOpacity onPress={() => navigation.goBack()}>
+              <Feather name="arrow-left" color={"white"} size={24} />
+            </TouchableOpacity>
+
+            <Text style={styles.titleText}>
+              {route.params.exercise} HISTORY
+            </Text>
+          </View>
+        }
         renderItem={({ item, index }) => (
-          <PrevComponent info={item} index={index} />
+          <PrevComponent
+            key={index}
+            info={item}
+            date={dateList.current[index]}
+            index={index}
+          />
         )}
       />
     </View>

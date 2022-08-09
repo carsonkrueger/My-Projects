@@ -256,6 +256,7 @@ const HomeScreen = ({ navigation }) => {
 
   const [fontLoaded] = useFonts({
     RobotoCondensedRegular: require("../assets/fonts/RobotoCondensed-Regular.ttf"),
+    RobotoCondensedLight: require("../assets/fonts/RobotoCondensed-Light.ttf"),
   });
   if (!fontLoaded) return null;
 
@@ -324,7 +325,7 @@ const HomeScreen = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar backgroundColor={"#2494f0"} />
+      <StatusBar backgroundColor={"white"} barStyle={"dark-content"} />
       <ScrollView
         stickyHeaderIndices={[0, 2]}
         contentContainerStyle={styles.scrollContainer}

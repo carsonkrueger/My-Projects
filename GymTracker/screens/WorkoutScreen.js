@@ -399,6 +399,13 @@ const WorkoutScreen = ({ navigation, route }) => {
       fontSize: 18,
       color: "white",
     },
+    cancel: {
+      color: "red",
+      fontFamily: "RobotoCondensedLight",
+      fontSize: 20,
+      textAlign: "center",
+      paddingTop: isLocked ? "5%" : null,
+    },
   });
 
   return (
@@ -487,6 +494,11 @@ const WorkoutScreen = ({ navigation, route }) => {
                 <Text style={styles.addExerciseText}>ADD EXERCISE</Text>
               </TouchableOpacity>
             )}
+            <TouchableOpacity>
+              <Text onPress={() => navigation.goBack()} style={styles.cancel}>
+                CANCEL WORKOUT
+              </Text>
+            </TouchableOpacity>
           </View>
         }
       ></FlatList>

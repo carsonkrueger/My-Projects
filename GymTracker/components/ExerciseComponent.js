@@ -115,6 +115,7 @@ const ExerciseComponent = ({
       color: "white",
       padding: 5,
       width: "100%",
+      alignItems: "center",
     },
     setHead: {
       fontFamily: "RobotoCondensedRegular",
@@ -128,12 +129,13 @@ const ExerciseComponent = ({
       alignItems: "center",
     },
     prevText: {
-      paddingHorizontal: 10,
       fontFamily: "RobotoCondensedRegular",
       fontSize: 14,
       color: "white",
       backgroundColor: "#2494f0",
-      borderRadius: 8,
+      borderRadius: 12,
+      paddingVertical: 3,
+      paddingHorizontal: 13,
     },
     weightHead: {
       fontFamily: "RobotoCondensedRegular",
@@ -173,7 +175,7 @@ const ExerciseComponent = ({
           placeholder="EXERCISE NAME"
           placeholderTextColor="#90c6f5"
           value={workoutInfo.exercise}
-          maxLength={20}
+          maxLength={27}
           editable={!isLocked}
           autoCapitalize="characters"
           onChangeText={(newText) => {

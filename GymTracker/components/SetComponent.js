@@ -90,7 +90,7 @@ const SetComponent = ({
       alignItems: "center",
     },
     weightText: {
-      fontFamily: "RobotoCondensedRegular",
+      fontFamily: "RobotoCondensedLight",
       fontSize: 16,
       backgroundColor: isDone /*isDoneArr[numExercise][numSet]*/
         ? null
@@ -106,7 +106,7 @@ const SetComponent = ({
       fontSize: 16,
     },
     repText: {
-      fontFamily: "RobotoCondensedRegular",
+      fontFamily: "RobotoCondensedLight",
       fontSize: 16,
       backgroundColor: isDone /*isDoneArr[numExercise][numSet]*/
         ? null
