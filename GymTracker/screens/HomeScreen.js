@@ -21,9 +21,7 @@ import { useFonts } from "expo-font";
 const db = SQLite.openDatabase("GymTracker");
 
 const HomeScreen = ({ navigation }) => {
-  // [ [ NAME OF WORKOUT, NUM EXERCISES, LAST TIME DID WORKOUT ], ... ]
   const [workoutList, setWorkoutList] = useState([]);
-  // const [templateList, setTemplateList] = useState([]);
 
   const [forceUpdate, setForceUpdate] = useState(0);
   const isFocused = useIsFocused();
@@ -32,41 +30,6 @@ const HomeScreen = ({ navigation }) => {
   const windowHeight = useRef(Dimensions.get("window").height);
 
   const templateWorkouts = useRef([
-    {
-      workoutName: "PULL",
-      workoutInfo: [
-        {
-          exercise: "LAT PULL DOWN",
-          weights: ["", "", ""],
-          reps: ["12", "12", "12"],
-          restTimer: "120",
-        },
-        {
-          exercise: "BARBELL ROWS",
-          weights: ["", "", ""],
-          reps: ["10", "10", "10"],
-          restTimer: "120",
-        },
-        {
-          exercise: "EZ BAR CURLS",
-          weights: ["", "", ""],
-          reps: ["12", "12", "12"],
-          restTimer: "120",
-        },
-        {
-          exercise: "PREACHER CURLS",
-          weights: ["", "", ""],
-          reps: ["15", "15", "15"],
-          restTimer: "120",
-        },
-        {
-          exercise: "CABLE FACE PULL",
-          weights: ["", "", ""],
-          reps: ["15", "15", "15"],
-          restTimer: "30",
-        },
-      ],
-    },
     {
       workoutName: "PUSH",
       workoutInfo: [
@@ -99,6 +62,41 @@ const HomeScreen = ({ navigation }) => {
           weights: ["", "", ""],
           reps: ["15", "15", "15"],
           restTimer: "90",
+        },
+      ],
+    },
+    {
+      workoutName: "PULL",
+      workoutInfo: [
+        {
+          exercise: "LAT PULL DOWN",
+          weights: ["", "", ""],
+          reps: ["12", "12", "12"],
+          restTimer: "120",
+        },
+        {
+          exercise: "BARBELL ROWS",
+          weights: ["", "", ""],
+          reps: ["10", "10", "10"],
+          restTimer: "120",
+        },
+        {
+          exercise: "EZ BAR CURLS",
+          weights: ["", "", ""],
+          reps: ["12", "12", "12"],
+          restTimer: "120",
+        },
+        {
+          exercise: "PREACHER CURLS",
+          weights: ["", "", ""],
+          reps: ["15", "15", "15"],
+          restTimer: "120",
+        },
+        {
+          exercise: "CABLE FACE PULL",
+          weights: ["", "", ""],
+          reps: ["15", "15", "15"],
+          restTimer: "30",
         },
       ],
     },
@@ -246,7 +244,6 @@ const HomeScreen = ({ navigation }) => {
 
     fillTemplateTable();
     createPrevsTable();
-    // insertIntoPrevs();
     // printPrevData();
   }, []);
 
@@ -275,8 +272,8 @@ const HomeScreen = ({ navigation }) => {
       alignItems: "center",
     },
     screenHeaderText: {
-      fontFamily: "RobotoCondensedRegular",
-      fontSize: 22,
+      fontFamily: "RobotoCondensedLight",
+      fontSize: 25,
       color: "#2494f0", //"#2494f0",
     },
     subHeaderContainer: {
@@ -285,11 +282,11 @@ const HomeScreen = ({ navigation }) => {
       paddingVertical: "2%",
     },
     subHeaderText: {
-      fontFamily: "RobotoCondensedRegular",
+      fontFamily: "RobotoCondensedLight",
       paddingTop: "3%",
       paddingLeft: "5%",
       fontSize: 15,
-      color: "#bfbfbf",
+      color: "#9c9c9c",
     },
     newCreateWorkoutContainer: {
       width: "90%",
@@ -317,7 +314,7 @@ const HomeScreen = ({ navigation }) => {
       marginLeft: windowWidth.current / 2 - 85,
     },
     createWorkoutText: {
-      fontFamily: "RobotoCondensedRegular",
+      fontFamily: "RobotoCondensedLight",
       color: "white",
       fontSize: 20,
     },
@@ -331,7 +328,7 @@ const HomeScreen = ({ navigation }) => {
         contentContainerStyle={styles.scrollContainer}
       >
         <View style={styles.screenHeader}>
-          <Text style={styles.screenHeaderText}>WORKOUTS</Text>
+          <Text style={styles.screenHeaderText}>REPR</Text>
         </View>
 
         <View style={styles.subHeaderContainer}>

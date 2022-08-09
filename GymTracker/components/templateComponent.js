@@ -32,13 +32,13 @@ const TemplateComponent = ({ navigation, name, workoutInfo }) => {
     },
     title: {
       fontSize: 15,
-      fontFamily: "RobotoCondensedRegular",
+      fontFamily: "RobotoCondensedLight",
     },
     preview: {
       color: "#9c9c9c",
       fontSize: 11,
       textAlign: "right",
-      fontFamily: "RobotoCondensedRegular",
+      fontFamily: "RobotoCondensedLight",
     },
     dots: {
       color: "#9c9c9c",

@@ -60,7 +60,7 @@ const ExerciseComponent = ({
       marginVertical: "2%",
       borderColor: "#bdbdbd",
       borderWidth: 1,
-      borderRadius: 20,
+      borderRadius: 15,
       marginHorizontal: "2%",
       paddingTop: "5%",
       backgroundColor: "white",

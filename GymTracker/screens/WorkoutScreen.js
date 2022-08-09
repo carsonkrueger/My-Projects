@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   View,
   Text,
@@ -7,17 +7,28 @@ import {
   TextInput,
   SafeAreaView,
   FlatList,
+  AppState,
 } from "react-native";
 
 import * as SQLite from "expo-sqlite";
-import * as SplashScreen from "expo-splash-screen";
+import * as Notifications from "expo-notifications";
+import * as Device from "expo-device";
+// import * as SplashScreen from "expo-splash-screen";
 
 import BackComponent from "../components/BackComponent";
 import ExerciseComponent from "../components/ExerciseComponent";
 
-import { Feather } from "@expo/vector-icons";
+import { Feather, Ionicons } from "@expo/vector-icons";
 
 const db = SQLite.openDatabase("GymTracker");
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: false,
+    shouldPlaySound: false,
+    shouldSetBadge: false,
+  }),
+});
 
 const WorkoutScreen = ({ navigation, route }) => {
   // const [appIsReady, setAppIsReady] = useState(false);
@@ -28,6 +39,11 @@ const WorkoutScreen = ({ navigation, route }) => {
     restTimer: "",
   });
 
+  const notificationResponse = Notifications.useLastNotificationResponse();
+  const scheduledNotication = useRef();
+
+  const appState = useRef(AppState.currentState);
+
   const [states, setStates] = useState([]);
   const [workoutName, setWorkoutName] = useState("");
 
@@ -37,6 +53,21 @@ const WorkoutScreen = ({ navigation, route }) => {
   const [isLocked, setIsLocked] = useState(false);
 
   const date = useRef(new Date());
+
+  const swapExercises = (topIdx) => {
+    // swaps perv weights & reps
+    [prevWeightReps.current[topIdx], prevWeightReps.current[topIdx + 1]] = [
+      prevWeightReps.current[topIdx + 1],
+      prevWeightReps.current[topIdx],
+    ];
+    // swaps everything else held in states
+    let tempStates = [...states];
+    [tempStates[topIdx], tempStates[topIdx + 1]] = [
+      tempStates[topIdx + 1],
+      tempStates[topIdx],
+    ];
+    setStates(tempStates);
+  };
 
   const addExercise = () => {
     let temp = [...states];
@@ -245,21 +276,7 @@ const WorkoutScreen = ({ navigation, route }) => {
   };
 
   const savePrevData = async () => {
-    // states.exercisesArr.forEach((exerName, i) => {
-    // Do not save it weights and reps are empty
-    // if (
-    //   !states.weights[i].includes("") &&
-    //   !states.reps[i].includes("")
-    // )
-    //   return;
     for (let i = 0; i < states.length; i++) {
-      // console.log([
-      //   WORKOUT_ID,
-      //   states[i].exercise,
-      //   JSON.stringify(states[i].weights),
-      //   JSON.stringify(states[i].reps),
-      //   date.current.getMonth() + "-" + date.current.getDate(),
-      // ]);
       try {
         await db.transaction(
           async (tx) =>
@@ -273,7 +290,6 @@ const WorkoutScreen = ({ navigation, route }) => {
                 date.current.getMonth() + "-" + date.current.getDate(),
               ],
               null,
-              // () => navigation.navigate("HomeScreen"),
               (tx, error) => console.log("ERROR", error)
             )
         );
@@ -302,12 +318,89 @@ const WorkoutScreen = ({ navigation, route }) => {
     }
   };
 
+  async function registerForPushNotificationsAsync() {
+    let token;
+    if (Device.isDevice) {
+      const { status: existingStatus } =
+        await Notifications.getPermissionsAsync();
+      let finalStatus = existingStatus;
+      if (existingStatus !== "granted") {
+        const { status } = await Notifications.requestPermissionsAsync();
+        finalStatus = status;
+      }
+      if (finalStatus !== "granted") {
+        console.log("Failed to get push token for push notification!");
+        return;
+      }
+      token = (await Notifications.getExpoPushTokenAsync()).data;
+      console.log(token);
+    } else {
+      console.log("Must use physical device for Push Notifications");
+    }
+
+    if (Platform.OS === "android") {
+      Notifications.setNotificationChannelAsync("default", {
+        name: "default",
+        importance: Notifications.AndroidImportance.LOW,
+        vibrationPattern: [0, 0, 0, 0],
+        lightColor: "#FF231F7C",
+      });
+    }
+
+    return token;
+  }
+
+  async function schedulePushNotification() {
+    scheduledNotication.current = await Notifications.scheduleNotificationAsync(
+      {
+        content: {
+          title: "REPR",
+          body: "Here is the notification body",
+          data: { data: "goes here" },
+        },
+        trigger: { seconds: 3, repeats: true },
+      }
+    );
+  }
+
   // on mount
   useEffect(() => {
     // SplashScreen.preventAutoHideAsync();
 
     WORKOUT_ID.current = route.params.id;
     route.params.isTemplate ? loadTemplateData() : loadWorkoutData();
+
+    // Managing app state (foregrounded/backgrounded) for expo notifications
+    // const notificationSubscription = Notifications.addPushTokenListener(
+    //   registerForPushNotificationsAsync
+    // );
+    // const notifcationBackgroundLister = Notifications.registerTaskAsync
+    // const appStateSubscription = AppState.addEventListener(
+    //   "change",
+    //   (nextAppState) => {
+    //     // Foreground
+    //     if (
+    //       appState.current.match(/inactive|background/) &&
+    //       nextAppState === "active" /*|| nextAppState === "inactive"*/
+    //     ) {
+    //       console.log("App has come to the foreground!");
+    //       Notifications.cancelAllScheduledNotificationsAsync();
+    //     }
+    //     // Background
+    //     schedulePushNotification();
+
+    //     appState.current = nextAppState;
+    //     console.log("AppState", appState.current);
+    //   }
+    // );
+
+    return () => {
+      // appStateSubscription.remove();
+      // notificationSubscription.remove();
+      // Notifications.cancelAllScheduledNotificationsAsync(
+      //   scheduledNotication.current
+      // );
+    };
 
     // async function prepare() {
     //   try {
@@ -384,18 +477,22 @@ const WorkoutScreen = ({ navigation, route }) => {
       paddingLeft: 3,
       paddingRight: 5,
     },
+    arrowSeparator: {
+      alignItems: "center",
+      justifyContent: "center",
+    },
     addExerciseContainer: {
       flex: 1,
       alignItems: "center",
       justifyContent: "center",
       marginVertical: "7%",
-      marginHorizontal: 80,
+      marginHorizontal: "24%",
       backgroundColor: "#43a2f0",
-      height: 40,
+      height: 35,
       borderRadius: 30,
     },
     addExerciseText: {
-      fontFamily: "RobotoCondensedRegular",
+      fontFamily: "RobotoCondensedLight",
       fontSize: 18,
       color: "white",
     },
@@ -410,10 +507,6 @@ const WorkoutScreen = ({ navigation, route }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* <ScrollView
-        stickyHeaderIndices={[0]}
-        contentContainerStyle={styles.scrollContainer}
-      > */}
       <FlatList
         stickyHeaderIndices={[0]}
         contentContainerStyle={styles.scrollContainer}
@@ -441,7 +534,6 @@ const WorkoutScreen = ({ navigation, route }) => {
                   savePrevData={savePrevData}
                   workoutName={workoutName}
                   id={WORKOUT_ID.current}
-                  // originalWorkoutName={states.originalWorkoutName}
                   isTemplate={route.params.isTemplate}
                 />
               </View>
@@ -484,6 +576,22 @@ const WorkoutScreen = ({ navigation, route }) => {
             isLocked={isLocked}
           />
         )}
+        ItemSeparatorComponent={({ highlighted, leadingItem }) =>
+          !isLocked && (
+            <TouchableOpacity
+              style={styles.arrowSeparator}
+              onPress={() =>
+                swapExercises(states.findIndex((item) => item === leadingItem))
+              }
+            >
+              <Ionicons
+                name="swap-vertical"
+                color="#2494f0"
+                size={24}
+              ></Ionicons>
+            </TouchableOpacity>
+          )
+        }
         ListFooterComponent={
           <View>
             {!isLocked && (
@@ -494,10 +602,8 @@ const WorkoutScreen = ({ navigation, route }) => {
                 <Text style={styles.addExerciseText}>ADD EXERCISE</Text>
               </TouchableOpacity>
             )}
-            <TouchableOpacity>
-              <Text onPress={() => navigation.goBack()} style={styles.cancel}>
-                CANCEL WORKOUT
-              </Text>
+            <TouchableOpacity onPress={() => navigation.goBack()}>
+              <Text style={styles.cancel}>CANCEL WORKOUT</Text>
             </TouchableOpacity>
           </View>
         }

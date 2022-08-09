@@ -60,10 +60,8 @@ const SetComponent = ({
       paddingBottom: 1,
       marginTop: 5,
       marginHorizontal: 5,
-      borderRadius: 9,
-      backgroundColor: isDone /*isDoneArr[numExercise][numSet]*/
-        ? "#9effb6"
-        : null,
+      borderRadius: 7,
+      backgroundColor: isDone ? "#9effb6" : null,
     },
     setContainer: {
       flex: 0.6,
@@ -121,6 +119,12 @@ const SetComponent = ({
       alignItems: "center",
       justifyContent: "center",
     },
+    checkButton: {
+      backgroundColor: isDone ? "#98ebad" : "#2494f0",
+      borderRadius: 6,
+      paddingHorizontal: "5%",
+      paddingVertical: "3%",
+    },
   });
 
   return (
@@ -177,12 +181,13 @@ const SetComponent = ({
       {/*CHECK*/}
       <View style={styles.checkContainer}>
         <TouchableOpacity
+          style={styles.checkButton}
           onPress={() => {
             setIsDone(!isDone);
             Vibration.vibrate(TWENTYTH_SECOND_MS);
           }}
         >
-          <Feather name="check" size={25} color={"#2494f0"} />
+          <Feather name="check" size={25} color={"white"} />
         </TouchableOpacity>
       </View>
     </View>

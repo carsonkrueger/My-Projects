@@ -97,19 +97,19 @@ const WorkoutComponent = ({
     },
     title: {
       fontSize: 16,
-      fontFamily: "RobotoCondensedRegular",
+      fontFamily: "RobotoCondensedLight",
     },
     date: {
       color: "#9c9c9c",
       fontSize: 11,
       alignItems: "flex-end",
-      fontFamily: "RobotoCondensedRegular",
+      fontFamily: "RobotoCondensedLight",
     },
     preview: {
       color: "#9c9c9c",
       fontSize: 11,
       textAlign: "right",
-      fontFamily: "RobotoCondensedRegular",
+      fontFamily: "RobotoCondensedLight",
     },
     dots: {
       color: "#9c9c9c",

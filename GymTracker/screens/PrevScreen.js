@@ -23,9 +23,11 @@ const PrevScreen = ({ navigation, route }) => {
     lastPerformed: "",
   });
   const [prevList, setPrevList] = useState([initialState.current]);
-  const dateList = useRef([{ month: "", day: "" }]);
+  const limit = useRef(10);
+  const curOffset = useRef(0);
 
-  const curMonthInt = useRef("null");
+  const dateList = useRef([{ month: "", day: "" }]);
+  const curMonth = useRef("null");
   const months = useRef([
     "JANUARY",
     "FEBRUARY",
@@ -44,8 +46,8 @@ const PrevScreen = ({ navigation, route }) => {
   const getDates = (lastPerformed) => {
     const [monthInt, dayInt] = lastPerformed.split("-");
 
-    if (curMonthInt.current !== months.current[monthInt - 1]) {
-      curMonthInt.current = months.current[monthInt - 1];
+    if (curMonth.current !== months.current[monthInt - 1]) {
+      curMonth.current = months.current[monthInt - 1];
       return { month: months.current[monthInt - 1], day: dayInt };
     }
 
@@ -57,9 +59,10 @@ const PrevScreen = ({ navigation, route }) => {
       db.transaction((tx) =>
         tx.executeSql(
           // (ID, Name, Weights, Reps, LastPerformed)
-          "SELECT * FROM Prevs WHERE Name = ? ORDER BY LastPerformed DESC",
-          [route.params.exercise],
+          "SELECT * FROM Prevs WHERE Name = ? ORDER BY LastPerformed DESC LIMIT ? OFFSET ?",
+          [route.params.exercise, limit.current, curOffset.current],
           (tx, result) => {
+            curOffset.current += 10;
             let tempPrevList = [];
             let tempDateList = [];
             for (let i = 0; i < result.rows.length; i++) {
@@ -73,8 +76,16 @@ const PrevScreen = ({ navigation, route }) => {
               tempDateList.push(getDates(result.rows.item(i).LastPerformed));
             }
 
-            dateList.current = tempDateList;
-            setPrevList(tempPrevList);
+            if (prevList.length === 1) {
+              // replaces state directly
+              dateList.current = tempDateList;
+              setPrevList(tempPrevList);
+            } else {
+              // adds to current state
+              dateList.current = dateList.current.concat(tempDateList);
+              let temp = [...prevList].concat(tempPrevList);
+              setPrevList(temp);
+            }
           },
           (tx, error) => console.log("Could not load prev data", error)
         )
@@ -94,7 +105,7 @@ const PrevScreen = ({ navigation, route }) => {
       backgroundColor: "#FFFFFF",
     },
     scrollContainer: {
-      paddingBottom: "60%",
+      paddingBottom: "30%",
     },
     titleContainer: {
       marginTop: "4%",
@@ -120,12 +131,14 @@ const PrevScreen = ({ navigation, route }) => {
   return (
     <View style={styles.container}>
       <FlatList
+        contentContainerStyle={styles.scrollContainer}
         data={prevList}
+        onEndReached={loadData}
         stickyHeaderIndices={[0]}
         ListHeaderComponent={
           <View style={styles.titleContainer}>
             <TouchableOpacity onPress={() => navigation.goBack()}>
-              <Feather name="arrow-left" color={"white"} size={24} />
+              <Feather name="arrow-left" color={"white"} size={26} />
             </TouchableOpacity>
 
             <Text style={styles.titleText}>
