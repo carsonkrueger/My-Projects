@@ -7,12 +7,12 @@ import {
   TextInput,
   SafeAreaView,
   FlatList,
-  AppState,
+  // AppState,
 } from "react-native";
 
 import * as SQLite from "expo-sqlite";
-import * as Notifications from "expo-notifications";
-import * as Device from "expo-device";
+// import * as Notifications from "expo-notifications";
+// import * as Device from "expo-device";
 // import * as SplashScreen from "expo-splash-screen";
 
 import BackComponent from "../components/BackComponent";
@@ -21,14 +21,6 @@ import ExerciseComponent from "../components/ExerciseComponent";
 import { Feather, Ionicons } from "@expo/vector-icons";
 
 const db = SQLite.openDatabase("GymTracker");
-
-Notifications.setNotificationHandler({
-  handleNotification: async () => ({
-    shouldShowAlert: false,
-    shouldPlaySound: false,
-    shouldSetBadge: false,
-  }),
-});
 
 const WorkoutScreen = ({ navigation, route }) => {
   // const [appIsReady, setAppIsReady] = useState(false);
@@ -216,6 +208,7 @@ const WorkoutScreen = ({ navigation, route }) => {
               tempWorkoutInfo[i].reps = new Array(
                 tempWorkoutInfo[i].reps.length
               ).fill("");
+              originalExercise.current.push(tempWorkoutInfo[i].exercise);
             }
 
             setStates(tempWorkoutInfo);

@@ -12,9 +12,12 @@
       "backgroundColor": "#FFF"
     },
     "updates": {
-      "fallbackToCacheTimeout": 0
+      "fallbackToCacheTimeout": 0,
+      "url": "https://u.expo.dev/e0ba4b42-9795-48e2-a970-c047448aa8c2"
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": true
     },
@@ -22,19 +25,14 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/weight_1.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.crkruege00.REPR"
     },
     "web": {
       "favicon": "./assets/weight_1.png"
     },
-    "plugins": [
-      [
-        "expo-notifications",
-        {
-          "icon": "./assets/weight_1.png",
-          "color": "#2494f0"
-        }
-      ]
-    ]
+    "runtimeVersion": {
+      "policy": "sdkVersion"
+    }
   }
 }
