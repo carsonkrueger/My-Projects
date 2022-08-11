@@ -39,13 +39,14 @@ const WorkoutScreen = ({ navigation, route }) => {
     restTimer: "",
   });
 
-  const notificationResponse = Notifications.useLastNotificationResponse();
-  const scheduledNotication = useRef();
+  // const notificationResponse = Notifications.useLastNotificationResponse();
+  // const scheduledNotication = useRef();
 
-  const appState = useRef(AppState.currentState);
+  // const appState = useRef(AppState.currentState);
 
   const [states, setStates] = useState([]);
   const [workoutName, setWorkoutName] = useState("");
+  const originalExercise = useRef([]);
 
   const prevWeightReps = useRef([]);
 
@@ -59,6 +60,11 @@ const WorkoutScreen = ({ navigation, route }) => {
     [prevWeightReps.current[topIdx], prevWeightReps.current[topIdx + 1]] = [
       prevWeightReps.current[topIdx + 1],
       prevWeightReps.current[topIdx],
+    ];
+    // swaps original workout names
+    [originalExercise.current[topIdx], originalExercise.current[topIdx + 1]] = [
+      originalExercise.current[topIdx + 1],
+      originalExercise.current[topIdx],
     ];
     // swaps everything else held in states
     let tempStates = [...states];
@@ -174,6 +180,7 @@ const WorkoutScreen = ({ navigation, route }) => {
               tempWorkoutInfo[i].reps = new Array(
                 tempWorkoutInfo[i].reps.length
               ).fill("");
+              originalExercise.current.push(tempWorkoutInfo[i].exercise);
             }
             // console.log(prevWeightReps.current);
             setStates(tempWorkoutInfo);
@@ -298,6 +305,22 @@ const WorkoutScreen = ({ navigation, route }) => {
       }
       // });
       navigation.navigate("HomeScreen");
+    }
+  };
+
+  const updatePrevName = async () => {
+    console.log("yo");
+    try {
+      await db.transaction(async (tx) => {
+        await tx.executeSql(
+          "UPDATE Prevs SET Name = ? WHERE Name = ?",
+          [workoutInfo.exercise, originalName.current],
+          null,
+          (tx, error) => console.log("COULD NOT UPDATE EXERCISE NAME", error)
+        );
+      });
+    } catch (error) {
+      console.log("COULD NOT UPDATE EXERCISE NAME", error);
     }
   };
 
@@ -574,6 +597,7 @@ const WorkoutScreen = ({ navigation, route }) => {
             }
             setReps={setReps}
             isLocked={isLocked}
+            originalExercise={originalExercise.current[index]}
           />
         )}
         ItemSeparatorComponent={({ highlighted, leadingItem }) =>

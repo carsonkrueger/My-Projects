@@ -12,6 +12,10 @@ import { MaterialIcons, Feather } from "@expo/vector-icons";
 
 import SetComponent from "./SetComponent";
 
+import * as SQLite from "expo-sqlite";
+
+const db = SQLite.openDatabase("GymTracker");
+
 const ExerciseComponent = ({
   navigation,
   addSet,
@@ -26,9 +30,11 @@ const ExerciseComponent = ({
   prevReps,
   setReps,
   isLocked,
+  originalExercise,
 }) => {
   const [doTimer, setDoTimer] = useState(false);
   const countdownTime = useRef(new Date().getTime());
+  const originalName = useRef();
 
   const flipDoTimer = () => {
     // console.log("FLIP! doTimer:", doTimer);
@@ -38,6 +44,30 @@ const ExerciseComponent = ({
   };
   const [sec, setSec] = useState(new Date().getTime());
   const intervalId = useRef();
+
+  const calcTime = () => {
+    const time = Math.trunc(
+      workoutInfo.restTimer - (sec - countdownTime.current) / 1000 + 1
+    );
+    if (time < -999) flipDoTimer();
+    return time;
+  };
+
+  const updatePrevName = async () => {
+    console.log("yo");
+    try {
+      await db.transaction(async (tx) => {
+        await tx.executeSql(
+          "UPDATE Prevs SET Name = ? WHERE Name = ?",
+          [workoutInfo.exercise, originalExercise],
+          null,
+          (tx, error) => console.log("COULD NOT UPDATE EXERCISE NAME", error)
+        );
+      });
+    } catch (error) {
+      console.log("COULD NOT UPDATE EXERCISE NAME", error);
+    }
+  };
 
   useEffect(() => {
     if (doTimer) {
@@ -53,6 +83,13 @@ const ExerciseComponent = ({
 
     return () => clearInterval(intervalId.current);
   }, [doTimer]);
+
+  useEffect(() => {
+    originalName.current = workoutInfo.exercise;
+
+    return () =>
+      workoutInfo.exercise !== originalName.current ? updatePrevName() : null;
+  }, []);
 
   const styles = StyleSheet.create({
     container: {
@@ -181,6 +218,7 @@ const ExerciseComponent = ({
           onChangeText={(newText) => {
             setExercise(newText, numExercise);
           }}
+          // onEndEditing={updatePrevName}
         />
 
         <TouchableOpacity style={styles.timerContainer} onPress={flipDoTimer}>
@@ -196,15 +234,7 @@ const ExerciseComponent = ({
             <TextInput
               style={styles.timerText}
               placeholder="0s"
-              value={
-                doTimer
-                  ? Math.trunc(
-                      workoutInfo.restTimer -
-                        (sec - countdownTime.current) / 1000 +
-                        1
-                    ).toString()
-                  : workoutInfo.restTimer
-              }
+              value={doTimer ? calcTime().toString() : workoutInfo.restTimer}
               maxLength={4}
               keyboardType="numeric"
               editable={!doTimer && !isLocked}
@@ -241,6 +271,7 @@ const ExerciseComponent = ({
           onPress={() =>
             navigation.navigate("PrevScreen", {
               exercise: workoutInfo.exercise,
+              originalExercise: originalExercise,
             })
           }
         >

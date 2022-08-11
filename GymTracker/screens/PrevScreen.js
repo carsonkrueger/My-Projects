@@ -60,7 +60,7 @@ const PrevScreen = ({ navigation, route }) => {
         tx.executeSql(
           // (ID, Name, Weights, Reps, LastPerformed)
           "SELECT * FROM Prevs WHERE Name = ? ORDER BY LastPerformed DESC LIMIT ? OFFSET ?",
-          [route.params.exercise, limit.current, curOffset.current],
+          [route.params.originalExercise, limit.current, curOffset.current],
           (tx, result) => {
             curOffset.current += 10;
             let tempPrevList = [];

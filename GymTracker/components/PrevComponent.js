@@ -121,10 +121,10 @@ const PrevComponent = ({ info, date, index }) => {
             <View key={idx} style={styles.setsRow}>
               <Text style={[styles.setsText, styles.set]}>{idx + 1}</Text>
               <Text style={[styles.setsText, styles.weightReps]}>
-                {rep !== "" ? rep : "-----"}
+                {info.weights[idx] !== "" ? info.weights[idx] : "-----"}
               </Text>
               <Text style={[styles.setsText, styles.weightReps]}>
-                {info.weights[idx] !== "" ? info.weights[idx] : "-----"}
+                {rep !== "" ? rep : "-----"}
               </Text>
             </View>
           ))}
