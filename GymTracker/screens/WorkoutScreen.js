@@ -35,11 +35,10 @@ const WorkoutScreen = ({ navigation, route }) => {
   // const scheduledNotication = useRef();
 
   // const appState = useRef(AppState.currentState);
-
-  const [states, setStates] = useState([]);
   const [workoutName, setWorkoutName] = useState("");
-  const originalExercise = useRef([]);
+  const [states, setStates] = useState([]);
 
+  const originalExercise = useRef([]);
   const prevWeightReps = useRef([]);
 
   const WORKOUT_ID = useRef(null);
@@ -48,16 +47,19 @@ const WorkoutScreen = ({ navigation, route }) => {
   const date = useRef(new Date());
 
   const swapExercises = (topIdx) => {
-    // swaps perv weights & reps
+    // swaps prev weights & reps
+    console.log("BEFORE", prevWeightReps.current);
     [prevWeightReps.current[topIdx], prevWeightReps.current[topIdx + 1]] = [
       prevWeightReps.current[topIdx + 1],
       prevWeightReps.current[topIdx],
     ];
+    console.log("AFTER", prevWeightReps.current);
     // swaps original workout names
     [originalExercise.current[topIdx], originalExercise.current[topIdx + 1]] = [
       originalExercise.current[topIdx + 1],
       originalExercise.current[topIdx],
     ];
+
     // swaps everything else held in states
     let tempStates = [...states];
     [tempStates[topIdx], tempStates[topIdx + 1]] = [
@@ -69,7 +71,14 @@ const WorkoutScreen = ({ navigation, route }) => {
 
   const addExercise = () => {
     let temp = [...states];
-    // temp.push(Object.assign({}, initialState.current));
+
+    prevWeightReps.current.push({
+      weights: [""],
+      reps: [""],
+    });
+
+    originalExercise.current.push("");
+
     temp.push({
       exercise: "",
       weights: [""],
@@ -81,6 +90,15 @@ const WorkoutScreen = ({ navigation, route }) => {
 
   const deleteExercise = (idx) => {
     if (states.length <= 1) {
+      prevWeightReps.current = [
+        {
+          weights: [""],
+          reps: [""],
+        },
+      ];
+
+      originalExercise.current = [""];
+
       setStates([
         {
           exercise: "",
@@ -90,6 +108,9 @@ const WorkoutScreen = ({ navigation, route }) => {
         },
       ]);
     } else {
+      prevWeightReps.current.splice(idx, 1);
+      originalExercise.current.splice(idx, 1);
+
       let temp = [...states];
       temp.splice(idx, 1);
       setStates(temp);
@@ -149,6 +170,13 @@ const WorkoutScreen = ({ navigation, route }) => {
   const loadWorkoutData = async () => {
     if (WORKOUT_ID.current === null) {
       // create new workout for null id
+      prevWeightReps.current = [
+        {
+          weights: [""],
+          reps: [""],
+        },
+      ];
+      originalExercise.current = [""];
       setStates([initialState.current]);
       return;
     }
@@ -577,17 +605,9 @@ const WorkoutScreen = ({ navigation, route }) => {
             setRestTimer={setRestTimer}
             delExercise={deleteExercise}
             setExercise={setExercise}
-            prevWeights={
-              index < prevWeightReps.current.length
-                ? prevWeightReps.current[index].weights
-                : [""]
-            }
+            prevWeights={prevWeightReps.current[index].weights}
             setWeights={setWeights}
-            prevReps={
-              index < prevWeightReps.current.length
-                ? prevWeightReps.current[index].reps
-                : [""]
-            }
+            prevReps={prevWeightReps.current[index].reps}
             setReps={setReps}
             isLocked={isLocked}
             originalExercise={originalExercise.current[index]}

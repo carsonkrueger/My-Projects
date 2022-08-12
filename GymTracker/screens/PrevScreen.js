@@ -17,12 +17,12 @@ const db = SQLite.openDatabase("GymTracker");
 
 const PrevScreen = ({ navigation, route }) => {
   const initialState = useRef({
-    name: "",
     weights: [""],
     reps: [""],
     lastPerformed: "",
   });
-  const [prevList, setPrevList] = useState([initialState.current]);
+
+  const [prevList, setPrevList] = useState([]);
   const limit = useRef(10);
   const curOffset = useRef(0);
 
@@ -55,6 +55,12 @@ const PrevScreen = ({ navigation, route }) => {
   };
 
   const loadData = () => {
+    if (
+      route.params.originalExercise === "" ||
+      route.params.originalExercise == undefined
+    )
+      return;
+
     try {
       db.transaction((tx) =>
         tx.executeSql(
@@ -76,9 +82,12 @@ const PrevScreen = ({ navigation, route }) => {
               tempDateList.push(getDates(result.rows.item(i).LastPerformed));
             }
 
-            if (prevList.length === 1) {
-              // replaces state directly
+            if (dateList.current.length === 1) {
               dateList.current = tempDateList;
+            }
+
+            if (prevList.length === 0) {
+              // replaces state directly
               setPrevList(tempPrevList);
             } else {
               // adds to current state
@@ -105,7 +114,7 @@ const PrevScreen = ({ navigation, route }) => {
       backgroundColor: "#FFFFFF",
     },
     scrollContainer: {
-      paddingBottom: "30%",
+      paddingBottom: "20%",
     },
     titleContainer: {
       marginTop: "4%",
@@ -125,6 +134,19 @@ const PrevScreen = ({ navigation, route }) => {
       color: "white",
       fontSize: 18,
       fontFamily: "RobotoCondensedRegular",
+    },
+    noHistoryContainer: {
+      flex: 1,
+      justifyContent: "center",
+      alignItems: "center",
+    },
+    noHistoryText: {
+      padding: "10%",
+      fontSize: 18,
+      textAlign: "center",
+      justifyContent: "center",
+      color: "#2494f0",
+      fontFamily: "RobotoCondensedLight",
     },
   });
 
@@ -153,6 +175,11 @@ const PrevScreen = ({ navigation, route }) => {
             date={dateList.current[index]}
             index={index}
           />
+        )}
+        ListEmptyComponent={() => (
+          <View style={styles.noHistoryContainer}>
+            <Text style={styles.noHistoryText}>NO HISTORY</Text>
+          </View>
         )}
       />
     </View>

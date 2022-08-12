@@ -22,26 +22,6 @@ const SetComponent = ({
   const TWENTYTH_SECOND_MS = 50;
   const [isDone, setIsDone] = useState(false);
 
-  // const getPrevWeightsText = () => {
-  //   if (prevWeights.length < numExercise + 1) {
-  //     return "";
-  //   } else if (prevWeights[numExercise].length < numSet + 1) {
-  //     return "";
-  //   } else {
-  //     return prevWeights[numExercise][numSet].toString();
-  //   }
-  // };
-
-  // const getPrevRepsText = () => {
-  //   if (prevReps.length < numExercise + 1) {
-  //     return "";
-  //   } else if (prevReps[numExercise].length < numSet + 1) {
-  //     return "";
-  //   } else {
-  //     return prevReps[numExercise][numSet].toString();
-  //   }
-  // };
-
   useEffect(() => {
     if (isDone) {
       if (weights[numSet] == "" && prevWeight !== "")

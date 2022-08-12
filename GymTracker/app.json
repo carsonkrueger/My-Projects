@@ -24,7 +24,8 @@
         "foregroundImage": "./assets/weight_1.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.crkruege00.REPR"
+      "package": "com.crkruege00.REPR",
+      "versionCode": 4
     },
     "web": {
       "favicon": "./assets/weight_1.png"
