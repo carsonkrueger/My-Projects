@@ -8,16 +8,14 @@
     "userInterfaceStyle": "light",
     "splash": {
       "image": "./assets/weight_2_splash.png",
-      "resizeMode": "contain",
+      "resizeMode": "cover",
       "backgroundColor": "#FFF"
     },
     "updates": {
       "fallbackToCacheTimeout": 0,
       "url": "https://u.expo.dev/e0ba4b42-9795-48e2-a970-c047448aa8c2"
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true
     },
