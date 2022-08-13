@@ -393,6 +393,9 @@ const HomeScreen = ({ navigation }) => {
         bannerSize="fullBanner"
         adUnitID="ca-app-pub-8357822625939612/6897489102" // Test ID, Replace with your-admob-unit-id
         servePersonalizedAds={true} // true or false
+        onDidFailToReceiveAdWithError={(error) =>
+          console.log("ad loading error", error)
+        }
       />
     </SafeAreaView>
   );

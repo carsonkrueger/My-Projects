@@ -8,7 +8,11 @@ import {
   Vibration,
 } from "react-native";
 // import { useFonts, Bebas_Neue } from "@expo-google-fonts/inter";
-import { MaterialIcons, Feather } from "@expo/vector-icons";
+import {
+  MaterialIcons,
+  MaterialCommunityIcons,
+  Feather,
+} from "@expo/vector-icons";
 
 import SetComponent from "./SetComponent";
 
@@ -184,8 +188,14 @@ const ExerciseComponent = ({
       flex: 1,
       alignItems: "center",
     },
-    emptyHead: {
+    notesHead: {
       flex: 0.6,
+      alignItems: "center",
+    },
+    notesButton: {
+      // backgroundColor: "#2494f0", //"#b56be3",
+      padding: "4%",
+      borderRadius: 3,
     },
     blackText: {
       fontFamily: "RobotoCondensedRegular",
@@ -283,7 +293,15 @@ const ExerciseComponent = ({
         <View style={styles.repHead}>
           <Text style={styles.blackText}>REPS</Text>
         </View>
-        <View style={styles.emptyHead}>{/* Empty header */}</View>
+        <View style={styles.notesHead}>
+          <TouchableOpacity style={styles.notesButton}>
+            <MaterialCommunityIcons
+              name="notebook-outline"
+              size={22}
+              color={"#2494f0"}
+            />
+          </TouchableOpacity>
+        </View>
       </View>
       {workoutInfo.weights.map((weight, i) => {
         return (
