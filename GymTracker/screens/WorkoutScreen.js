@@ -20,15 +20,11 @@ import BackComponent from "../components/BackComponent";
 import ExerciseComponent from "../components/ExerciseComponent";
 
 import { Feather, Ionicons } from "@expo/vector-icons";
-import {
-  AdMobBanner,
-  AdMobInterstitial,
-  PublisherBanner,
-  AdMobRewarded,
-  setTestDeviceIDAsync,
-} from "expo-ads-admob";
+
+import { AdMobBanner, setTestDeviceIDAsync } from "expo-ads-admob";
 
 setTestDeviceIDAsync("device");
+
 const db = SQLite.openDatabase("GymTracker");
 
 const WorkoutScreen = ({ navigation, route }) => {
@@ -655,8 +651,8 @@ const WorkoutScreen = ({ navigation, route }) => {
       ></FlatList>
 
       <AdMobBanner
-        style={styles.bottomBanner}
-        bannerSize="fullBanner"
+        // style={styles.bottomBanner}
+        bannerSize="smartBannerPortrait"
         adUnitID="ca-app-pub-8357822625939612/5770780706" // Test ID, Replace with your-admob-unit-id
         servePersonalizedAds={true} // true or false
         testID={"device"}

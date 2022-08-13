@@ -18,13 +18,7 @@ import * as SQLite from "expo-sqlite";
 import { useIsFocused } from "@react-navigation/native";
 import { useFonts } from "expo-font";
 
-import {
-  AdMobBanner,
-  AdMobInterstitial,
-  PublisherBanner,
-  AdMobRewarded,
-  setTestDeviceIDAsync,
-} from "expo-ads-admob";
+import { AdMobBanner, setTestDeviceIDAsync } from "expo-ads-admob";
 
 setTestDeviceIDAsync("device");
 
@@ -395,7 +389,7 @@ const HomeScreen = ({ navigation }) => {
 
       <AdMobBanner
         style={styles.bottomBanner}
-        bannerSize="fullBanner"
+        bannerSize="smartBannerPortrait"
         adUnitID="ca-app-pub-8357822625939612/6897489102" // Test ID, Replace with your-admob-unit-id
         servePersonalizedAds={true} // true or false
         testID={"device"}

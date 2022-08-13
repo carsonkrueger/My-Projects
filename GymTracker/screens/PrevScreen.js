@@ -13,6 +13,10 @@ import * as SQLite from "expo-sqlite";
 import PrevComponent from "../components/PrevComponent";
 import { Feather } from "@expo/vector-icons";
 
+import { AdMobBanner, setTestDeviceIDAsync } from "expo-ads-admob";
+
+setTestDeviceIDAsync("device");
+
 const db = SQLite.openDatabase("GymTracker");
 
 const PrevScreen = ({ navigation, route }) => {
@@ -186,6 +190,17 @@ const PrevScreen = ({ navigation, route }) => {
             <Text style={styles.noHistoryText}>NO HISTORY</Text>
           </View>
         )}
+      />
+
+      <AdMobBanner
+        // style={styles.bottomBanner}
+        bannerSize="smartBannerPortrait"
+        adUnitID="ca-app-pub-8357822625939612/1402507891" // Test ID, Replace with your-admob-unit-id
+        servePersonalizedAds={true} // true or false
+        testID={"device"}
+        onDidFailToReceiveAdWithError={() =>
+          console.log("AD RECIEVED W/ ERROR")
+        }
       />
     </View>
   );
