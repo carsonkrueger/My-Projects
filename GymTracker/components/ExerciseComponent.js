@@ -147,7 +147,7 @@ const ExerciseComponent = ({
       paddingHorizontal: 3,
     },
     trashContainer: {
-      flex: 7.3,
+      flex: 6.5,
       alignItems: "center",
       justifyContent: "center",
     },
