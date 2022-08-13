@@ -26,7 +26,7 @@ const PrevScreen = ({ navigation, route }) => {
   const limit = useRef(10);
   const curOffset = useRef(0);
 
-  const dateList = useRef([{ month: "", day: "" }]);
+  const dateList = useRef([]);
   const curMonth = useRef("null");
   const months = useRef([
     "JANUARY",
@@ -82,15 +82,20 @@ const PrevScreen = ({ navigation, route }) => {
               tempDateList.push(getDates(result.rows.item(i).LastPerformed));
             }
 
-            if (dateList.current.length === 1) {
+            console.log(tempDateList, "\n====\n", tempPrevList);
+
+            if (dateList.current.length === 0) {
+              console.log("set datelist");
               dateList.current = tempDateList;
             }
 
             if (prevList.length === 0) {
+              console.log("set prevlist");
               // replaces state directly
               setPrevList(tempPrevList);
             } else {
               // adds to current state
+              console.log("appended lists");
               dateList.current = dateList.current.concat(tempDateList);
               let temp = [...prevList].concat(tempPrevList);
               setPrevList(temp);
