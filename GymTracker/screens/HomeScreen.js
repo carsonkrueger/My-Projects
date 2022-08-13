@@ -328,6 +328,10 @@ const HomeScreen = ({ navigation }) => {
       color: "white",
       fontSize: 20,
     },
+    bottomBanner: {
+      position: "absolute",
+      bottom: 0,
+    },
   });
 
   return (
@@ -390,9 +394,14 @@ const HomeScreen = ({ navigation }) => {
       </ScrollView>
 
       <AdMobBanner
+        style={styles.bottomBanner}
         bannerSize="fullBanner"
         adUnitID="ca-app-pub-8357822625939612/6897489102" // Test ID, Replace with your-admob-unit-id
         servePersonalizedAds={true} // true or false
+        testID={"device"}
+        onDidFailToReceiveAdWithError={() =>
+          console.log("AD RECIEVED W/ ERROR")
+        }
       />
     </SafeAreaView>
   );
