@@ -20,6 +20,9 @@
       "supportsTablet": true
     },
     "android": {
+      "config": {
+        "googleMobileAdsAppId": "ca-app-pub-8357822625939612~2153263039"
+      },
       "adaptiveIcon": {
         "foregroundImage": "./assets/weight_1.png",
         "backgroundColor": "#ffffff"
@@ -32,6 +35,14 @@
     },
     "runtimeVersion": {
       "policy": "sdkVersion"
-    }
+    },
+    "plugins": [
+      [
+        "expo-ads-admob",
+        {
+          "userTrackingPermission": "This identifier will be used to deliver personalized ads to you."
+        }
+      ]
+    ]
   }
 }

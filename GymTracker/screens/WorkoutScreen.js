@@ -48,12 +48,11 @@ const WorkoutScreen = ({ navigation, route }) => {
 
   const swapExercises = (topIdx) => {
     // swaps prev weights & reps
-    console.log("BEFORE", prevWeightReps.current);
     [prevWeightReps.current[topIdx], prevWeightReps.current[topIdx + 1]] = [
       prevWeightReps.current[topIdx + 1],
       prevWeightReps.current[topIdx],
     ];
-    console.log("AFTER", prevWeightReps.current);
+
     // swaps original workout names
     [originalExercise.current[topIdx], originalExercise.current[topIdx + 1]] = [
       originalExercise.current[topIdx + 1],

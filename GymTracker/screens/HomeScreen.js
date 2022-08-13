@@ -18,6 +18,16 @@ import * as SQLite from "expo-sqlite";
 import { useIsFocused } from "@react-navigation/native";
 import { useFonts } from "expo-font";
 
+import {
+  AdMobBanner,
+  AdMobInterstitial,
+  PublisherBanner,
+  AdMobRewarded,
+  setTestDeviceIDAsync,
+} from "expo-ads-admob";
+
+setTestDeviceIDAsync("device");
+
 const db = SQLite.openDatabase("GymTracker");
 
 const HomeScreen = ({ navigation }) => {
@@ -323,6 +333,7 @@ const HomeScreen = ({ navigation }) => {
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar backgroundColor={"white"} barStyle={"dark-content"} />
+
       <ScrollView
         stickyHeaderIndices={[0, 2]}
         contentContainerStyle={styles.scrollContainer}
@@ -377,6 +388,12 @@ const HomeScreen = ({ navigation }) => {
           />
         ))}
       </ScrollView>
+
+      <AdMobBanner
+        bannerSize="fullBanner"
+        adUnitID="ca-app-pub-8357822625939612/6897489102" // Test ID, Replace with your-admob-unit-id
+        servePersonalizedAds={true} // true or false
+      />
     </SafeAreaView>
   );
 };
