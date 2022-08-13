@@ -86,20 +86,15 @@ const PrevScreen = ({ navigation, route }) => {
               tempDateList.push(getDates(result.rows.item(i).LastPerformed));
             }
 
-            console.log(tempDateList, "\n====\n", tempPrevList);
-
             if (dateList.current.length === 0) {
-              console.log("set datelist");
               dateList.current = tempDateList;
             }
 
             if (prevList.length === 0) {
-              console.log("set prevlist");
               // replaces state directly
               setPrevList(tempPrevList);
             } else {
               // adds to current state
-              console.log("appended lists");
               dateList.current = dateList.current.concat(tempDateList);
               let temp = [...prevList].concat(tempPrevList);
               setPrevList(temp);
