@@ -14,7 +14,6 @@ import {
 import * as SQLite from "expo-sqlite";
 // import * as Notifications from "expo-notifications";
 // import * as Device from "expo-device";
-// import * as SplashScreen from "expo-splash-screen";
 
 import BackComponent from "../components/BackComponent";
 import ExerciseComponent from "../components/ExerciseComponent";
