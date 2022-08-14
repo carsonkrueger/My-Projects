@@ -33,6 +33,7 @@ const WorkoutScreen = ({ navigation, route }) => {
     weights: [""],
     reps: [""],
     restTimer: "",
+    notes: "",
   });
 
   // const notificationResponse = Notifications.useLastNotificationResponse();
@@ -87,6 +88,7 @@ const WorkoutScreen = ({ navigation, route }) => {
       weights: [""],
       reps: [""],
       restTimer: "",
+      notes: "",
     });
     setStates(temp);
   };
@@ -108,6 +110,7 @@ const WorkoutScreen = ({ navigation, route }) => {
           weights: [""],
           reps: [""],
           restTimer: "",
+          notes: "",
         },
       ]);
     } else {
@@ -166,6 +169,12 @@ const WorkoutScreen = ({ navigation, route }) => {
     setStates(temp);
   };
 
+  const setNotes = (notes, numExercise) => {
+    let temp = [...states];
+    temp[numExercise].notes = notes;
+    setStates(temp);
+  };
+
   const switchLock = () => {
     setIsLocked(!isLocked);
   };
@@ -193,13 +202,16 @@ const WorkoutScreen = ({ navigation, route }) => {
             let tempWorkoutInfo = JSON.parse(result.rows.item(0).WorkoutInfo);
 
             for (let i = 0; i < tempWorkoutInfo.length; i++) {
+              // get prev weights & reps
               prevWeightReps.current.push({
                 weights: tempWorkoutInfo[i].weights,
                 reps: tempWorkoutInfo[i].reps,
               });
+              // reset weights
               tempWorkoutInfo[i].weights = new Array(
                 tempWorkoutInfo[i].weights.length
               ).fill("");
+              // reset reps
               tempWorkoutInfo[i].reps = new Array(
                 tempWorkoutInfo[i].reps.length
               ).fill("");
@@ -329,22 +341,6 @@ const WorkoutScreen = ({ navigation, route }) => {
       }
       // });
       navigation.navigate("HomeScreen");
-    }
-  };
-
-  const updatePrevName = async () => {
-    console.log("yo");
-    try {
-      await db.transaction(async (tx) => {
-        await tx.executeSql(
-          "UPDATE Prevs SET Name = ? WHERE Name = ?",
-          [workoutInfo.exercise, originalName.current],
-          null,
-          (tx, error) => console.log("COULD NOT UPDATE EXERCISE NAME", error)
-        );
-      });
-    } catch (error) {
-      console.log("COULD NOT UPDATE EXERCISE NAME", error);
     }
   };
 
@@ -608,6 +604,7 @@ const WorkoutScreen = ({ navigation, route }) => {
             setRestTimer={setRestTimer}
             delExercise={deleteExercise}
             setExercise={setExercise}
+            setNotes={setNotes}
             prevWeights={prevWeightReps.current[index].weights}
             setWeights={setWeights}
             prevReps={prevWeightReps.current[index].reps}

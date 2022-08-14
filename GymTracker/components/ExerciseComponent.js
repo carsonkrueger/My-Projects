@@ -8,13 +8,10 @@ import {
   Vibration,
 } from "react-native";
 // import { useFonts, Bebas_Neue } from "@expo-google-fonts/inter";
-import {
-  MaterialIcons,
-  MaterialCommunityIcons,
-  Feather,
-} from "@expo/vector-icons";
+import { MaterialIcons, SimpleLineIcons, Feather } from "@expo/vector-icons";
 
 import SetComponent from "./SetComponent";
+import NotesComponent from "../components/NotesComponent";
 
 import * as SQLite from "expo-sqlite";
 
@@ -29,6 +26,7 @@ const ExerciseComponent = ({
   setRestTimer,
   delExercise,
   setExercise,
+  setNotes,
   prevWeights,
   setWeights,
   prevReps,
@@ -37,8 +35,13 @@ const ExerciseComponent = ({
   originalExercise,
 }) => {
   const [doTimer, setDoTimer] = useState(false);
+  const [doNotes, setDoNotes] = useState(false);
+
   const countdownTime = useRef(new Date().getTime());
   const originalName = useRef();
+
+  const [sec, setSec] = useState(new Date().getTime());
+  const intervalId = useRef();
 
   const flipDoTimer = () => {
     // console.log("FLIP! doTimer:", doTimer);
@@ -46,8 +49,10 @@ const ExerciseComponent = ({
 
     if (!doTimer) countdownTime.current = new Date().getTime();
   };
-  const [sec, setSec] = useState(new Date().getTime());
-  const intervalId = useRef();
+
+  const flipDoNotes = () => {
+    setDoNotes(!doNotes);
+  };
 
   const calcTime = () => {
     const time = Math.trunc(
@@ -58,7 +63,6 @@ const ExerciseComponent = ({
   };
 
   const updatePrevName = async () => {
-    console.log("yo");
     try {
       await db.transaction(async (tx) => {
         await tx.executeSql(
@@ -147,9 +151,9 @@ const ExerciseComponent = ({
       paddingHorizontal: 3,
     },
     trashContainer: {
-      flex: 6.5,
-      alignItems: "center",
+      flex: 5,
       justifyContent: "center",
+      paddingLeft: "3%",
     },
     headers: {
       flexDirection: "row",
@@ -194,8 +198,9 @@ const ExerciseComponent = ({
     },
     notesButton: {
       // backgroundColor: "#2494f0", //"#b56be3",
-      padding: "4%",
+      justifyContent: "center",
       borderRadius: 3,
+      paddingRight: "3%",
     },
     blackText: {
       fontFamily: "RobotoCondensedRegular",
@@ -216,6 +221,14 @@ const ExerciseComponent = ({
 
   return (
     <View style={styles.container}>
+      <NotesComponent
+        doNotes={doNotes}
+        flipDoNotes={flipDoNotes}
+        notes={workoutInfo.notes}
+        setNotes={setNotes}
+        numExercise={numExercise}
+      />
+
       <View style={styles.titleContainer}>
         <TextInput
           style={styles.titleText}
@@ -230,6 +243,10 @@ const ExerciseComponent = ({
           }}
           // onEndEditing={updatePrevName}
         />
+
+        <TouchableOpacity style={styles.notesButton} onPress={flipDoNotes}>
+          <SimpleLineIcons name="notebook" size={20} color={"#2494f0"} />
+        </TouchableOpacity>
 
         <TouchableOpacity style={styles.timerContainer} onPress={flipDoTimer}>
           <View style={styles.timerIconContainer}>
@@ -293,15 +310,7 @@ const ExerciseComponent = ({
         <View style={styles.repHead}>
           <Text style={styles.blackText}>REPS</Text>
         </View>
-        <View style={styles.notesHead}>
-          <TouchableOpacity style={styles.notesButton}>
-            <MaterialCommunityIcons
-              name="notebook-outline"
-              size={22}
-              color={"#2494f0"}
-            />
-          </TouchableOpacity>
-        </View>
+        <View style={styles.notesHead}></View>
       </View>
       {workoutInfo.weights.map((weight, i) => {
         return (

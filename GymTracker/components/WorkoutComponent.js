@@ -1,7 +1,5 @@
 import React, { useRef, useState } from "react";
 
-import * as SQLite from "expo-sqlite";
-
 import {
   StyleSheet,
   View,
@@ -13,6 +11,7 @@ import {
 } from "react-native";
 
 // import Animated, { useSharedValue } from "react-native-reanimated";
+import * as SQLite from "expo-sqlite";
 
 import { Feather } from "@expo/vector-icons";
 
@@ -26,8 +25,8 @@ const WorkoutComponent = ({
   workoutInfo,
   setForceUpdate,
 }) => {
-  const translation = useRef(new Animated.Value(0)).current;
   const windowWidth = useRef(Dimensions.get("window").width);
+  const translation = useRef(new Animated.Value(0)).current;
   const [isTranslated, setIsTranslated] = useState(false);
 
   const handleLongPress = () => {
