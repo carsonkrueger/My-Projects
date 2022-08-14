@@ -15,6 +15,7 @@ import {
 } from "@expo/vector-icons";
 
 import SetComponent from "./SetComponent";
+import NotesComponent from "../components/NotesComponent";
 
 import * as SQLite from "expo-sqlite";
 
@@ -37,8 +38,13 @@ const ExerciseComponent = ({
   originalExercise,
 }) => {
   const [doTimer, setDoTimer] = useState(false);
+  const [doNotes, setDoNotes] = useState(false);
+
   const countdownTime = useRef(new Date().getTime());
   const originalName = useRef();
+
+  const [sec, setSec] = useState(new Date().getTime());
+  const intervalId = useRef();
 
   const flipDoTimer = () => {
     // console.log("FLIP! doTimer:", doTimer);
@@ -46,8 +52,10 @@ const ExerciseComponent = ({
 
     if (!doTimer) countdownTime.current = new Date().getTime();
   };
-  const [sec, setSec] = useState(new Date().getTime());
-  const intervalId = useRef();
+
+  const flipDoNotes = () => {
+    setDoNotes(!doNotes);
+  };
 
   const calcTime = () => {
     const time = Math.trunc(
@@ -216,6 +224,8 @@ const ExerciseComponent = ({
 
   return (
     <View style={styles.container}>
+      {doNotes && <NotesComponent />}
+
       <View style={styles.titleContainer}>
         <TextInput
           style={styles.titleText}
@@ -294,7 +304,7 @@ const ExerciseComponent = ({
           <Text style={styles.blackText}>REPS</Text>
         </View>
         <View style={styles.notesHead}>
-          <TouchableOpacity style={styles.notesButton}>
+          <TouchableOpacity style={styles.notesButton} onPress={flipDoNotes}>
             <MaterialCommunityIcons
               name="notebook-outline"
               size={22}

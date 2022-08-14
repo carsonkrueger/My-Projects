@@ -328,22 +328,6 @@ const WorkoutScreen = ({ navigation, route }) => {
     }
   };
 
-  const updatePrevName = async () => {
-    console.log("yo");
-    try {
-      await db.transaction(async (tx) => {
-        await tx.executeSql(
-          "UPDATE Prevs SET Name = ? WHERE Name = ?",
-          [workoutInfo.exercise, originalName.current],
-          null,
-          (tx, error) => console.log("COULD NOT UPDATE EXERCISE NAME", error)
-        );
-      });
-    } catch (error) {
-      console.log("COULD NOT UPDATE EXERCISE NAME", error);
-    }
-  };
-
   const printPrevData = () => {
     try {
       db.transaction((tx) =>
