@@ -1,42 +1,49 @@
 import React, { useEffect, useState, useRef } from "react";
 
 import {
-  FlatList,
+  TextInput,
   StyleSheet,
   Text,
   View,
   TouchableOpacity,
   Animated,
+  Dimensions,
 } from "react-native";
 
-import * as SQLite from "expo-sqlite";
+import { MaterialIcons } from "@expo/vector-icons";
 
-const NotesComponent = () => {
-  const [componentWidth, setComponentWidth] = useState(0);
-  const translation = useRef(new Animated.Value(0)).current;
-  const [isTranslated, setIsTranslated] = useState(false);
+const NotesComponent = ({
+  doNotes,
+  flipDoNotes,
+  notes,
+  setNotes,
+  numExercise,
+}) => {
+  const [componentWidth, setComponentWidth] = useState(
+    Dimensions.get("window").width
+  );
+  const translation = useRef(new Animated.Value(componentWidth)).current;
 
-  const handleAnim = () => {
-    if (!isTranslated) {
-      setIsTranslated(true);
-      Animated.timing(translation, {
-        toValue: 0,
-        duration: 300,
-        useNativeDriver: true,
-      }).start();
-    } else {
-      setIsTranslated(false);
-      Animated.timing(translation, {
-        toValue: componentWidth,
-        duration: 300,
-        useNativeDriver: true,
-      }).start();
-    }
+  const startAnim = () => {
+    Animated.timing(translation, {
+      toValue: 0,
+      duration: 200,
+      useNativeDriver: true,
+    }).start();
+  };
+
+  const endAnim = () => {
+    flipDoNotes();
+    Animated.timing(translation, {
+      toValue: componentWidth,
+      duration: 200,
+      useNativeDriver: true,
+    }).start();
   };
 
   useEffect(() => {
-    handleAnim();
-  }, [componentWidth]);
+    doNotes && startAnim();
+  }, [doNotes]);
 
   const styles = StyleSheet.create({
     container: {
@@ -45,22 +52,70 @@ const NotesComponent = () => {
       bottom: 0,
       left: 0,
       right: 0,
-      // translateX: componentWidth,
+      translateX: componentWidth,
       transform: [{ translateX: translation }],
-      borderRadius: 15,
-      backgroundColor: "black",
+      borderRadius: 14,
+      backgroundColor: "white",
       position: "absolute",
       zIndex: 10,
+    },
+    title: {
+      backgroundColor: "#2494f0",
+      borderTopRightRadius: 14,
+      borderTopLeftRadius: 14,
+      paddingVertical: "2%",
+      paddingHorizontal: "5%",
+      flexDirection: "row",
+      alignItems: "center",
+    },
+    titleText: {
+      flex: 1,
+      color: "white",
+      fontFamily: "RobotoCondensedRegular",
+      fontSize: 15,
+    },
+    backButton: {
+      flex: 1,
+      justifyContent: "flex-end",
+      transform: [{ rotateY: "180deg" }],
+    },
+    notes: {
+      fontFamily: "RobotoCondensedLight",
+      padding: 6,
+      scrollEnabled: false,
     },
   });
   return (
     <Animated.View
       style={styles.container}
       onLayout={(event) => {
-        setComponentWidth(event.nativeEvent.layout.width);
-        translation = new Animated.Value(event.nativeEvent.layout.width);
+        setComponentWidth(
+          event.nativeEvent.layout.width + event.nativeEvent.layout.width * 0.05
+        );
+        // translation = new Animated.Value(event.nativeEvent.layout.width);
       }}
-    ></Animated.View>
+    >
+      <View style={styles.title}>
+        <Text style={styles.titleText}>NOTES</Text>
+        <TouchableOpacity onPress={endAnim}>
+          <MaterialIcons
+            style={styles.backButton}
+            name="arrow-back-ios"
+            size={18}
+            color={"white"}
+          />
+        </TouchableOpacity>
+      </View>
+
+      <TextInput
+        style={styles.notes}
+        placeholder="ENTER TEXT HERE"
+        multiline={true}
+        scrollEnabled={false}
+        value={notes}
+        onChangeText={(newText) => setNotes(newText, numExercise)}
+      />
+    </Animated.View>
   );
 };
 
