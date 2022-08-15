@@ -6,9 +6,15 @@ import {
   Text,
   TouchableOpacity,
   Vibration,
-  Animated,
   Dimensions,
 } from "react-native";
+
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+  Easing,
+} from "react-native-reanimated";
 
 // import Animated, { useSharedValue } from "react-native-reanimated";
 import * as SQLite from "expo-sqlite";
@@ -26,28 +32,27 @@ const WorkoutComponent = ({
   setForceUpdate,
 }) => {
   const windowWidth = useRef(Dimensions.get("window").width);
-  const translation = useRef(new Animated.Value(0)).current;
+  // const translation = useRef(new Animated.Value(0)).current;
+  const translation = useSharedValue(0);
   const [isTranslated, setIsTranslated] = useState(false);
 
-  const handleLongPress = () => {
-    if (!isTranslated) {
-      setIsTranslated(true);
-      Animated.timing(translation, {
-        toValue: -(windowWidth.current / 6),
-        duration: 300,
-        useNativeDriver: true,
-      }).start();
-    } else {
-      setIsTranslated(false);
-      Animated.timing(translation, {
-        toValue: 0,
-        duration: 300,
-        useNativeDriver: true,
-      }).start();
-    }
+  const VIBRATE_TIME = 30;
 
-    Vibration.vibrate(25);
+  const handleLongPress = () => {
+    Vibration.vibrate(VIBRATE_TIME);
+    const toValue = isTranslated ? 0 : -60;
+    setIsTranslated(!isTranslated);
+    translation.value = withTiming(toValue, {
+      duration: 300,
+    });
   };
+
+  const animStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{ translateX: translation.value }],
+      easing: Easing.bezier(0.1, 1, 1, 0.1),
+    };
+  });
 
   const handleDeleteWorkout = async () => {
     try {
@@ -79,7 +84,6 @@ const WorkoutComponent = ({
       borderColor: "#c9c9c9",
       borderRadius: 10,
       padding: "4%",
-      transform: [{ translateX: translation }],
     },
     topButton: {
       flex: 1,
@@ -136,7 +140,7 @@ const WorkoutComponent = ({
 
   return (
     <View style={styles.container}>
-      <Animated.View style={styles.topContainer}>
+      <Animated.View style={[styles.topContainer, animStyle]}>
         <TouchableOpacity
           style={styles.topButton}
           onPress={() => {
@@ -147,7 +151,7 @@ const WorkoutComponent = ({
             });
           }}
           onLongPress={handleLongPress}
-          delayLongPress={500}
+          delayLongPress={400}
         >
           <View style={styles.left}>
             <Text style={styles.title}>{name}</Text>

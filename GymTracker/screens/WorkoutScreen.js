@@ -11,6 +11,14 @@ import {
   // AppState,
 } from "react-native";
 
+import Animated, {
+  Extrapolate,
+  interpolate,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from "react-native-reanimated";
+
 import * as SQLite from "expo-sqlite";
 // import * as Notifications from "expo-notifications";
 // import * as Device from "expo-device";
@@ -25,6 +33,9 @@ import { AdMobBanner, setTestDeviceIDAsync } from "expo-ads-admob";
 setTestDeviceIDAsync("device");
 
 const db = SQLite.openDatabase("GymTracker");
+
+const AnimatedTouchableOpacity =
+  Animated.createAnimatedComponent(TouchableOpacity);
 
 const WorkoutScreen = ({ navigation, route }) => {
   // const [appIsReady, setAppIsReady] = useState(false);
@@ -51,6 +62,8 @@ const WorkoutScreen = ({ navigation, route }) => {
 
   const date = useRef(new Date());
 
+  const height = useSharedValue(0);
+
   const swapExercises = (topIdx) => {
     // swaps prev weights & reps
     [prevWeightReps.current[topIdx], prevWeightReps.current[topIdx + 1]] = [
@@ -71,6 +84,10 @@ const WorkoutScreen = ({ navigation, route }) => {
       tempStates[topIdx],
     ];
     setStates(tempStates);
+  };
+
+  const findThenSwap = (leadingItem) => {
+    swapExercises(states.findIndex((item) => item === leadingItem));
   };
 
   const addExercise = () => {
@@ -406,6 +423,30 @@ const WorkoutScreen = ({ navigation, route }) => {
     );
   }
 
+  const handleAnim = () => {
+    "worklet";
+    const toValue = isLocked ? 0 : 100;
+    height.value = withTiming(toValue);
+  };
+
+  const swapHeightAnimStyle = useAnimatedStyle(() => {
+    return {
+      height: interpolate(height.value, [0, 100], [0, 25], Extrapolate.CLAMP),
+    };
+  });
+
+  const addExerciseAnimStyle = useAnimatedStyle(() => {
+    return {
+      height: interpolate(height.value, [0, 100], [0, 35], Extrapolate.CLAMP),
+    };
+  });
+
+  // const handleTrash
+
+  useEffect(() => {
+    handleAnim();
+  }, [isLocked]);
+
   // on mount
   useEffect(() => {
     // SplashScreen.preventAutoHideAsync();
@@ -613,32 +654,25 @@ const WorkoutScreen = ({ navigation, route }) => {
             originalExercise={originalExercise.current[index]}
           />
         )}
-        ItemSeparatorComponent={({ highlighted, leadingItem }) =>
-          !isLocked && (
-            <TouchableOpacity
-              style={styles.arrowSeparator}
-              onPress={() =>
-                swapExercises(states.findIndex((item) => item === leadingItem))
-              }
-            >
-              <Ionicons
-                name="swap-vertical"
-                color="#2494f0"
-                size={24}
-              ></Ionicons>
-            </TouchableOpacity>
-          )
-        }
+        ItemSeparatorComponent={({ highlighted, leadingItem }) => (
+          <AnimatedTouchableOpacity
+            style={[styles.arrowSeparator, swapHeightAnimStyle]}
+            onPress={() =>
+              swapExercises(states.findIndex((item) => item === leadingItem))
+            }
+          >
+            <Ionicons name="swap-vertical" color="#2494f0" size={24}></Ionicons>
+          </AnimatedTouchableOpacity>
+        )}
         ListFooterComponent={
           <View>
-            {!isLocked && (
-              <TouchableOpacity
-                style={styles.addExerciseContainer}
-                onPress={addExercise}
-              >
-                <Text style={styles.addExerciseText}>ADD EXERCISE</Text>
-              </TouchableOpacity>
-            )}
+            <AnimatedTouchableOpacity
+              style={[styles.addExerciseContainer, addExerciseAnimStyle]}
+              onPress={addExercise}
+            >
+              <Text style={styles.addExerciseText}>ADD EXERCISE</Text>
+            </AnimatedTouchableOpacity>
+
             <TouchableOpacity onPress={() => navigation.goBack()}>
               <Text style={styles.cancel}>CANCEL WORKOUT</Text>
             </TouchableOpacity>

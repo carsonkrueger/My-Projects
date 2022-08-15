@@ -6,9 +6,15 @@ import {
   Text,
   View,
   TouchableOpacity,
-  Animated,
   Dimensions,
 } from "react-native";
+
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+  Easing,
+} from "react-native-reanimated";
 
 import { MaterialIcons } from "@expo/vector-icons";
 
@@ -22,24 +28,29 @@ const NotesComponent = ({
   const [componentWidth, setComponentWidth] = useState(
     Dimensions.get("window").width
   );
-  const translation = useRef(new Animated.Value(componentWidth)).current;
+  // const translation = useRef(new Animated.Value(componentWidth)).current;
+  const translation = useSharedValue(componentWidth);
+  const isTranslated = useRef(false);
 
   const startAnim = () => {
-    Animated.timing(translation, {
-      toValue: 0,
-      duration: 200,
-      useNativeDriver: true,
-    }).start();
+    translation.value = withTiming(0, {
+      duration: 300,
+    });
   };
 
   const endAnim = () => {
     flipDoNotes();
-    Animated.timing(translation, {
-      toValue: componentWidth,
-      duration: 200,
-      useNativeDriver: true,
-    }).start();
+
+    translation.value = withTiming(componentWidth, {
+      duration: 300,
+    });
   };
+
+  const animStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{ translateX: translation.value }],
+    };
+  });
 
   useEffect(() => {
     doNotes && startAnim();
@@ -52,8 +63,6 @@ const NotesComponent = ({
       bottom: 0,
       left: 0,
       right: 0,
-      translateX: componentWidth,
-      transform: [{ translateX: translation }],
       borderRadius: 14,
       backgroundColor: "white",
       position: "absolute",
@@ -82,12 +91,11 @@ const NotesComponent = ({
     notes: {
       fontFamily: "RobotoCondensedLight",
       padding: 6,
-      scrollEnabled: false,
     },
   });
   return (
     <Animated.View
-      style={styles.container}
+      style={[styles.container, animStyle]}
       onLayout={(event) => {
         setComponentWidth(
           event.nativeEvent.layout.width + event.nativeEvent.layout.width * 0.05
@@ -111,7 +119,6 @@ const NotesComponent = ({
         style={styles.notes}
         placeholder="ENTER TEXT HERE"
         multiline={true}
-        scrollEnabled={false}
         value={notes}
         onChangeText={(newText) => setNotes(newText, numExercise)}
       />

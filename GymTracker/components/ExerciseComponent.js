@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
+
 import {
   TouchableOpacity,
   View,
@@ -7,7 +8,17 @@ import {
   TextInput,
   Vibration,
 } from "react-native";
-// import { useFonts, Bebas_Neue } from "@expo-google-fonts/inter";
+
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+  Easing,
+  withSpring,
+  interpolate,
+  Extrapolate,
+} from "react-native-reanimated";
+
 import { MaterialIcons, SimpleLineIcons, Feather } from "@expo/vector-icons";
 
 import SetComponent from "./SetComponent";
@@ -43,6 +54,8 @@ const ExerciseComponent = ({
   const [sec, setSec] = useState(new Date().getTime());
   const intervalId = useRef();
 
+  const height = useSharedValue(0);
+
   const flipDoTimer = () => {
     // console.log("FLIP! doTimer:", doTimer);
     setDoTimer(!doTimer);
@@ -77,6 +90,28 @@ const ExerciseComponent = ({
     }
   };
 
+  const handleHeightAnim = () => {
+    "worklet";
+    const toValue = isLocked ? 0 : 100;
+    height.value = withTiming(toValue);
+  };
+
+  const heightAnimStyle = useAnimatedStyle(() => {
+    return {
+      height: interpolate(height.value, [0, 100], [0, 40], Extrapolate.CLAMP),
+    };
+  });
+
+  const trashWidthAnimStyle = useAnimatedStyle(() => {
+    return {
+      width: interpolate(height.value, [0, 100], [0, 50], Extrapolate.CLAMP),
+    };
+  });
+
+  useEffect(() => {
+    handleHeightAnim();
+  }, [isLocked]);
+
   useEffect(() => {
     if (doTimer) {
       setSec(new Date().getTime());
@@ -102,14 +137,13 @@ const ExerciseComponent = ({
   const styles = StyleSheet.create({
     container: {
       flex: 1,
-      marginVertical: "2%",
+      margin: "2%",
       borderColor: "#bdbdbd",
       borderWidth: 1,
       borderRadius: 15,
-      marginHorizontal: "2%",
       paddingTop: "5%",
       backgroundColor: "white",
-      paddingBottom: isLocked ? "4%" : "0%",
+      // paddingBottom: isLocked ? "4%" : "0%",
     },
     titleContainer: {
       flex: 1,
@@ -213,10 +247,6 @@ const ExerciseComponent = ({
       alignItems: "center",
       justifyContent: "space-evenly",
     },
-    addSet: {
-      color: "#2494f0",
-      fontSize: 14,
-    },
   });
 
   return (
@@ -275,7 +305,7 @@ const ExerciseComponent = ({
         </TouchableOpacity>
 
         {!isLocked && (
-          <View style={styles.trashContainer}>
+          <View style={[styles.trashContainer]}>
             <TouchableOpacity
               onPress={() => {
                 setDoTimer(false);
@@ -329,17 +359,15 @@ const ExerciseComponent = ({
         );
       })}
 
-      {!isLocked && (
-        <View style={styles.addDelSetContainer}>
-          <TouchableOpacity onPress={() => deleteSet(numExercise)}>
-            <Feather name="minus" color="#2494f0" size={22} />
-          </TouchableOpacity>
+      <Animated.View style={[styles.addDelSetContainer, heightAnimStyle]}>
+        <TouchableOpacity onPress={() => deleteSet(numExercise)}>
+          <Feather name="minus" color="#2494f0" size={22} />
+        </TouchableOpacity>
 
-          <TouchableOpacity onPress={() => addSet(numExercise)}>
-            <Feather name="plus" color="#2494f0" size={22} />
-          </TouchableOpacity>
-        </View>
-      )}
+        <TouchableOpacity onPress={() => addSet(numExercise)}>
+          <Feather name="plus" color="#2494f0" size={22} />
+        </TouchableOpacity>
+      </Animated.View>
     </View>
   );
 };
