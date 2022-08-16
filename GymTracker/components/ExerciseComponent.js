@@ -22,7 +22,8 @@ import Animated, {
 import { MaterialIcons, SimpleLineIcons, Feather } from "@expo/vector-icons";
 
 import SetComponent from "./SetComponent";
-import NotesComponent from "../components/NotesComponent";
+import NotesComponent from "./NotesComponent";
+import SearchComponent from "./SearchComponent";
 
 import * as SQLite from "expo-sqlite";
 
@@ -48,6 +49,7 @@ const ExerciseComponent = ({
 }) => {
   const [doTimer, setDoTimer] = useState(false);
   const [doNotes, setDoNotes] = useState(false);
+  const [searchList, setSearchList] = useState([]);
 
   const countdownTime = useRef(new Date().getTime());
   const originalName = useRef();
@@ -55,7 +57,9 @@ const ExerciseComponent = ({
   const [sec, setSec] = useState(new Date().getTime());
   const intervalId = useRef();
 
-  const height = useSharedValue(0);
+  // height is 0-100
+  const searchComponentYOffset = useRef(0);
+  const height = useSharedValue(100);
 
   const flipDoTimer = () => {
     // console.log("FLIP! doTimer:", doTimer);
@@ -77,13 +81,20 @@ const ExerciseComponent = ({
   };
 
   const loadWorkoutnames = async (text) => {
+    if (text.trim() === "") return;
     try {
       await db.transaction(async (tx) => {
         await tx.executeSql(
           "SELECT DISTINCT Name FROM Prevs WHERE Name LIKE ? LIMIT 5",
           [`%${text}%`],
           (tx, result) => {
-            console.log(result.rows._array);
+            // console.log(result.rows._array);
+            let tempNames = [];
+            for (let i = 0; i < result.rows.length; i++) {
+              tempNames.push(result.rows.item(i).Name);
+            }
+            console.log(tempNames);
+            if (tempNames.length > 0) setSearchList(tempNames);
           },
           (tx, error) => console.log("ERROR LOADING WORKOUT NAMES", error)
         );
@@ -277,6 +288,13 @@ const ExerciseComponent = ({
         numExercise={numExercise}
       />
 
+      <SearchComponent
+        searchList={searchList}
+        setExercise={setExercise}
+        numExercise={numExercise}
+        yOffset={searchComponentYOffset.current}
+      />
+
       <View style={styles.titleContainer}>
         <TextInput
           style={styles.titleText}
@@ -286,11 +304,18 @@ const ExerciseComponent = ({
           maxLength={27}
           editable={!isLocked}
           autoCapitalize="characters"
+          onLayout={(event) => {
+            var { x, y, width, height } = event.nativeEvent.layout;
+            searchComponentYOffset.current = height;
+          }}
           onChangeText={(newText) => {
             loadWorkoutnames(newText);
             setExercise(newText, numExercise);
           }}
-          // onEndEditing={updatePrevName}
+          onEndEditing={() => {
+            console.log("ONPRESSOUT");
+            // setSearchList([]);
+          }}
         />
 
         <TouchableOpacity style={styles.notesButton} onPress={flipDoNotes}>
