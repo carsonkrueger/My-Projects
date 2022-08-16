@@ -158,9 +158,10 @@ const ExerciseComponent = ({
       // fontFamily: "Bebas Neue",
       color: "#2494f0",
       paddingLeft: 16,
+      textAlign: "left",
     },
     timerContainer: {
-      paddingHorizontal: "0%",
+      marginVertical: ".7%",
       paddingVertical: ".3%",
       flex: isLocked ? 7 : 9,
       marginRight: isLocked ? "4%" : 0,
@@ -266,12 +267,14 @@ const ExerciseComponent = ({
           placeholder="EXERCISE NAME"
           placeholderTextColor="#90c6f5"
           value={workoutInfo.exercise}
-          maxLength={27}
+          multiline={true}
+          numberOfLines={2}
           editable={!isLocked}
           autoCapitalize="characters"
           onChangeText={(newText) => {
             setExercise(newText, numExercise);
           }}
+          maxLength={35}
           // onEndEditing={updatePrevName}
         />
 

@@ -62,7 +62,7 @@ const WorkoutScreen = ({ navigation, route }) => {
 
   const date = useRef(new Date());
 
-  const height = useSharedValue(100);
+  const height = useSharedValue(0);
 
   const swapExercises = (topIdx) => {
     // swaps prev weights & reps
@@ -199,6 +199,7 @@ const WorkoutScreen = ({ navigation, route }) => {
   const loadWorkoutData = async () => {
     if (WORKOUT_ID.current === null) {
       // create new workout for null id
+      // WORKOUT_ID.current = db.lastInsertRowId;
       prevWeightReps.current = [
         {
           weights: [""],
@@ -249,6 +250,24 @@ const WorkoutScreen = ({ navigation, route }) => {
   };
 
   const loadTemplateData = async () => {
+    // console.log("creating new workout for template");
+    // try {
+    //   await db.transaction(async (tx) => {
+    //     await tx.executeSql(
+    //       "SELECT last_insert_rowid();",
+    //       null,
+    //       (tx, result) => {
+    //         // WORKOUT_ID.current = result.rows.item(0);
+    //         console.log(result.rows.item(0));
+    //       },
+    //       (tx, error) =>
+    //         console.log(WORKOUT_ID, "COULD NOT SELECT LAST ROW ID", error)
+    //     );
+    //   });
+    // } catch (error) {
+    //   console.log("COULD NOT SELECT LAST ROW ID");
+    // }
+
     try {
       await db.transaction(async (tx) => {
         await tx.executeSql(
@@ -300,7 +319,10 @@ const WorkoutScreen = ({ navigation, route }) => {
             isLocked,
             date.current.getMonth() + "-" + date.current.getDate(),
           ],
-          // null,
+          (tx, result) => {
+            // sets workout id for templates so prev data gets saved with same workout id
+            if (route.params.isTemplate) WORKOUT_ID.current = result.insertId;
+          },
           () => navigation.navigate("HomeScreen"),
           (tx, error) => console.log("COULD NOT SAVE NEW WORKOUT DATA", error)
         );
