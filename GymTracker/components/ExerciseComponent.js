@@ -30,6 +30,7 @@ const db = SQLite.openDatabase("GymTracker");
 
 const ExerciseComponent = ({
   navigation,
+  WORKOUT_ID,
   addSet,
   deleteSet,
   numExercise,
@@ -79,8 +80,8 @@ const ExerciseComponent = ({
     try {
       await db.transaction(async (tx) => {
         await tx.executeSql(
-          "UPDATE Prevs SET Name = ? WHERE Name = ?",
-          [workoutInfo.exercise, originalExercise],
+          "UPDATE Prevs SET Name = ? WHERE Name = ? AND ID = ?",
+          [workoutInfo.exercise, originalExercise, WORKOUT_ID],
           null,
           (tx, error) => console.log("COULD NOT UPDATE EXERCISE NAME", error)
         );
@@ -328,6 +329,7 @@ const ExerciseComponent = ({
           onPress={() =>
             navigation.navigate("PrevScreen", {
               exercise: workoutInfo.exercise,
+              WORKOUT_ID: WORKOUT_ID,
               originalExercise: originalExercise,
             })
           }

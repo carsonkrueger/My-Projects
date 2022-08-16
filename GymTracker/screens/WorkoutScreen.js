@@ -637,6 +637,7 @@ const WorkoutScreen = ({ navigation, route }) => {
         renderItem={({ item, index }) => (
           <ExerciseComponent
             key={index}
+            WORKOUT_ID={WORKOUT_ID.current}
             navigation={navigation}
             workoutInfo={item}
             numExercise={index}

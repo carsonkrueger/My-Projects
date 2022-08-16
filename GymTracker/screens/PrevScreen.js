@@ -69,8 +69,13 @@ const PrevScreen = ({ navigation, route }) => {
       db.transaction((tx) =>
         tx.executeSql(
           // (ID, Name, Weights, Reps, LastPerformed)
-          "SELECT * FROM Prevs WHERE Name = ? ORDER BY LastPerformed DESC LIMIT ? OFFSET ?",
-          [route.params.originalExercise, limit.current, curOffset.current],
+          "SELECT * FROM Prevs WHERE Name = ? AND ID = ? ORDER BY LastPerformed DESC LIMIT ? OFFSET ?",
+          [
+            route.params.originalExercise,
+            route.params.WORKOUT_ID,
+            limit.current,
+            curOffset.current,
+          ],
           (tx, result) => {
             curOffset.current += 10;
             let tempPrevList = [];
@@ -109,6 +114,7 @@ const PrevScreen = ({ navigation, route }) => {
   };
 
   useEffect(() => {
+    console.log(route.params);
     loadData();
   }, []);
 
