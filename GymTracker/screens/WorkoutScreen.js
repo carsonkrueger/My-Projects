@@ -62,7 +62,7 @@ const WorkoutScreen = ({ navigation, route }) => {
 
   const date = useRef(new Date());
 
-  const height = useSharedValue(0);
+  const height = useSharedValue(100);
 
   const swapExercises = (topIdx) => {
     // swaps prev weights & reps
@@ -435,12 +435,6 @@ const WorkoutScreen = ({ navigation, route }) => {
     };
   });
 
-  const addExerciseAnimStyle = useAnimatedStyle(() => {
-    return {
-      height: interpolate(height.value, [0, 100], [0, 35], Extrapolate.CLAMP),
-    };
-  });
-
   // const handleTrash
 
   useEffect(() => {
@@ -667,12 +661,14 @@ const WorkoutScreen = ({ navigation, route }) => {
         )}
         ListFooterComponent={
           <View>
-            <AnimatedTouchableOpacity
-              style={[styles.addExerciseContainer, addExerciseAnimStyle]}
-              onPress={addExercise}
-            >
-              <Text style={styles.addExerciseText}>ADD EXERCISE</Text>
-            </AnimatedTouchableOpacity>
+            {!isLocked && (
+              <TouchableOpacity
+                style={styles.addExerciseContainer}
+                onPress={addExercise}
+              >
+                <Text style={styles.addExerciseText}>ADD EXERCISE</Text>
+              </TouchableOpacity>
+            )}
 
             <TouchableOpacity onPress={() => navigation.goBack()}>
               <Text style={styles.cancel}>CANCEL WORKOUT</Text>
