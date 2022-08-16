@@ -114,7 +114,6 @@ const PrevScreen = ({ navigation, route }) => {
   };
 
   useEffect(() => {
-    console.log(route.params);
     loadData();
   }, []);
 

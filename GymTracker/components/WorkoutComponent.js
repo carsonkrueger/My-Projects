@@ -68,7 +68,22 @@ const WorkoutComponent = ({
     } catch (error) {
       console.log(error);
     }
+
     setForceUpdate((prevNum) => prevNum + 1);
+
+    try {
+      await db.transaction(
+        async (tx) =>
+          await tx.executeSql(
+            "DELETE FROM Prevs WHERE ID = ?",
+            [id],
+            () => {},
+            (tx, error) => console.log("ERROR DELETING Prevs Data")
+          )
+      );
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const styles = StyleSheet.create({
