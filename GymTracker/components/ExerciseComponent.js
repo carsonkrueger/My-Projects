@@ -76,6 +76,23 @@ const ExerciseComponent = ({
     return time;
   };
 
+  const loadWorkoutnames = async (text) => {
+    try {
+      await db.transaction(async (tx) => {
+        await tx.executeSql(
+          "SELECT DISTINCT Name FROM Prevs WHERE Name LIKE ? LIMIT 5",
+          [`%${text}%`],
+          (tx, result) => {
+            console.log(result.rows._array);
+          },
+          (tx, error) => console.log("ERROR LOADING WORKOUT NAMES", error)
+        );
+      });
+    } catch (error) {
+      console.log("ERROR LOADING WORKOUT NAMES");
+    }
+  };
+
   const updatePrevName = async () => {
     try {
       await db.transaction(async (tx) => {
@@ -270,6 +287,7 @@ const ExerciseComponent = ({
           editable={!isLocked}
           autoCapitalize="characters"
           onChangeText={(newText) => {
+            loadWorkoutnames(newText);
             setExercise(newText, numExercise);
           }}
           // onEndEditing={updatePrevName}
