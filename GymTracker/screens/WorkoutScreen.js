@@ -30,7 +30,7 @@ import { Feather, Ionicons } from "@expo/vector-icons";
 
 import { AdMobBanner, setTestDeviceIDAsync } from "expo-ads-admob";
 
-setTestDeviceIDAsync("device");
+// setTestDeviceIDAsync("device");
 
 const db = SQLite.openDatabase("GymTracker");
 
@@ -704,9 +704,9 @@ const WorkoutScreen = ({ navigation, route }) => {
         bannerSize="smartBannerPortrait"
         adUnitID="ca-app-pub-8357822625939612/5770780706" // Test ID, Replace with your-admob-unit-id
         servePersonalizedAds={true} // true or false
-        testID={"device"}
-        onDidFailToReceiveAdWithError={() =>
-          console.log("AD RECIEVED W/ ERROR")
+        // testID={"device"}
+        onDidFailToReceiveAdWithError={(e) =>
+          console.log("AD RECIEVED W/ ERROR", e)
         }
       />
     </SafeAreaView>
