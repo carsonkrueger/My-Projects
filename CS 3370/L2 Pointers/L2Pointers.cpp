@@ -103,10 +103,11 @@ void questionTwo() {
 }
 
 void questionFive() {
-    int a[1][1][1][1] = {{{{1}}}};
+    int a[1][1][1][4] = {{{{1}}}};
 
-    for (size_t i = 0; i < sizeof(a)/sizeof(int); i++){
-        std::cout << "sizeof a = " << sizeof a << std::endl;
-    }
-    // describe(a);
+    std::cout << sizeof(a)/sizeof(a[0]) << std::endl;
+    std::cout << sizeof(a[0])/sizeof(a[0][0]) << std::endl;
+    std::cout << sizeof(a[0][0])/sizeof(a[0][0][0]) << std::endl;
+    std::cout << sizeof(a[0][0][0])/sizeof(int) << std::endl;
+    
 }
