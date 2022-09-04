@@ -5,21 +5,22 @@ using std::cout;
 #include "CircBuf.h"
 
 CircBuf::CircBuf() {
-	char* buffer = new char[0];
-	size_t cap {0};
+	buffer = new char[CHUNK] {0};
 }
 
 CircBuf::CircBuf(size_t reserve) {
-	char* buffer = new char[reserve];
-	size_t cap {reserve};
+	buffer = new char[reserve] {0};
+	cap = reserve;
 }
 
 CircBuf::~CircBuf() {
-	delete [] CircBuf::buffer;
+	delete [] buffer;
 }
 
 void CircBuf::insert(char ch) {
+	cout << ch << endl;
 	CircBuf::buffer[insertIndex] = ch;
+	cout << buffer[insertIndex] << " " << cap << endl;
 	insertIndex ++;
 	siz ++;
 }
@@ -39,17 +40,22 @@ char CircBuf::get() {
 }
 
 string CircBuf::examine() {
-	string str = "";
+	string str("");
 	for (int i = 0; i < cap; i++) {
-		cout << buffer[i];
-		if (buffer[i] == '\0') str.push_back('-'); 
-		else str.push_back(buffer[i]);
+		if (buffer[i] == 0) {
+			str.push_back('-');
+			cout << "pushing dash back" << endl;
+		}
+		else {
+			str.push_back(buffer[i]);
+			cout << "pushing back: " << buffer[i] << endl;
+		}
 	}
 	return str;
 }
 
 int main() {
 	CircBuf c(5);
-	c.insert('a');
+	c.insert('0');
 	cout << c.examine() << endl;
 }
