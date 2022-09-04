@@ -12,8 +12,11 @@ class CircBuf {
 	char* buffer;
 	size_t siz {0};
 	size_t cap {0};
-	size_t insertIndex = {0};
-	size_t getIndex = {0};
+	size_t insertIndex {0};
+	size_t getIndex {0};
+
+	void		grow();
+	string convertToString();
 	
 public:
 	CircBuf();
@@ -23,7 +26,7 @@ public:
 	size_t	capacity() {return CHUNK;}
 	
 	void		insert(char);
-	// void		insert (const char*, size_t sz);
+	void		insert (const char*, size_t sz);
 	void		insert(const string&);
 	char		get();
 	string	get(size_t);
