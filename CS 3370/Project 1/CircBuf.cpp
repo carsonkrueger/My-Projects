@@ -18,9 +18,7 @@ CircBuf::~CircBuf() {
 }
 
 void CircBuf::insert(char ch) {
-	cout << ch << endl;
 	CircBuf::buffer[insertIndex] = ch;
-	cout << buffer[insertIndex] << " " << cap << endl;
 	insertIndex ++;
 	siz ++;
 }
@@ -44,11 +42,9 @@ string CircBuf::examine() {
 	for (int i = 0; i < cap; i++) {
 		if (buffer[i] == 0) {
 			str.push_back('-');
-			cout << "pushing dash back" << endl;
 		}
 		else {
 			str.push_back(buffer[i]);
-			cout << "pushing back: " << buffer[i] << endl;
 		}
 	}
 	return str;
