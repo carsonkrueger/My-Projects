@@ -20,10 +20,10 @@ class CircBuf {
 	
 public:
 	CircBuf();
-	CircBuf(size_t reserve = 0);		// Number of elements you want it to be able to hold to start with.
+	CircBuf(size_t reserve);		// Number of elements you want it to be able to hold to start with.
 	~CircBuf();
 	size_t	size() {return siz;}
-	size_t	capacity() {return CHUNK;}
+	size_t	capacity() {return cap;}
 	
 	void		insert(char);
 	void		insert (const char*, size_t sz);

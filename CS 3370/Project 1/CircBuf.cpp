@@ -41,9 +41,10 @@ void CircBuf::insert(const string& str) {
 }
 
 char CircBuf::get() {
-	return buffer[getIndex];
+	char ch = buffer[getIndex];
 	getIndex ++;
 	siz --;
+	return ch;
 }
 
 string CircBuf::get(size_t sz) {
@@ -51,22 +52,33 @@ string CircBuf::get(size_t sz) {
 	for (int i = 0; i < sz; i++) {
 		str.push_back(buffer[getIndex]);
 		getIndex ++;
-		siz ++;
+		siz --;
 	}
+	return str;
 }
 
 string CircBuf::flush() {
-	
+	// gets string out of buffer
+	string str = CircBuf::convertToString();
+
+	// clears buffer
 	delete [] buffer;
+
+	// creates new empty buffer
 	buffer = new char[0];
+
+	// resets all values for CircBuf
 	cap = 0;
 	siz = 0;
 	insertIndex = 0;
 	getIndex = 0;
+
+	// returns previous saved buffer string
+	return str;
 }
 
 string CircBuf::examine() {
-	string str("");
+	string str("[");
 	for (int i = 0; i < cap; i++) {
 		if (buffer[i] == 0) {
 			str.push_back('-');
@@ -75,6 +87,7 @@ string CircBuf::examine() {
 			str.push_back(buffer[i]);
 		}
 	}
+	str.push_back(']');
 	return str;
 }
 
@@ -83,17 +96,39 @@ void CircBuf::grow() {
 	std::copy(buffer, buffer+cap, tempBuf);
 	delete [] buffer;
 	buffer = tempBuf;
+	cap += CHUNK;
 }
 
 string CircBuf::convertToString() {
 	string str = "";
-	for(auto ch: buffer) {
-		
+	for(int i = 0; i < cap; i++) {
+		str.push_back(buffer[i]);
 	}
+	return str;
+}
+
+void CircBuf::shrink() {
+	char tempBuf[siz];
+	int count = 0;
+
+	for (int i = 0; i < cap; i++) {
+		if (buffer[i] != 0) {
+			tempBuf[count] = buffer[i];
+			count ++;
+		}
+	}
+
+	delete [] buffer;
+
+	buffer = tempBuf;
+	cap = siz;
+	insertIndex = 0;
+	getIndex = 0;
 }
 
 int main() {
-	CircBuf c(5);
-	c.insert("ab");
-	cout << c.examine() << endl;
+	CircBuf ab;
+	ab.insert("ONE", 3);
+	ab.get(2);
+	cout << ab.examine() << endl;
 }
