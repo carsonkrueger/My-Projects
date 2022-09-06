@@ -141,9 +141,13 @@ string CircBuf::convertToString() {
 }
 
 void CircBuf::shrink() {
-	int prevGetIndex = getIndex;
-	int newCap = (cap - prevGetIndex) / CHUNK;
-	const int rem = (cap - prevGetIndex) % CHUNK;
+	int newCap;
+	int rem;
+
+	if (siz == 0) newCap = 0;
+	else newCap = (cap - getIndex) / CHUNK;
+	
+	rem = (cap - getIndex) % CHUNK;
 	if (rem != 0) newCap += CHUNK;
 
 	char* tempBuf = new char[newCap]{0};
