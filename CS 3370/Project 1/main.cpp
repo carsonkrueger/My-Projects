@@ -78,6 +78,7 @@ int main()
 	
 	CircBuf xb(511);
 	test_(xb.size() == 0);
+	std::cout << "cap: " << xb.capacity() << std::endl;
 	test_(xb.capacity() == 512);
 	
 	report_();

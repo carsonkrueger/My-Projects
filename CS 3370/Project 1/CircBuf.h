@@ -16,7 +16,7 @@ class CircBuf {
 	size_t getIndex {0};
 
 	void		grow();
-	string convertToString();
+	string convertToStringWQuotations();
 	
 public:
 	CircBuf();
