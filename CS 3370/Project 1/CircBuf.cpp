@@ -19,6 +19,8 @@ CircBuf::~CircBuf() {
 }
 
 void CircBuf::insert(char ch) {
+	if (siz == cap) grow();
+	if (insertIndex >= cap-1) insertIndex = 0;
 	buffer[insertIndex] = ch;
 	insertIndex ++;
 	siz ++;
@@ -26,6 +28,8 @@ void CircBuf::insert(char ch) {
 
 void CircBuf::insert (const char* ch, size_t sz) {
 	for (int i = 0; i < sz; i++) {
+		if (siz == cap) grow();
+		if (insertIndex >= cap-1) insertIndex = 0;
 		buffer[insertIndex] = *(ch+i);
 		insertIndex ++;
 		siz ++;
@@ -34,6 +38,8 @@ void CircBuf::insert (const char* ch, size_t sz) {
 
 void CircBuf::insert(const string& str) {
 	for (int i = 0; i < str.length(); i++) {
+		if (siz == cap) grow();
+		if (insertIndex >= cap-1) insertIndex = 0;
 		buffer[insertIndex] = str.at(i);
 		insertIndex ++;
 		siz ++;
@@ -41,6 +47,8 @@ void CircBuf::insert(const string& str) {
 }
 
 char CircBuf::get() {
+	if (getIndex >= cap-1) getIndex = 0;
+
 	char ch = buffer[getIndex];
 	getIndex ++;
 	siz --;
@@ -50,6 +58,7 @@ char CircBuf::get() {
 string CircBuf::get(size_t sz) {
 	string str = "";
 	for (int i = 0; i < sz; i++) {
+		if (getIndex >= cap-1) getIndex = 0;
 		str.push_back(buffer[getIndex]);
 		getIndex ++;
 		siz --;
@@ -78,7 +87,7 @@ string CircBuf::flush() {
 }
 
 string CircBuf::examine() {
-	string str("[");
+	string str = "[";
 	for (int i = 0; i < cap; i++) {
 		if (buffer[i] == 0) {
 			str.push_back('-');
@@ -128,7 +137,8 @@ void CircBuf::shrink() {
 
 int main() {
 	CircBuf ab;
+	ab.insert('T');
 	ab.insert("ONE", 3);
-	ab.get(2);
+	// ab.get(2);
 	cout << ab.examine() << endl;
 }
