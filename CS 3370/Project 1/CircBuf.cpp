@@ -1,3 +1,11 @@
+/*
+WHAT I LEARNED:
+
+From project 1, it helped me relearn the basics of c++ and it made me more comfortable
+with memory management, with simple arrays at least. 
+
+*/
+
 #include <iostream>
 #include <algorithm>
 using std::endl;
@@ -11,7 +19,8 @@ CircBuf::CircBuf() {
 
 CircBuf::CircBuf(size_t reserve) {
 	const int rem = reserve % CHUNK;
-	cap = reserve / CHUNK; 
+	cap = reserve / CHUNK;
+	cap *= CHUNK;
 	if (rem != 0) cap += CHUNK;
 	buffer = new char[cap] {0};
 }
@@ -158,7 +167,8 @@ void CircBuf::shrink() {
 		getIndex = 0;
 	}
 	else {
-		newCap = ((cap - getIndex) / CHUNK) * CHUNK;
+		newCap = (cap - getIndex) / CHUNK;
+		newCap *= CHUNK;
 
 		rem = (cap - getIndex) % CHUNK;
 		// cout << "remainder" << rem << endl;
