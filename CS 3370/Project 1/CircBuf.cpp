@@ -1,3 +1,11 @@
+/*
+WHAT I LEARNED:
+
+From project 1, it helped me relearn the basics of c++ and it made me more comfortable
+with memory management, with simple arrays at least. 
+
+*/
+
 #include <iostream>
 #include <algorithm>
 using std::endl;
@@ -11,7 +19,8 @@ CircBuf::CircBuf() {
 
 CircBuf::CircBuf(size_t reserve) {
 	const int rem = reserve % CHUNK;
-	cap = reserve / CHUNK; 
+	cap = reserve / CHUNK;
+	cap *= CHUNK;
 	if (rem != 0) cap += CHUNK;
 	buffer = new char[cap] {0};
 }
@@ -79,13 +88,13 @@ string CircBuf::get(size_t sz) {
 
 string CircBuf::flush() {
 	// gets string out of buffer
-	string str = CircBuf::convertToString();
+	string str = CircBuf::convertToStringWQuotations();
 
 	// clears buffer
 	delete [] buffer;
 
 	// creates new empty buffer
-	buffer = new char[0];
+	buffer = new char[CHUNK];
 
 	// resets all values for CircBuf
 	cap = 0;
@@ -132,42 +141,72 @@ void CircBuf::grow() {
 	cap += CHUNK;
 }
 
-string CircBuf::convertToString() {
+string CircBuf::convertToStringWQuotations() {
 	string str = "";
 	for(int i = 0; i < cap; i++) {
+		if(buffer[i] == 0) break;
 		str.push_back(buffer[i]);
 	}
+	// str.push_back('\"');
 	return str;
 }
 
 void CircBuf::shrink() {
-	int newCap;
-	int rem;
+	size_t newCap;
+	size_t rem;
 
-	if (siz == 0) newCap = 0;
-	else newCap = (cap - getIndex) / CHUNK;
+	if (siz == 0) {
+		newCap = 0;
+		char* tempBuf = new char[newCap + CHUNK]{0};
+
+		delete [] buffer;
+		buffer = tempBuf;
+
+		cap = newCap;
+		insertIndex = 0;
+		getIndex = 0;
+	}
+	else {
+		newCap = (cap - getIndex) / CHUNK;
+		newCap *= CHUNK;
+
+		rem = (cap - getIndex) % CHUNK;
+		// cout << "remainder" << rem << endl;
+		if (rem != 0) newCap += CHUNK;
+
+		char* tempBuf = new char[newCap]{0};
+
+		string str = CircBuf::get(siz);
+		delete [] buffer;
+		buffer = tempBuf;
+
+		cap = newCap;
+		insertIndex = 0;
+		getIndex = 0;
+		CircBuf::insert(str);
+	}
 	
-	rem = (cap - getIndex) % CHUNK;
-	if (rem != 0) newCap += CHUNK;
+	// rem = (cap - getIndex) % CHUNK;
+	// // cout << "remainder" << rem << endl;
+	// if (rem != 0) newCap += CHUNK;
 
-	char* tempBuf = new char[newCap]{0};
+	// char* tempBuf = new char[newCap]{0};
 
-	string str = CircBuf::get(siz);
-	delete [] buffer;
-	buffer = tempBuf;
+	// string str = CircBuf::get(siz);
+	// delete [] buffer;
+	// buffer = tempBuf;
 
-	cap = newCap;
-	insertIndex = 0;
-	getIndex = 0;
-	CircBuf::insert(str);
+	// cap = newCap;
+	// insertIndex = 0;
+	// getIndex = 0;
+	// CircBuf::insert(str);
 }
 
 // int main() {
 // 	CircBuf cb;
-// 	cb.insert("aaaaaaaaa");
+// 	cb.insert("The Quick Brown Fox Jumped Over the Lazy Poodle");
 // 	cout << cb.examine() << endl;
-// 	cb.get(2);
-// 	cout << cb.examine() << endl;
-// 	cb.shrink();
+// 	bool isSame = cb.flush() == "The Quick Brown Fox Jumped Over the Lazy Poodle";
+// 	cout << isSame << endl;
 // 	cout << cb.examine() << endl;
 // }
