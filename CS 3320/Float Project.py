@@ -16,36 +16,40 @@ def ulps(a,b):
     elif (a == inf or b == inf):
         return inf
 
+    # swap if a is greater than b
+    if (a > b):
+        tempA = a
+        a = b
+        b = tempA
     # print(math.ulp(a))
 
-    exp = 0
-    lowerBound = a
-    if (a >= 1):
-        while (lowerBound <= b):
-            lowerBound *= base
-            exp += 1
-    elif (a < 1):
-        while (lowerBound <= b):
-            lowerBound /= base
-            exp -= 1
+    # exp = 0
+    # lowerBound = a
+    # if (a >= 1):
+    #     while (lowerBound <= b):
+    #         lowerBound *= base
+    #         exp += 1
+    # elif (a < 1):
+    #     while (lowerBound <= b):
+    #         lowerBound /= base
+    #         exp -= 1
+    # print("num intervals", exp)
 
-    print("num intervals", exp)
+    ulpA = math.ulp(a)
 
-    # y=a
-    # yPlusOne = y+1
-    # while (yPlusOne-y == 1):
-    #     y*=5
-    #     yPlusOne = y+1
+    interval = a
+    numIntervals = 0
+    if a > 0:
+        while interval < b:
+            interval += ulpA
+            numIntervals += 1
+    else:
+        print("hi")
+        while interval > b:
+            interval += ulpA
+            numIntervals += 1
 
-    # print(y)
-
-    # #Find Base
-    # x = 1
-    # while(y+x == y):
-    #     x += 1
-
-    # base = int((y+x)-y)
-    # print(base)
+    print(numIntervals)
 
 if __name__ == "__main__":
-    ulps(1,26)
+    ulps(-1,-1.0000000000000006)
