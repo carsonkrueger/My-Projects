@@ -21,35 +21,48 @@ def ulps(a,b):
         tempA = a
         a = b
         b = tempA
-    # print(math.ulp(a))
 
-    # exp = 0
-    # lowerBound = a
-    # if (a >= 1):
-    #     while (lowerBound <= b):
-    #         lowerBound *= base
-    #         exp += 1
-    # elif (a < 1):
-    #     while (lowerBound <= b):
-    #         lowerBound /= base
-    #         exp -= 1
-    # print("num intervals", exp)
+    # find exponent
+    exp = 0
+    lub = 1
+    while (lub < b):
+        lub *= base
+        exp += 1
+    # print(exp)
 
+    # ulps
     ulpA = math.ulp(a)
+    ulpB = math.ulp(b)
+    expA = math.frexp(ulpA)[1]
+    expB = math.frexp(ulpB)[1]
 
-    interval = a
-    numIntervals = 0
-    if a > 0:
-        while interval < b:
-            interval += ulpA
-            numIntervals += 1
-    else:
-        print("hi")
-        while interval > b:
-            interval += ulpA
-            numIntervals += 1
+    numUlps = 0
+    intervalExp = expA
+    lowerBound = a
 
-    print(numIntervals)
+    while (intervalExp <= expB):
+        upperBound = 2**(51+intervalExp+1)
+        intervalUlp = math.ulp(lowerBound)
+
+        # if upperbound goes beyond b, set b as the upperbound
+        if (upperBound > b):
+            upperBound = b
+
+        # adds number of ulps in this interval to total ulps
+        numUlps += (upperBound - lowerBound)/intervalUlp
+        lowerBound = upperBound
+        intervalExp += 1
+
+    # same exponent
+    # elif (expA == expB):
+    #     numUlps = (b - a)/ulpA
+
+    return numUlps
 
 if __name__ == "__main__":
-    ulps(-1,-1.0000000000000006)
+    print(ulps(15.0, 100.0))
+    print(ulps(1.0, 1.0000000000000006))
+    print(ulps(1.0, 2.0))
+
+    # for i in range (0,20):
+    #     print(i, ":", math.frexp(i)[1])
