@@ -9,9 +9,8 @@ def ulps(a,b):
     eps = sys.float_info.epsilon
     prec = sys.float_info.mant_dig
     inf = math.inf
-    # print(sys.float_info)
     
-    if ((a < 0 and b > 0) or (a > 0 and b < 0)):
+    if ((a <= 0 and b >= 0) or (a >= 0 and b <= 0)):
         return inf
     elif (a == inf or b == inf):
         return inf
@@ -22,17 +21,11 @@ def ulps(a,b):
         a = b
         b = tempA
 
-    # find exponent
-    exp = 0
-    lub = 1
-    while (lub < b):
-        lub *= base
-        exp += 1
-    # print(exp)
-
     # ulps
     ulpA = math.ulp(a)
     ulpB = math.ulp(b)
+
+    # exponents
     expA = math.frexp(ulpA)[1]
     expB = math.frexp(ulpB)[1]
 
@@ -41,7 +34,7 @@ def ulps(a,b):
     lowerBound = a
 
     while (intervalExp <= expB):
-        upperBound = 2**(51+intervalExp+1)
+        upperBound = 2**((prec-2)+intervalExp+1)
         intervalUlp = math.ulp(lowerBound)
 
         # if upperbound goes beyond b, set b as the upperbound
@@ -53,16 +46,23 @@ def ulps(a,b):
         lowerBound = upperBound
         intervalExp += 1
 
-    # same exponent
-    # elif (expA == expB):
-    #     numUlps = (b - a)/ulpA
-
     return numUlps
 
 if __name__ == "__main__":
-    print(ulps(15.0, 100.0))
-    print(ulps(1.0, 1.0000000000000006))
-    print(ulps(1.0, 2.0))
-
-    # for i in range (0,20):
-    #     print(i, ":", math.frexp(i)[1])
+    pass
+    # print(ulps(-1.0, -1.0000000000000003)) #1 
+    # print(ulps(1.0, 1.0000000000000003))   #1 
+    # print(ulps(1.0, 1.0000000000000004))   #2 
+    # print(ulps(1.0, 1.0000000000000005))   #2 
+    # print(ulps(1.0, 1.0000000000000006))   #3 
+    # print(ulps(0.9999999999999999, 1.0))   #1 
+    # print(ulps(0.4999999999999995, 2.0)) #9007199254741001 
+    # print(ulps(0.5000000000000005, 2.0)) #9007199254740987 
+    # print(ulps(0.5, 2.0)) #9007199254740992 
+    # print(ulps(1.0, 2.0)) #4503599627370496 
+    # print(2.0**52)        # 4503599627370496.0 
+    # print(ulps(-1.0, 1.0)) #inf 
+    # print(ulps(-1.0, 0.0)) #inf 
+    # print(ulps(0.0, 1.0))  #inf 
+    # print(ulps(5.0, math.inf)) #inf 
+    # print(ulps(15.0, 100.0))  # 12103423998558208
