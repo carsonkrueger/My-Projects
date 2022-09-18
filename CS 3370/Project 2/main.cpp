@@ -9,6 +9,7 @@ using namespace std;
 
 int main() {
     MyObject::profile();
+    cout << "start" << endl;
     // Create an array of MyObject heap objects
     const int MAXOBJS{10};
     MyObject* objs[MAXOBJS];

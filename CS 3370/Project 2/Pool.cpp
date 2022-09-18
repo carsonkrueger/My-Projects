@@ -1,5 +1,9 @@
 #include "Pool.h"
 #include "MyObject.h"
+#include <iostream>
+
+using std::cout;
+using std::endl;
 
 Pool::Pool(size_t elemSiz, size_t blockSiz): elemSize{elemSiz}, blockSize{blockSiz}, pool{new char*[poolSize]} {
     // insert first free list
@@ -11,10 +15,12 @@ Pool::Pool(size_t elemSiz, size_t blockSiz): elemSize{elemSiz}, blockSize{blockS
    };
 
 Pool::~Pool() {
-    char* ptr = pool[0];
     for (size_t i=0; i < poolSize; i++) {
-        void* tempNext = reinterpret_cast<MyObject*>(*pool[i] + elemSize*(i))->next;
-        delete pool[i] + elemSize*(i);
+        // void* ptr = pool[i];
+        for (size_t j=0; j<blockSize; j++) {
+            // reinterpret_cast<MyObject*>((char*)ptr + elemSize*(j))->next;
+            delete (pool[i] + elemSize*(j));
+        }
     }
     delete pool;
 }
@@ -26,15 +32,15 @@ void* Pool::allocate() {
 }
 
 void Pool::deallocate(void* ptr){
-    delete ptr;
+    delete reinterpret_cast<MyObject*>(ptr);
 }
 
 void* Pool::grow(size_t blockSize) {
     // grow pool by one
-    char* newPool = new char[poolSize+1];
-    for (size_t i = 0; i < poolSize; i++) newPool[i] = *pool[i];
+    char** newPool = new char*[poolSize+1];
+    for (size_t i = 0; i < poolSize; i++) newPool[i] = pool[i];
     delete [] pool;
-    *pool = newPool;
+    pool = newPool;
     poolSize += 1;
 
     // create new free list
@@ -45,4 +51,12 @@ void* Pool::grow(size_t blockSize) {
         reinterpret_cast<MyObject*>(pool[poolSize-1] + elemSize*(i))->next = pool[poolSize-1] + (elemSize*(i+1)); // connects next* to the successor block
     
     return pool[poolSize-1];
+}
+
+void Pool::profile() {
+    for (size_t i=0; i < poolSize; i++) {
+        for (size_t j=0; j < blockSize; j++) {
+            cout << *reinterpret_cast<MyObject*>(pool[i] + elemSize*(j)) << endl;
+        }
+    }
 }
