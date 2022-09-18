@@ -19,6 +19,7 @@ class MyObject {
     }
    
 public:
+    void* next;
     static MyObject* create(int id, const std::string& name) {
         return new MyObject{id, name};
     }
