@@ -3,7 +3,7 @@
 
 #include <iosfwd>
 #include <string>
-#include "Pool.h"
+#include "Pools.h"
 
 class MyObject {
     int id;
