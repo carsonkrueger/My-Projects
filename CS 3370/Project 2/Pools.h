@@ -4,9 +4,9 @@
 #include <cstddef>
 
 class Pool {
-   char** pool;
-   size_t poolSize = 1;
-   void* nextFree = nullptr; // next available slot in the block to be allocated at
+   char** pool= nullptr;
+   size_t poolSize = 0;
+   void* freeHead = nullptr; // next available slot in the block to be allocated at
    size_t blockSize;
    size_t elemSize;
 

@@ -14,8 +14,8 @@ int main() {
         objs[i] = MyObject::create(i, "\"" + to_string(i) + "\"");
     cout << "Object 5 == " << *objs[5] << endl;
     MyObject::profile();
-    delete objs[5];
-    MyObject::profile();
+    // delete objs[5];
+    // MyObject::profile();
     //--------------
     // MyObject::profile();
     // // Create an array of MyObject heap objects

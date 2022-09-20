@@ -3,7 +3,7 @@
 
 #include <iosfwd>
 #include <string>
-#include "Pools.h"
+#include "pool.h"
 
 class MyObject {
     int id;
@@ -19,7 +19,6 @@ class MyObject {
     }
    
 public:
-    void* next;
     static MyObject* create(int id, const std::string& name) {
         return new MyObject{id, name};
     }
