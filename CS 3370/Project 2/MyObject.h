@@ -8,7 +8,7 @@
 class MyObject {
     int id;
     std::string name;
-    static Pool pool;
+    static Pool<MyObject> pool;
 
     // Disallow copy, assign, and direct construction by user
     MyObject(const MyObject&) = delete;
