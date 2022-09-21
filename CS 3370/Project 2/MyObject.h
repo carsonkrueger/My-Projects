@@ -3,12 +3,12 @@
 
 #include <iosfwd>
 #include <string>
-#include "Pools.h"
+#include "pool.h"
 
 class MyObject {
     int id;
     std::string name;
-    static Pool pool;
+    static Pool<MyObject> pool;
 
     // Disallow copy, assign, and direct construction by user
     MyObject(const MyObject&) = delete;
@@ -19,7 +19,6 @@ class MyObject {
     }
    
 public:
-    void* next;
     static MyObject* create(int id, const std::string& name) {
         return new MyObject{id, name};
     }
