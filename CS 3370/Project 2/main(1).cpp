@@ -8,6 +8,15 @@
 using namespace std;
 
 int main() {
+    // const int MAXOBJS{10};
+    // MyObject* objs[MAXOBJS];
+    // for (int i{0}; i < MAXOBJS; ++i)
+    //     objs[i] = MyObject::create(i, "\"" + to_string(i) + "\"");
+    // cout << "Object 5 == " << *objs[5] << endl;
+    // MyObject::profile();
+    // delete objs[5];
+    // MyObject::profile();
+    //--------------
     MyObject::profile();
     // Create an array of MyObject heap objects
     const int MAXOBJS{10};
@@ -15,6 +24,7 @@ int main() {
     for (int i{0}; i < MAXOBJS; ++i)
         objs[i] = MyObject::create(i, "\"" + to_string(i) + "\"");
     cout << "Object 5 == " << *objs[5] << endl;
+    MyObject::profile();
     delete objs[5];
     objs[5] = nullptr;
     MyObject::profile();
