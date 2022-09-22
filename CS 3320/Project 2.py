@@ -1,5 +1,6 @@
 import sys
 import math
+from struct import *
 
 base = sys.float_info.radix
 eps = sys.float_info.epsilon
@@ -7,12 +8,13 @@ prec = sys.float_info.mant_dig
 inf = math.inf
 
 def sign(x):
-    if (x < 0):
-        return -1
-    elif (x > 0):
-        return 1
-    elif (x == 0):
-        return 0
+    return binary(x)[0]
+    # if (x < 0):
+    #     return -1
+    # elif (x > 0):
+    #     return 1
+    # elif (x == 0):
+    #     return 0
 
 def exponent(x):
     expA = math.frexp(x)[1]
@@ -21,12 +23,13 @@ def exponent(x):
     return expA-1
 
 def fraction(x):
-    print("-TESTING-", end="")
-    return 0
+    # print("-TESTING- ", end="")
+    return math.frexp(x)[0]
 
 def mantissa(x):
-    print("-TESTING-", end="")
-    return (fraction(x) + 1)
+    # print("-TESTING-", end="")
+    # return (fraction(x) + 1)
+    return math.frexp(x)[0] * 2
 
 def is_posinfinity(x):
     if (x == inf): return True
@@ -81,14 +84,15 @@ def ulps(a,b):
 
     return numUlps
 
-def convert(x):
-    def DecimalToBinary(x):
-        if x >= 1:
-            DecimalToBinary(x // 2)
-            x %= 2
+def binary(num):
+    return ''.join('{:0>8b}'.format(c) for c in pack('!f', num))
+
+def decimal(num):
+    pass
 
 if __name__ == "__main__":
     y = 6.5 
+    # print(binary(y))
     # subMin = np.nextafter(0,1) //subMin = 5e-324 
     print(sign(y)) #1 
     print(sign(0.0)) # 0 
