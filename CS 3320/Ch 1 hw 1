@@ -46,7 +46,30 @@ def planeCalc():
         v = v + (g - (.47/68.1) * (v * abs(v))) * 2
         # x = 
 
+def test():
+    numA = 2**-53
+    numB = 1.0
+    sum1 = 0
+    for i in range(5):
+      sum1 = sum1 + numA
+    sum1 = sum1 + numB
+
+    print(sum1)
+
+def test2():
+    numA = 2**-53
+    numB = 1.0
+    sum1 = numB
+    for i in range(5):
+        sum1 = sum1 + numA
+
+    print(sum1)
+
 def main():
+
+    test()
+    test2()
+
     m = 68.1
     cd = 0.25
     vi = -40
