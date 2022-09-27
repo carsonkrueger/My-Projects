@@ -5,13 +5,13 @@ epsilon = sys.float_info.epsilon
 
 def mySine(x):
     if (x > 10**9):
-        # print("too big")
+        print("too big", end=" ")
         return math.nan
     elif (x**2 <= epsilon):
-        # print("too small")
+        print("too small", end=" ")
         return math.sin(x)
 
-    x = x % 90
+    x = x % (math.pi/2)
 
     doNeg = True
     for i in range(3,21+1,2):
@@ -22,10 +22,7 @@ def mySine(x):
         doNeg = not doNeg # flip doNeg
 
     return x
-    # return math.sin(x)
-    
-    # redu = x % (math.pi/2)
-    
+
 
 if __name__ == "__main__":
     print(mySine(1.0e-08)) #1e-08 
