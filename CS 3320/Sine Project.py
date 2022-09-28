@@ -9,7 +9,7 @@ def mySine(x):
         return math.nan
     elif ((x**2 <= epsilon and x > 0) or (-x**2 >= epsilon and x < 0)):
         print("too small", end=" ")
-        return math.sin(x)
+        return x
 
     # if (x > 0):
     #     x = x % (math.pi/2)
@@ -18,17 +18,18 @@ def mySine(x):
 
     # x = (x * (math.pi/180)) % (math.pi/2/180)
 
-    x = round(x/math.pi) # x - n pi
-    x -= x*math.pi
+    t = x - round(x/math.pi) * math.pi # x - n pi
 
     denom = 1
+    doNeg = True
     for i in range(3,21+1,2):
-        x += (-x*x*x)/(math.factorial(i))
-        # else:
-        #     x += (x**3)/(math.factorial(i))
-        # doNeg = not doNeg # flip doNeg
+        if doNeg:
+            t -= (t**i)/(math.factorial(i))
+        else:
+            t += (t**i)/(math.factorial(i))
+        doNeg = not doNeg # flip doNeg
 
-    return x
+    return t
 
 
 if __name__ == "__main__":
