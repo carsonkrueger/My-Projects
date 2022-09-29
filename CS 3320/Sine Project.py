@@ -18,7 +18,8 @@ def mySine(x):
 
     # x = (x * (math.pi/180)) % (math.pi/2/180)
 
-    t = x - round(x/math.pi) * math.pi # x - n pi
+    y = round(x/math.pi)  # x - n pi
+    t = x - (y* math.pi)
 
     denom = 1
     doNeg = True
