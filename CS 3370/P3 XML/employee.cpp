@@ -1,18 +1,25 @@
 #include <iostream>
 #include <fstream>
+#include <vector>
+
+#include "employee.h"
+
 using std::cout;
 using std::endl;
 using std::string;
+using std::vector;
+
 
 int main(int argc, char* argv[]) {
-    for(size_t i=0; i<argc; ++i) {
-        cout << argv[i] << endl;
-    }
+    vector<Employee> emps;
+    
+    for(int i=0; i<argc; ++i) {
+        std::fstream in(argv[1]);
+        char n = in.get();
 
-    std::fstream in(argv[1]);
-
-    string n;
-    while (in >> n) {
-        cout << n << endl;
+        while (in) {
+            cout << n << endl;
+            n = in.get();
+        }
     }
 };

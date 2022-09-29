@@ -13,6 +13,17 @@ class Employee{
     string phone;
     double salary;
 
+    struct emp {
+        char name[10];
+        int id;
+        char address[10];
+        char city[10];
+        char state[10];
+        char country[10];
+        char phone[10];
+        double salary;
+    };
+
 public:
     void display(std::ostream&) const; // Write a readable Employee representation to a stream
     void write(std::ostream&) const; // Write a fixed-length record to current file position
