@@ -25,6 +25,7 @@ class Employee{
     };
 
 public:
+    Employee(string);
     void display(std::ostream&) const; // Write a readable Employee representation to a stream
     void write(std::ostream&) const; // Write a fixed-length record to current file position
     void store(std::iostream&) const; // Overwrite (or append) record in (to) file
