@@ -5,33 +5,24 @@ epsilon = sys.float_info.epsilon
 
 def mySine(x):
     if (x > 10**9 or x < -10**9):
-        print("too big", end=" ")
         return math.nan
     elif ((x**2 <= epsilon and x > 0) or (-x**2 >= epsilon and x < 0)):
-        print("too small", end=" ")
         return x
 
-    # if (x > 0):
-    #     x = x % (math.pi/2)
-    # elif (x < 0):
-    #     x = x % (-math.pi/2)
+    n = round(x/math.pi)  # x - n pi
+    t = x - n * math.pi
 
-    # x = (x * (math.pi/180)) % (math.pi/2/180)
-
-    y = round(x/math.pi)  # x - n pi
-    t = x - (y* math.pi)
-
-    denom = 1
+    sinx = t
     doNeg = True
+
     for i in range(3,21+1,2):
         if doNeg:
-            t -= (t**i)/(math.factorial(i))
+            sinx -= (t**i)/math.factorial(i)
         else:
-            t += (t**i)/(math.factorial(i))
+            sinx += (t**i)/math.factorial(i)
         doNeg = not doNeg # flip doNeg
 
-    return t
-
+    return -sinx if (n%2) else sinx 
 
 if __name__ == "__main__":
     print(mySine(1.0e-08)) #1e-08 
