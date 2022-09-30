@@ -6,14 +6,14 @@ using std::cout;
 using std::endl;
 
 class Employee{
-    string name = NULL;
-    int id = NULL;
-    string address = NULL;
-    string city = NULL;
-    string state = NULL;
-    string country = NULL;
-    string phone = NULL;
-    double salary = NULL;
+    string name = "";
+    int id = 0;
+    string address = "";
+    string city = "";
+    string state = "";
+    string country = "";
+    string phone = "";
+    double salary = 0;
 
     struct emp {
         char name[10];
@@ -40,7 +40,29 @@ public:
     static Employee* read(std::istream&); // Read record from current file position
     static Employee* retrieve(std::istream&,int); // Search file for record by id
     static Employee* fromXML(std::istream& in) { // Read the XML record from a stream
-        char n = in.get();
-        cout << n << endl;
+        Employee* emp = new Employee();
+
+        string name = "";
+        int id = 0;
+        string address = "";
+        string city = "";
+        string state = "";
+        string country = "";
+        string phone = "";
+        double salary = 0;
+
+        // char n;
+        // while(in) {
+        //     n = in.get();
+        //     cout << n << endl;
+        // }
+
+        string s;
+        while(in) {
+            in >> s;
+            cout << s << endl;
+        }
+
+        return emp;
     }
 };
