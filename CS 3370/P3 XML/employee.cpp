@@ -19,17 +19,9 @@ int main(int argc, char* argv[]) {
     std::vector<Employee*> emps;
 
     for(int i=0; i<argc; ++i) {
-        Employee* emp = new Employee();
-        emps.push_back(emp);
-
         std::fstream in(argv[i]);
-        // char n = in.get();
 
-        while (in) {
-            // cout << n << endl;
-            emp->fromXML(in);
-        }
+        Employee* emp = Employee::fromXML(in);
+        emps.push_back(emp);
     }
-
-
 };

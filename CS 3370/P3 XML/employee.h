@@ -60,7 +60,11 @@ public:
         string s;
         while(in) {
             in >> s;
-            cout << s << endl;
+            int idx = s.find("<employee>");
+            if (idx != string::npos) {
+                cout << idx << ": " << s << endl;
+            }
+                
         }
 
         return emp;
