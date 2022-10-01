@@ -18,10 +18,17 @@
 int main(int argc, char* argv[]) {
     std::vector<Employee*> emps;
 
+    // cout << towlower('/');
     for(int i=0; i<argc; ++i) {
         std::fstream in(argv[i]);
 
-        Employee* emp = Employee::fromXML(in);
-        emps.push_back(emp);
+        try {
+            Employee* emp = Employee::fromXML(in);
+            emps.push_back(emp);
+        }
+        catch (std::runtime_error) {
+            cout << "runtime error" << endl;
+        }
+        
     }
 };
