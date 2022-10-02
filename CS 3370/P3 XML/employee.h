@@ -29,6 +29,8 @@ class Employee {
 
 public:
     Employee() = default;
+    Employee(string na, int i, string a, string ci, string st, string co, string p, double sa): 
+        name{na}, id{i}, address{a}, city{ci}, state{st}, country{co}, phone{p}, salary{sa} {};
 
     void display(std::ostream& os) const {
         os << "id: " << this->id << endl << "name: " << this->name << endl << "address: " << this->address
@@ -50,94 +52,71 @@ public:
         string phone = "";
         double salary = -1;
 
-        // ----- get
-
         bool empTag = false;
-        bool attTag = false;
-
         char n;
         string tag = "";
+        string prevTag = "";
         string attVal = "";
+
         while(in) {
             n = in.get();
+            prevTag = tag;
             tag = "";
 
             // gets the element tag
             if (n == '<') {
+                n = in.get();
                 while (in && n != '>') {
-                    n = in.get();
                     tag += n;
+                    n = in.get();
                 }
+                cout << tag << endl;
+            }
+
+            // if we already have employee tag, start getting attribute values
+            if (empTag == true) {
+                if (tag == "/employee") break; // if we need to close employee tag
+                else if (tag == "name") name = getAttVal(in);
+                else if (tag == "id") id = std::stoi(getAttVal(in));
+                else if (tag == "address") address = getAttVal(in);
+                else if (tag == "city") city = getAttVal(in);
+                else if (tag == "state") state = getAttVal(in);
+                else if (tag == "country") country = getAttVal(in);
+                else if (tag == "phone") phone = getAttVal(in);
+                else if (tag == "salary") salary = std::stod(getAttVal(in));
+                else if (tag != ('/' + prevTag)) throw std::runtime_error("Incorrect or missing tag: " + tag);
             }
 
             // if we dont yet have an employee tag
             if (empTag == false) {
                 if (tag == "employee") empTag = true;
-                else throw std::runtime_error;
+                else { 
+                    // tag != "employee", but we dont have an opening employee tag
+                    throw std::runtime_error("Missing opening employee tag");
+                    break;
+                }
                 continue; // this will allow us to get the next tag for the attributes
             }
 
-            // if we need to close employee tag
-            if (empTag == true && tag == "/employee") empTag = false;
             
-            // if we already have employee tag, start getting attribute values
-            
-            switch (tag) {
-                // case ("employee") 
-                case ("name") name = getAttVal(in);
-                case ("id") id = static_cast<int>(getAttVal(in));
-                case ("address") address = getAttVal(in);
-                case ("city") city = getAttVal(in);
-                case ("state") state = getAttVal(in);
-                case ("country") country = getAttVal(in);
-                case ("phone") phone = getAttVal(in);
-                case ("salary") salary = static_cast<double>(getAttVal(in));
-            }
         }
 
-        // ------ >>
+        if (name == "" || id == -1 || salary == -1) {
+            throw std::runtime_error("Name, Id, and Salary are all required fields");
+        }
 
-        // string s;
-        // while(in) {
-        //     in >> s;
-        //     int idx = s.find("<employee>");
-        //     if (idx != string::npos) {
-        //         cout << idx << ": " << s << endl;
-        //     }
-        // }
-        
-        // ----- split method
-
-        // std::vector<string> wordVector;
-
-        // string line;
-        // while(in >> line) {
-        //     cout << line << endl;
-
-        //     std::size_t prev = 0, pos;
-        //     while ((pos = line.find_first_of("<>", prev)) != std::string::npos){
-        //         if (pos > prev)
-        //             wordVector.push_back(line.substr(prev, pos-prev));
-        //         prev = pos+1;
-        //     }
-        //     if (prev < line.length())
-        //         wordVector.push_back(line.substr(prev, std::string::npos));
-        // }
-
-        // for (int i=0; i<wordVector.size(); ++i) {
-        //     if 
-        // }
-
-        Employee* emp = new Employee();
-        return emp;
+        return new Employee(name, id, address, city, state, country, phone, salary);
     }
 
-    string getAttVal(std::istream& in) {
+    static string getAttVal(std::istream& in) {
+        cout << "getAttVal" << endl;
         string attVal = "";
+        char n = in.get();
         while (in && n != '<') {
             attVal += n;
             n = in.get();
         }
+        if (attVal == "") throw std::runtime_error("Attribute value cannot be empty");
         in.unget(); // pushes the '<' back onto the buffer
         return attVal;
     }
