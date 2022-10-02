@@ -60,6 +60,7 @@ public:
 
         while(in) {
             n = in.get();
+            if (n == '\n' || n == '\t') continue;
             prevTag = tag;
             tag = "";
 
@@ -84,7 +85,7 @@ public:
                 else if (tag == "country") country = getAttVal(in);
                 else if (tag == "phone") phone = getAttVal(in);
                 else if (tag == "salary") salary = std::stod(getAttVal(in));
-                else if (tag != ('/' + prevTag)) throw std::runtime_error("Incorrect or missing tag: " + tag);
+                else if (tag != ('/' + prevTag)) throw std::runtime_error("Incorrect or missing tag: \"" + tag + "\"");
             }
 
             // if we dont yet have an employee tag

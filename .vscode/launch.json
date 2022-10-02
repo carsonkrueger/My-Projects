@@ -16,7 +16,7 @@
       "type": "cppdbg",
       "request": "launch",
       "program": "${workspaceFolder}/cs 3370/P3 XML/a.exe",
-      "args": [],
+      "args": [".\\employee.xml"],
       "stopAtEntry": false,
       "cwd": "${fileDirname}",
       "environment": [],
