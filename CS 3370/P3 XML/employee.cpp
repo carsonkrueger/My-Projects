@@ -7,11 +7,6 @@
 int main(int argc, char* argv[]) {
     std::vector<Employee*> emps;
 
-    // cout << "NUM ARGS: " << argc << endl;
-    // for(int i=1; i<argc; ++i) {
-    //     cout << argv[i] << endl;
-    // }
-
     for(int i=1; i<argc; ++i) {
         std::ifstream is(argv[i]);
         cout << "PARSING FILE: " << argv[i] << endl;
@@ -19,7 +14,6 @@ int main(int argc, char* argv[]) {
             try {
                 Employee* emp = Employee::fromXML(is);
                 if (emp) emps.push_back(emp);
-                else cout << "nullptr" << endl;
             }
             catch (std::runtime_error e) {
                 cout << "RUNTIME ERROR: " << e.what() << endl;
@@ -32,5 +26,10 @@ int main(int argc, char* argv[]) {
     // std::ostream os;
     for (auto e: emps) {
         e->display();
+    }
+
+    std::fstream bs("emp.out", std::ios::out | std::ios::binary | std::ios::trunc);
+    for (auto e: emps) {
+        e->write(bs);
     }
 };
