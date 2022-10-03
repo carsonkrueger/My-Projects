@@ -4,31 +4,33 @@
 
 #include "employee.h"
 
-
-// Employee::Employee(string fileName) {
-//     std::fstream in(fileName);
-//     char n = in.get();
-
-//     while (in) {
-//         cout << n << endl;
-//         n = in.get();
-//     }
-// }
-
 int main(int argc, char* argv[]) {
     std::vector<Employee*> emps;
 
-    cout << towlower('/');
-    for(int i=0; i<argc; ++i) {
-        std::ifstream in(argv[i]);
-        cout << "ON FILE: " << argv[i] << endl;
+    // cout << "NUM ARGS: " << argc << endl;
+    // for(int i=1; i<argc; ++i) {
+    //     cout << argv[i] << endl;
+    // }
 
-        try {
-            Employee* emp = Employee::fromXML(in);
-            emps.push_back(emp);
+    for(int i=1; i<argc; ++i) {
+        std::ifstream is(argv[i]);
+        cout << "PARSING FILE: " << argv[i] << endl;
+        while(is) {
+            try {
+                Employee* emp = Employee::fromXML(is);
+                if (emp) emps.push_back(emp);
+                else cout << "nullptr" << endl;
+            }
+            catch (std::runtime_error e) {
+                cout << "RUNTIME ERROR: " << e.what() << endl;
+                break;
+            }
         }
-        catch (std::runtime_error e) {
-            cout << "runtime error: " << e.what() << endl;
-        }
+        
+    }
+
+    // std::ostream os;
+    for (auto e: emps) {
+        e->display();
     }
 };
