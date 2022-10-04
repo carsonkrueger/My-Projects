@@ -66,10 +66,11 @@ public:
     // Employee(string na, int i, string a, string ci, string st, string co, string p, double sa): 
     //     name{na}, id{i}, address{a}, city{ci}, state{st}, country{co}, phone{p}, salary{sa} {};
 
+    //std::ostream&
     void display() const { // Write a readable Employee representation to a stream
         cout << endl << "id: " << this->id << endl << "name: " << this->name << endl << "address: " << this->address
         << endl << "city: " << this->city << endl << "state: " << this->state << endl << "country: " 
-        << this->country << endl << "phone: " << this->phone << endl << "salary: " << this->salary << endl << endl;
+        << this->country << endl << "phone: " << this->phone << endl << "salary: " << this->salary << endl;
     }; 
 
     void write(std::ostream& bos) const { // Write a fixed-length record to current file position
@@ -90,10 +91,23 @@ public:
         bos.write(reinterpret_cast<const char*>(&empRec), sizeof(empRec));
     };
 
-    void store(std::iostream&) const { // Overwrite (or append) record in (to) file
-
+    void store(std::iostream& ios) const { // Overwrite (or append) record in (to) file
+        std::streampos pos = ios.tellg();
     };
-    void toXML(std::ostream&) const; // Write XML record for Employee
+
+    //std::ostream&
+    void toXML() const { // Write XML record for Employee
+        cout << endl << "<Employee>" << endl;
+        cout << "\t" << "<Name>" << name << "</Name>" << endl;
+        cout << "\t" << "<ID>" << id << "</ID>" << endl;
+        if (address != "") cout << "\t" << "<Address>" << address << "</Address>" << endl;
+        if (city != "") cout << "\t" << "<City>" << city << "</City>" << endl;
+        if (state != "") cout << "\t" << "<State>" << state << "</State>" << endl;
+        if (country != "") cout << "\t" << "<Country>" << country << "</Country>" << endl;
+        if (phone != "") cout << "\t" << "<Phone>" << phone << "</Phone>" << endl;
+        if (salary != -1) cout << "\t" << "<Salary>" << salary << "</Salary>" << endl;
+        cout << "</Employee>" << endl;
+    };
 
     static Employee* read(std::istream& bis) { // Read record from current file position
         EmployeeRec empRec;
@@ -102,7 +116,7 @@ public:
         Employee* emp = new Employee();
 
         if (bis) {
-            cout << "EMPREC ID: " << empRec.id << ", NAME: " << empRec.name << endl;
+            // cout << "EMPREC ID: " << empRec.id << ", NAME: " << empRec.name << endl;
             emp->id = empRec.id;
             emp->name = empRec.name;
             emp->address = empRec.address;
@@ -117,13 +131,35 @@ public:
         return emp;
     };
 
-    static Employee* retrieve(std::istream&,int); // Search file for record by id
+    static Employee* retrieve(std::istream& bis, int id) { // Search file for record by id
+        EmployeeRec empRec;
+        Employee* emp = new Employee();
+
+        while(bis) {
+            bis.read(reinterpret_cast<char*>(&empRec), sizeof(empRec));
+
+            if (bis && empRec.id == id) {
+                // Found employee
+                emp->id = empRec.id;
+                emp->name = empRec.name;
+                emp->address = empRec.address;
+                emp->city = empRec.city;
+                emp->state = empRec.state;
+                emp->country = empRec.country;
+                emp->phone = empRec.phone;
+                emp->salary = empRec.salary;
+                return emp;
+            }
+        }
+        // found no employee with matching id
+        return nullptr;
+    };
 
     static Employee* fromXML(std::istream& is) { // Read the XML record from a stream
         Employee* emp = new Employee();
 
         bool empTag = false;
-        bool attTag = false;
+        bool valTag = false;
         char n;
         string tag = "";
         string prevTag = "";
@@ -138,27 +174,24 @@ public:
 
             // if we already have employee tag but dont already have an opening attribute tag, 
             // start getting attribute values
-            if (empTag && !attTag) {
+            if (empTag && !valTag) {
                 if (tag == "/employee") break; // if we need to close employee tag
-                    // while(is && n!='<') n = is.get();
-                    // if (is) is.unget();
-                    // else return nullptr;
-                else if (tag == "name") emp->name = getAttVal(is, attTag);
-                else if (tag == "id") emp->id = std::stoi(getAttVal(is, attTag));
-                else if (tag == "address") emp->address = getAttVal(is, attTag);
-                else if (tag == "city") emp->city = getAttVal(is, attTag);
-                else if (tag == "state") emp->state = getAttVal(is, attTag);
-                else if (tag == "country") emp->country = getAttVal(is, attTag);
-                else if (tag == "phone") emp->phone = getAttVal(is, attTag);
-                else if (tag == "salary") emp->salary = std::stod(getAttVal(is, attTag));
+                else if (tag == "name") emp->name = getAttVal(is, valTag);
+                else if (tag == "id") emp->id = std::stoi(getAttVal(is, valTag));
+                else if (tag == "address") emp->address = getAttVal(is, valTag);
+                else if (tag == "city") emp->city = getAttVal(is, valTag);
+                else if (tag == "state") emp->state = getAttVal(is, valTag);
+                else if (tag == "country") emp->country = getAttVal(is, valTag);
+                else if (tag == "phone") emp->phone = getAttVal(is, valTag);
+                else if (tag == "salary") emp->salary = std::stod(getAttVal(is, valTag));
                 else throw std::runtime_error("Incorrect tag: <" + tag + ">");
             }
 
             // If we have already parsed an attribute tag and value, check for a closing tag
-            else if (attTag) {
+            else if (valTag) {
                 // if no closing tag, throw error
-                if (tag != ('/' + prevTag)) throw std::runtime_error("Incorrect tag: <" + tag + ">");
-                attTag = false; // otherwise we do have closing tag and reset attTag value
+                if (tag != ('/' + prevTag)) throw std::runtime_error("Missing tag: </" + prevTag + ">");
+                valTag = false; // otherwise we do have closing tag and reset attTag value
             }
 
             // if we dont yet have an employee tag

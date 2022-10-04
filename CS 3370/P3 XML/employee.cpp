@@ -1,4 +1,3 @@
-#include <ostream>
 #include <fstream>
 #include <vector>
 
@@ -7,6 +6,7 @@
 int main(int argc, char* argv[]) {
     std::vector<Employee*> emps;
 
+    // read fromXML
     for(int i=1; i<argc; ++i) {
         std::ifstream is(argv[i]);
         cout << "PARSING FILE: " << argv[i] << endl;
@@ -23,23 +23,45 @@ int main(int argc, char* argv[]) {
         is.close();
     }
 
+    // display
     for (auto e: emps) {
         e->display();
     }
 
-    std::fstream bios("employee.bin", std::ios::in | std::ios::out | std::ios::binary);
+    // write to fixed length file
+    std::fstream bos("employee.bin", std::ios::in | std::ios::out | std::ios::binary);
     for (auto e: emps) {
-        e->write(bios);
+        e->write(bos);
     }
+    bos.close();
     emps.clear();
-    while(bios) {
-        cout << "hi" << endl;
-        Employee* emp = Employee::read(bios);
+
+    // read from fixed length file
+    std::fstream bis("employee.bin", std::ios::in | std::ios::binary);
+    while(bis) {
+        Employee* emp = Employee::read(bis);
         emps.push_back(emp);
     }
-    bios.close();
+    bis.close();
 
-    for (auto e: emps) {
-        e->display();
+    // display
+    // std::ostream os;
+    for (int i=0; emps[i]; ++i) {
+        emps[i]->display();
     }
+
+    // print out XML representation
+    for (int i=0; emps[i]; ++i) {
+        emps[i]->toXML();
+    }
+
+    // search file for employee with id 12345
+    std::fstream is("employee.bin", std::ios::in | std::ios::binary);
+    int id = 12345;
+    Employee* emp = Employee::retrieve(is, id);
+    bis.close();
+
+    cout << "Found employee:" << endl;
+    emp->display();
+    
 };
