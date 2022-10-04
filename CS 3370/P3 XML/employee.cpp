@@ -59,9 +59,11 @@ int main(int argc, char* argv[]) {
     std::fstream is("employee.bin", std::ios::in | std::ios::binary);
     int id = 12345;
     Employee* emp = Employee::retrieve(is, id);
-    bis.close();
+    is.close();
 
     cout << "Found employee:" << endl;
     emp->display();
+    
+    // change employee salary to 150000
     
 };
