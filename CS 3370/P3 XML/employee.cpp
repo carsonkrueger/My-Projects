@@ -25,7 +25,7 @@ int main(int argc, char* argv[]) {
 
     // display
     for (auto e: emps) {
-        e->display();
+        e->display(cout);
     }
 
     // write to fixed length file
@@ -47,12 +47,12 @@ int main(int argc, char* argv[]) {
     // display
     // std::ostream os;
     for (int i=0; emps[i]; ++i) {
-        emps[i]->display();
+        emps[i]->display(cout);
     }
 
     // print out XML representation
     for (int i=0; emps[i]; ++i) {
-        emps[i]->toXML();
+        emps[i]->toXML(cout);
     }
 
     // search file for employee with id 12345
@@ -62,8 +62,9 @@ int main(int argc, char* argv[]) {
     is.close();
 
     cout << "Found employee:" << endl;
-    emp->display();
+    emp->display(cout);
     
     // change employee salary to 150000
-    
+    std::fstream ios("employee.bin", std::ios::in | std::ios::out | std::ios::binary);
+    emp->store(ios);
 };

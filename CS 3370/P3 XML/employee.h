@@ -67,8 +67,8 @@ public:
     //     name{na}, id{i}, address{a}, city{ci}, state{st}, country{co}, phone{p}, salary{sa} {};
 
     //std::ostream&
-    void display() const { // Write a readable Employee representation to a stream
-        cout << endl << "id: " << this->id << endl << "name: " << this->name << endl << "address: " << this->address
+    void display(std::ostream& stream) const { // Write a readable Employee representation to a stream
+        stream << endl << "id: " << this->id << endl << "name: " << this->name << endl << "address: " << this->address
         << endl << "city: " << this->city << endl << "state: " << this->state << endl << "country: " 
         << this->country << endl << "phone: " << this->phone << endl << "salary: " << this->salary << endl;
     }; 
@@ -93,20 +93,32 @@ public:
 
     void store(std::iostream& ios) const { // Overwrite (or append) record in (to) file
         std::streampos pos = ios.tellg();
+        cout << "get pos: " << pos << endl;
+        
+        while(ios) {
+            Employee* emp = Employee::read(ios);
+            if (emp->id == this->id) {
+                // overwrite file
+            }
+            else if (!ios) {
+                // append file
+            }
+            else pos = ios.tellg();
+        }
     };
 
     //std::ostream&
-    void toXML() const { // Write XML record for Employee
-        cout << endl << "<Employee>" << endl;
-        cout << "\t" << "<Name>" << name << "</Name>" << endl;
-        cout << "\t" << "<ID>" << id << "</ID>" << endl;
-        if (address != "") cout << "\t" << "<Address>" << address << "</Address>" << endl;
-        if (city != "") cout << "\t" << "<City>" << city << "</City>" << endl;
-        if (state != "") cout << "\t" << "<State>" << state << "</State>" << endl;
-        if (country != "") cout << "\t" << "<Country>" << country << "</Country>" << endl;
-        if (phone != "") cout << "\t" << "<Phone>" << phone << "</Phone>" << endl;
-        if (salary != -1) cout << "\t" << "<Salary>" << salary << "</Salary>" << endl;
-        cout << "</Employee>" << endl;
+    void toXML(std::ostream& stream) const { // Write XML record for Employee
+        stream << endl << "<Employee>" << endl;
+        stream << "\t" << "<Name>" << name << "</Name>" << endl;
+        stream << "\t" << "<ID>" << id << "</ID>" << endl;
+        if (address != "") stream << "\t" << "<Address>" << address << "</Address>" << endl;
+        if (city != "") stream << "\t" << "<City>" << city << "</City>" << endl;
+        if (state != "") stream << "\t" << "<State>" << state << "</State>" << endl;
+        if (country != "") stream << "\t" << "<Country>" << country << "</Country>" << endl;
+        if (phone != "") stream << "\t" << "<Phone>" << phone << "</Phone>" << endl;
+        if (salary != -1) stream << "\t" << "<Salary>" << salary << "</Salary>" << endl;
+        stream << "</Employee>" << endl;
     };
 
     static Employee* read(std::istream& bis) { // Read record from current file position
