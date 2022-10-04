@@ -20,16 +20,26 @@ int main(int argc, char* argv[]) {
                 break;
             }
         }
-        
+        is.close();
     }
 
-    // std::ostream os;
     for (auto e: emps) {
         e->display();
     }
 
-    std::fstream bs("emp.out", std::ios::out | std::ios::binary | std::ios::trunc);
+    std::fstream bios("employee.bin", std::ios::in | std::ios::out | std::ios::binary);
     for (auto e: emps) {
-        e->write(bs);
+        e->write(bios);
+    }
+    emps.clear();
+    while(bios) {
+        cout << "hi" << endl;
+        Employee* emp = Employee::read(bios);
+        emps.push_back(emp);
+    }
+    bios.close();
+
+    for (auto e: emps) {
+        e->display();
     }
 };

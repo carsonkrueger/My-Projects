@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include <exception>
+#include <memory>
 
 using std::string;
 using std::cout;
@@ -55,13 +56,13 @@ class Employee {
 
     static void stobuf(const string& s, char* buf, size_t lim) {
         size_t nchars = std::min(lim-1, s.size());
-
         s.copy(buf, nchars);
         buf[nchars] = '\0';
     }
 
 public:
     Employee() = default;
+    ~Employee() = default;
     // Employee(string na, int i, string a, string ci, string st, string co, string p, double sa): 
     //     name{na}, id{i}, address{a}, city{ci}, state{st}, country{co}, phone{p}, salary{sa} {};
 
@@ -76,12 +77,6 @@ public:
         EmployeeRec empRec;
         
         empRec.id = this->id;
-        // empRec.name = this->name;
-        // empRec.address = this->address;
-        // empRec.city = this->city;
-        // empRec.state = this->state;
-        // empRec.country = this->country;
-        // empRec.phone = this->phone;
         stobuf(this->name, empRec.name, sizeof(empRec.name)-1);
         stobuf(this->address, empRec.address, sizeof(empRec.address)-1);
         stobuf(this->city, empRec.city, sizeof(empRec.city)-1);
@@ -90,13 +85,38 @@ public:
         stobuf(this->phone, empRec.phone, sizeof(empRec.phone)-1);
         empRec.salary = this->salary;
 
+        // cout << empRec.name << empRec.id << endl;
+
         bos.write(reinterpret_cast<const char*>(&empRec), sizeof(empRec));
-        // bs >> empRec.id >> empRec.name >> empRec.address >> empRec.city >> empRec.state >> empRec.country >> empRec.phone >> empRec.salary;
     };
 
-    void store(std::iostream&) const; // Overwrite (or append) record in (to) file
+    void store(std::iostream&) const { // Overwrite (or append) record in (to) file
+
+    };
     void toXML(std::ostream&) const; // Write XML record for Employee
-    static Employee* read(std::istream&); // Read record from current file position
+
+    static Employee* read(std::istream& bis) { // Read record from current file position
+        EmployeeRec empRec;
+        bis.read(reinterpret_cast<char*>(&empRec), sizeof(empRec));
+
+        Employee* emp = new Employee();
+
+        if (bis) {
+            cout << "EMPREC ID: " << empRec.id << ", NAME: " << empRec.name << endl;
+            emp->id = empRec.id;
+            emp->name = empRec.name;
+            emp->address = empRec.address;
+            emp->city = empRec.city;
+            emp->state = empRec.state;
+            emp->country = empRec.country;
+            emp->phone = empRec.phone;
+            emp->salary = empRec.salary;
+        }
+        else return nullptr;
+
+        return emp;
+    };
+
     static Employee* retrieve(std::istream&,int); // Search file for record by id
 
     static Employee* fromXML(std::istream& is) { // Read the XML record from a stream
@@ -112,18 +132,17 @@ public:
         while(is) {
             n = is.get();
             if (n == '\n' || n == '\t' || std::isspace(n)) continue;
+            else if (!is) return nullptr;
             prevTag = tag;
             tag = getXMLTag(is, n);
 
             // if we already have employee tag but dont already have an opening attribute tag, 
             // start getting attribute values
             if (empTag && !attTag) {
-                if (tag == "/employee") {
-                    while(is && n!='<') n = is.get();
-                    if (is) is.unget();
-                    else return nullptr;
-                    break;
-                } // if we need to close employee tag
+                if (tag == "/employee") break; // if we need to close employee tag
+                    // while(is && n!='<') n = is.get();
+                    // if (is) is.unget();
+                    // else return nullptr;
                 else if (tag == "name") emp->name = getAttVal(is, attTag);
                 else if (tag == "id") emp->id = std::stoi(getAttVal(is, attTag));
                 else if (tag == "address") emp->address = getAttVal(is, attTag);
@@ -132,13 +151,13 @@ public:
                 else if (tag == "country") emp->country = getAttVal(is, attTag);
                 else if (tag == "phone") emp->phone = getAttVal(is, attTag);
                 else if (tag == "salary") emp->salary = std::stod(getAttVal(is, attTag));
-                else throw std::runtime_error("Incorrect or missing tag: <" + tag + ">");
+                else throw std::runtime_error("Incorrect tag: <" + tag + ">");
             }
 
-            // If we have already parsed an attribute tag, check for a closing tag
+            // If we have already parsed an attribute tag and value, check for a closing tag
             else if (attTag) {
                 // if no closing tag, throw error
-                if (tag != ('/' + prevTag)) throw std::runtime_error("Incorrect or missing tag: <" + tag + ">");
+                if (tag != ('/' + prevTag)) throw std::runtime_error("Incorrect tag: <" + tag + ">");
                 attTag = false; // otherwise we do have closing tag and reset attTag value
             }
 
