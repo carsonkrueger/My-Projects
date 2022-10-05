@@ -31,10 +31,10 @@ class Employee {
     static string getXMLTag(std::istream& is, char& n) {
         string tag = "";
         if (n == '<') {
-            n = (char)std::towlower(is.get());
+            n = (char)std::tolower(is.get());
             while (is && n != '>') {
                 tag += n;
-                n = (char)std::towlower(is.get());
+                n = (char)std::tolower(is.get());
             }
             // cout << tag << endl;
         }
@@ -63,10 +63,11 @@ class Employee {
 public:
     Employee() = default;
     ~Employee() = default;
-    // Employee(string na, int i, string a, string ci, string st, string co, string p, double sa): 
-    //     name{na}, id{i}, address{a}, city{ci}, state{st}, country{co}, phone{p}, salary{sa} {};
+    
+    void setSalary(const double& sal) {
+        this->salary = sal;
+    }
 
-    //std::ostream&
     void display(std::ostream& stream) const { // Write a readable Employee representation to a stream
         stream << endl << "id: " << this->id << endl << "name: " << this->name << endl << "address: " << this->address
         << endl << "city: " << this->city << endl << "state: " << this->state << endl << "country: " 
@@ -92,18 +93,24 @@ public:
     };
 
     void store(std::iostream& ios) const { // Overwrite (or append) record in (to) file
-        std::streampos pos = ios.tellg();
-        cout << "get pos: " << pos << endl;
-        
+        EmployeeRec empRec;
+
         while(ios) {
-            Employee* emp = Employee::read(ios);
-            if (emp->id == this->id) {
+            ios.seekp(ios.tellg());
+            // cout << "POS: " << ios.tellp() << endl;
+
+            ios.read(reinterpret_cast<char*>(&empRec), sizeof(empRec));
+            if (empRec.id == this->id) {
                 // overwrite file
+                // cout << "overwriting..." << endl;
+                ios.write(reinterpret_cast<const char*>(&empRec), sizeof(empRec));
+                break;
             }
             else if (!ios) {
-                // append file
+                // reached eof, append empRec
+                // cout << "appending..." << endl;
+                ios.write(reinterpret_cast<const char*>(&empRec), sizeof(empRec));
             }
-            else pos = ios.tellg();
         }
     };
 
@@ -188,14 +195,38 @@ public:
             // start getting attribute values
             if (empTag && !valTag) {
                 if (tag == "/employee") break; // if we need to close employee tag
-                else if (tag == "name") emp->name = getAttVal(is, valTag);
-                else if (tag == "id") emp->id = std::stoi(getAttVal(is, valTag));
-                else if (tag == "address") emp->address = getAttVal(is, valTag);
-                else if (tag == "city") emp->city = getAttVal(is, valTag);
-                else if (tag == "state") emp->state = getAttVal(is, valTag);
-                else if (tag == "country") emp->country = getAttVal(is, valTag);
-                else if (tag == "phone") emp->phone = getAttVal(is, valTag);
-                else if (tag == "salary") emp->salary = std::stod(getAttVal(is, valTag));
+                else if (tag == "name") {
+                    if (emp->name != "") throw std::runtime_error("Duplicate <" + tag + "> tags");
+                    emp->name = getAttVal(is, valTag);
+                }
+                else if (tag == "id") {
+                    if (emp->id != -1) throw std::runtime_error("Duplicate <" + tag + "> tags");
+                    emp->id = std::stoi(getAttVal(is, valTag));
+                }
+                else if (tag == "address") {
+                    if (emp->address != "") throw std::runtime_error("Duplicate <" + tag + "> tags");
+                    emp->address = getAttVal(is, valTag);
+                }
+                else if (tag == "city") {
+                    if (emp->city != "") throw std::runtime_error("Duplicate <" + tag + "> tags");
+                    emp->city = getAttVal(is, valTag);
+                }
+                else if (tag == "state") {
+                    if (emp->state != "") throw std::runtime_error("Duplicate <" + tag + "> tags");
+                    emp->state = getAttVal(is, valTag);
+                }
+                else if (tag == "country") {
+                    if (emp->country != "") throw std::runtime_error("Duplicate <" + tag + "> tags");
+                    emp->country = getAttVal(is, valTag);
+                }
+                else if (tag == "phone") {
+                    if (emp->phone != "") throw std::runtime_error("Duplicate <" + tag + "> tags");
+                    emp->phone = getAttVal(is, valTag);
+                }
+                else if (tag == "salary") {
+                    if (emp->salary != -1) throw std::runtime_error("Duplicate <" + tag + "> tags");
+                    emp->salary = std::stod(getAttVal(is, valTag));
+                }
                 else throw std::runtime_error("Incorrect tag: <" + tag + ">");
             }
 

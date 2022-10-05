@@ -10,23 +10,24 @@ int main(int argc, char* argv[]) {
     for(int i=1; i<argc; ++i) {
         std::ifstream is(argv[i]);
         cout << "PARSING FILE: " << argv[i] << endl;
-        while(is) {
-            try {
+
+        try {
+            while(is) {
                 Employee* emp = Employee::fromXML(is);
                 if (emp) emps.push_back(emp);
             }
-            catch (std::runtime_error e) {
-                cout << "RUNTIME ERROR: " << e.what() << endl;
-                break;
-            }
+        }
+        catch (std::runtime_error e) {
+            cout << "RUNTIME ERROR: " << e.what() << endl;
+            break;
         }
         is.close();
     }
 
     // display
-    for (auto e: emps) {
-        e->display(cout);
-    }
+    // for (auto e: emps) {
+    //     e->display(cout);
+    // }
 
     // write to fixed length file
     std::fstream bos("employee.bin", std::ios::in | std::ios::out | std::ios::binary);
@@ -61,10 +62,18 @@ int main(int argc, char* argv[]) {
     Employee* emp = Employee::retrieve(is, id);
     is.close();
 
-    cout << "Found employee:" << endl;
+    cout << endl << "Found:";
     emp->display(cout);
     
     // change employee salary to 150000
     std::fstream ios("employee.bin", std::ios::in | std::ios::out | std::ios::binary);
+    // emp->store(ios);
+    emp->setSalary(150000);
     emp->store(ios);
+    ios.close();
+
+    std::fstream tis("employee.bin", std::ios::in | std::ios::binary);
+    emp = Employee::retrieve(tis, id);
+    emp->toXML(cout);
+    tis.close();
 };
