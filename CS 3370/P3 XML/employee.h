@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 #include <string>
 #include <exception>
 #include <memory>
@@ -62,9 +63,11 @@ class Employee {
 
 public:
     Employee() = default;
+    Employee(string na, int i, string ad, string ci, string st, string co, string ph, double sa) : 
+    name{na},  id{i}, address{ad}, city{ci}, state{st}, country{co}, phone{ph}, salary{sa} {};
     ~Employee() = default;
     
-    void setSalary(const double& sal) {
+    void setSalary(double sal) {
         this->salary = sal;
     }
 
@@ -87,34 +90,55 @@ public:
         stobuf(this->phone, empRec.phone, sizeof(empRec.phone)-1);
         empRec.salary = this->salary;
 
-        // cout << empRec.name << empRec.id << endl;
-
         bos.write(reinterpret_cast<const char*>(&empRec), sizeof(empRec));
     };
 
     void store(std::iostream& ios) const { // Overwrite (or append) record in (to) file
+        EmployeeRec tempEmpRec;
         EmployeeRec empRec;
 
-        while(ios) {
-            ios.seekp(ios.tellg());
-            // cout << "POS: " << ios.tellp() << endl;
+        // copy emp data into struct obj
+        empRec.id = this->id;
+        stobuf(this->name, empRec.name, sizeof(empRec.name)-1);
+        stobuf(this->address, empRec.address, sizeof(empRec.address)-1);
+        stobuf(this->city, empRec.city, sizeof(empRec.city)-1);
+        stobuf(this->state, empRec.state, sizeof(empRec.state)-1);
+        stobuf(this->country, empRec.country, sizeof(empRec.country)-1);
+        stobuf(this->phone, empRec.phone, sizeof(empRec.phone)-1);
+        empRec.salary = this->salary;
 
-            ios.read(reinterpret_cast<char*>(&empRec), sizeof(empRec));
-            if (empRec.id == this->id) {
+        std::streampos prevPos = 0;
+        ios.clear();
+        ios.seekg(0);
+        ios.seekp(0);
+
+        while(ios) {
+            // cout << "GET" << ios.tellg() << endl;
+            // cout << "SET" << ios.tellp() << endl;
+            ios.read(reinterpret_cast<char*>(&tempEmpRec), sizeof(tempEmpRec));
+
+            // cout << "founded: " << tempEmpRec.id << endl;
+            
+
+            if (tempEmpRec.id == this->id) {
                 // overwrite file
-                // cout << "overwriting..." << endl;
+                ios.seekp(prevPos);
+                // cout << "overwriting at pos:" << ios.tellp() << endl;
                 ios.write(reinterpret_cast<const char*>(&empRec), sizeof(empRec));
                 break;
             }
-            else if (!ios) {
+            else if (ios.tellg() == -1) {
                 // reached eof, append empRec
-                // cout << "appending..." << endl;
+                ios.clear();
+                ios.seekp(prevPos);
+                // cout << "appending at pos:" << ios.tellp() << endl;
                 ios.write(reinterpret_cast<const char*>(&empRec), sizeof(empRec));
+                break;
             }
+            prevPos = ios.tellg();
         }
     };
 
-    //std::ostream&
     void toXML(std::ostream& stream) const { // Write XML record for Employee
         stream << endl << "<Employee>" << endl;
         stream << "\t" << "<Name>" << name << "</Name>" << endl;
@@ -153,7 +177,8 @@ public:
     static Employee* retrieve(std::istream& bis, int id) { // Search file for record by id
         EmployeeRec empRec;
         Employee* emp = new Employee();
-
+        bis.clear();
+        bis.seekg(0);
         while(bis) {
             bis.read(reinterpret_cast<char*>(&empRec), sizeof(empRec));
 
@@ -242,7 +267,7 @@ public:
                 if (tag == "employee") empTag = true;
                 else {
                     // tag != "employee", we dont have an opening employee tag
-                    throw std::runtime_error("Missing opening employee tag");
+                    throw std::runtime_error("Missing opening <Employee> tag");
                     break;
                 }
             }
@@ -251,7 +276,7 @@ public:
         // Finished reading in employee
         // If name, id, or salary were not changed throw error
         if (emp->name == "" || emp->id == -1) {
-            throw std::runtime_error("Name and Id are required fields");
+            throw std::runtime_error("<name> and <id> are required tags");
         }
 
         // return new Employee(name, id, address, city, state, country, phone, salary);
