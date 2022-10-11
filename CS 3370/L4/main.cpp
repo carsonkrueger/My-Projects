@@ -1,6 +1,7 @@
 #include <iostream>
 #include <array>
 #include <functional>
+#include <iterator>
 
 using std::cout;
 using std::endl;
@@ -29,12 +30,13 @@ bool is_sorted(T s, T e) {
     return true;
 }
 
-template<typename T>
-void range(T s, T e, T v) {
+template<typename T, typename P>
+P range(T s, T e, P n) {
     while(s != e) {
-        s = v;
-        s++;
+        s = n;
+        s++, n++;
     }
+    return n;
 }
 
 int main() {
