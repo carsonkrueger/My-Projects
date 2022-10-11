@@ -1,6 +1,5 @@
 #include <iostream>
 #include <array>
-#include <functional>
 #include <iterator>
 
 using std::cout;
@@ -11,8 +10,8 @@ void f(int n) {
     cout << n << "\n";
 }
 
-template<typename T>
-void for_each_if(T s, T e, std::function<void(int)> f, std::function<bool(int)> pred) {
+template<typename T, typename func1, typename func2> // std::function<void(int)>     std::function<bool(int)>
+void for_each_if(T s, T e, func1 f, func2 pred) {
     while (s != e) {
         if (pred(*s)) f(*s);
         s++;
@@ -33,7 +32,7 @@ bool is_sorted(T s, T e) {
 template<typename T, typename P>
 P range(T s, T e, P n) {
     while(s != e) {
-        s = n;
+        *s = n;
         s++, n++;
     }
     return n;
@@ -41,22 +40,25 @@ P range(T s, T e, P n) {
 
 int main() {
     // for_each_if
-    // array<int,4> a = {1,2,3,4};
-    // for_each_if(a.begin(), a.end(), f, [](int x){return x % 2 == 0;});
+    cout << endl << "for_each_if function:" << endl;
+    array<int,4> a = {1,2,3,4};
+    for_each_if(a.begin(), a.end(), f, [](int x){return x % 2 == 0;});
 
     // is_sorted
-    // array<int,4> a = {1,2,3,4};
-    // array<int,4> b = {1,3,2,4};
-    // cout << is_sorted(a.begin(),a.end()) << endl; // 1
-    // cout << is_sorted(b.begin(),b.end()) << endl; // 0
+    cout << endl << "is_sorted function:" << endl;
+    array<int,4> b = {1,2,3,4};
+    array<int,4> c = {1,3,2,4};
+    cout << is_sorted(b.begin(),b.end()) << endl; // 1
+    cout << is_sorted(c.begin(),c.end()) << endl; // 0
 
     // range
-    array<int,4> a;
-    int n = range(a.begin(), a.end(), 1);
-    array<int,2> b;
-    range(b.begin(), b.end(), n);
-    copy(a.begin(), a.end(), ostream_iterator<int>(cout, " ")); // 1 2 3 4
+    cout << endl << "range function:" << endl;
+    array<int,4> d;
+    int n = range(d.begin(), d.end(), 1);
+    array<int,2> e;
+    range(e.begin(), e.end(), n);
+    copy(d.begin(), d.end(), std::ostream_iterator<int>(cout, " ")); // 1 2 3 4
     cout << endl;
-    copy(b.begin(), b.end(), ostream_iterator<int>(cout, " ")); // 5 6
+    copy(e.begin(), e.end(), std::ostream_iterator<int>(cout, " ")); // 5 6
     cout << endl;
 }
