@@ -10,7 +10,7 @@ def func2(x):
     return x**3 - 7*x**2 + 15*x - 9
 
 def func3(x):
-    return x**4 - 3*x**2 - 75*x - 10000
+    return x**4 - 3*x**2 + 75*x - 10000
 
 def func4(x):
     return math.e**x - 3*x
@@ -101,14 +101,14 @@ if __name__ == "__main__":
     # xr, fl, fv, it = falsi(b2[0], b2[1], func2)
     # print(xr,fl,fv,it, "\n")
 
-    b3 = [9,12]
+    b3 = [-9,-11]
     xr, fl, fv, it = falsi(b3[0], b3[1], func3)
     print(xr,fl,fv,it, "\n")
 
     b4 = [1,2]
-    xr, fl, fv, it = falsi(b4[0], b4[1], func4)
-    print(xr,fl,fv,it, "\n")
+    # xr, fl, fv, it = falsi(b4[0], b4[1], func4)
+    # print(xr,fl,fv,it, "\n")
 
-    b5 = [.04/12, .05/12]
-    xr, fl, fv, it = falsi(b5[0], b5[1], func5)
-    print(xr,fl,fv,it, "\n")
+    # b5 = [.04/12, .05/12]
+    # xr, fl, fv, it = falsi(b5[0], b5[1], func5)
+    # print(xr,fl,fv,it, "\n")
