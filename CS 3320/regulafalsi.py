@@ -22,6 +22,9 @@ n = 7 * 12
 def func5(x):
     return p * (x * (1 + x)**n)/((1+x)**n - 1) - 1000
 
+def func6(x):
+    return x**2 + 2*x - 15
+
 # def bisection(xu, xl, func):
 #     root = (xu + xl) / 2
 #     flag = False
@@ -101,14 +104,18 @@ if __name__ == "__main__":
     # xr, fl, fv, it = falsi(b2[0], b2[1], func2)
     # print(xr,fl,fv,it, "\n")
 
-    b3 = [-9,-11]
-    xr, fl, fv, it = falsi(b3[0], b3[1], func3)
-    print(xr,fl,fv,it, "\n")
+    # b3 = [-9,-11]
+    # xr, fl, fv, it = falsi(b3[0], b3[1], func3)
+    # print(xr,fl,fv,it, "\n")
 
-    b4 = [1,2]
+    # b4 = [1,2]
     # xr, fl, fv, it = falsi(b4[0], b4[1], func4)
     # print(xr,fl,fv,it, "\n")
 
     # b5 = [.04/12, .05/12]
     # xr, fl, fv, it = falsi(b5[0], b5[1], func5)
     # print(xr,fl,fv,it, "\n")
+
+    b6 = [0,4]
+    xr, fl, fv, it = falsi(b6[0], b6[1], func6)
+    print(xr,fl,fv,it, "\n")
