@@ -87,11 +87,11 @@ int main(int argc, char* argv[]) {
                 it ++;
             }
 
-            cout << datFiles[j] << ":" << endl;
+            cout << endl << datFiles[j] << ":" << endl << endl;
             std::vector<string> pulses;
             std::vector<int>::iterator sit = smoothData.begin() + 3;
             it = data.begin() + 3;
-            int pulseStart = -1 , pulsePeak = -1;
+            int pulseStart = -1, pulsePeak = -1;
             int sum, wid, pigs = 0;
             bool isPulse = false;
             // BEGIN FINDING PULSES
@@ -107,24 +107,36 @@ int main(int argc, char* argv[]) {
                         // if the number exceeds belowDropRatio, omit the first pulse
                         if (pigs > belowDropRatio) pulses.pop_back();
                     }
+                    pulsePeak = -1;
                     pulseStart = k;
                     isPulse = true;
                 }
                 // during pulse
                 if (isPulse) {
-                    sum += it[0];
-                    wid++;
+                    // end of pulse
+                    if (it[0] < it[-1] || wid >= width) { 
+                        pulses.push_back(std::to_string(pulseStart) + " (" + std::to_string(sum) + ")");
+                        cout << pulseStart << " (" << sum << ")" << endl;
+                        pulseStart = -1;
+                        pulsePeak = k-1;
+                        sum, wid = 0;
+                        isPulse = false;
+                    }
+                    else { // pulse still going
+                        sum += it[0];
+                        wid++;
+                    }
                 }
                 // end of pulse
-                else if ((it[0] < it[-1] && isPulse) || wid >= width) {
-                    sum -=it[0];
-                    pulses.push_back(std::to_string(pulseStart) + " (" + std::to_string(sum) + ")");
-                    cout << pulseStart << " (" << sum << ")" << endl;
-                    pulseStart = -1;
-                    pulsePeak = k-1;
-                    sum, wid = 0;
-                    isPulse = false;
-                }
+                // else if ((it[0] < it[-1] && isPulse) || wid >= width) {
+                //     sum -=it[0];
+                //     pulses.push_back(std::to_string(pulseStart) + " (" + std::to_string(sum) + ")");
+                //     cout << pulseStart << " (" << sum << ")" << endl;
+                //     pulseStart = -1;
+                //     pulsePeak = k-1;
+                //     sum, wid = 0;
+                //     isPulse = false;
+                // }
                 sit++, it++;
             }
         }

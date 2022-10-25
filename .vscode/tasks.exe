@@ -9,7 +9,7 @@
   {
    "type": "cppbuild",
    "label": "C/C++: cpp.exe build active file",
-   "command": "C:\\MinGW\\bin\\cpp.exe",
+   "command": "C:\\msys64\\mingw64\\bin\\cpp.exe",
    "args": [
     "-g",
     "${file}",
@@ -26,7 +26,7 @@
     "kind": "build",
     "isDefault": true
    },
-   "detail": "compiler: C:\\MinGW\\bin\\cpp.exe"
+   "detail": "compiler: C:\\msys64\\mingw64\\bin\\cpp.exe"
   }
  ]
 }
