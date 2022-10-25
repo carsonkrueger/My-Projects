@@ -4,6 +4,9 @@
 #include <array>
 #include <iterator>
 #include <string>
+#include <filesystem>
+
+namespace fs = std::filesystem;
 
 using std::string;
 using std::array;
@@ -12,6 +15,13 @@ using std::endl;
 
 int main(int argc, char* argv[]) {
     array<string, 3> datFiles = {"2_Record2308.dat", "2_Record2388.dat", "as_ch01-0537xx_Record1042.dat"};
+    // std::string path(".");
+    // std::string ext(".dat");
+    // for (auto &p : fs::recursive_directory_iterator(path))
+    // {
+    //     if (p.path().extension() == ext)
+    //         std::cout << p.path().stem().string() << '\n';
+    // }
 
     for(int i = 1; i < argc; ++i){ // for each ini file
         cout << "FILE: " << argv[i] << endl;
@@ -24,8 +34,9 @@ int main(int argc, char* argv[]) {
         
         char ch;
         string var = "";
+        // READING INI FILE
+        // For each ini file, run the ini settings on each .dat file
         while(iniFile) {
-            // READING INI FILE
             ch = iniFile.get();
             if (isspace(ch)) continue;
             
@@ -42,27 +53,28 @@ int main(int argc, char* argv[]) {
                 }
                 var = "";
             }
-            else if (ch == '#') {
+            else if (ch == '#') { // Comments in ini file
                 std::getline(iniFile, var);
                 var = "";
             }
             else var.push_back(ch);
         }
+        
+        cout << vt << " " << width << " " << pulseDelta << " " << dropRatio << " " << belowDropRatio << endl;
 
         if (vt == -1 || width == -1 || pulseDelta == -1 || dropRatio == -1 || belowDropRatio == -1) {
             cout << "Invalid INI file: missing one or more properties" << endl;
-            return 0;
+            continue;
         }
-
-        // cout << vt << " " << width << " " << pulseDelta << " " << dropRatio << " " << belowDropRatio << endl;
 
         // READING DAT FILES
         for(int j = 0; j < datFiles.size(); ++j){ // for each dat file
             std::vector<int> data;
             std::ifstream datFile(datFiles[j]);
 
+            // read in unsmoothed data, but negate it
             int n;
-            while(datFile >> n) data.push_back(-n); // negates and pushes data
+            while(datFile >> n) data.push_back(-n); // negates and pushes data into data vector
             
             std::vector<int> smoothData;
             std::vector<int>::iterator it = data.begin();
@@ -74,38 +86,52 @@ int main(int argc, char* argv[]) {
                     smoothData.push_back(it[0]);
                 else 
                     smoothData.push_back((it[-3] + 2*it[-2] + 3*it[-1] + 3*it[0] + 3*it[1] + 2*it[2] + it[3]) / 15);
+                // cout << (it[-3] + 2*it[-2] + 3*it[-1] + 3*it[0] + 3*it[1] + 2*it[2] + it[3]) / 15 << endl;
+                it ++;
             }
 
             cout << datFiles[j] << ":" << endl;
+            // std::vector<std::tuple<int, int>> pulses;
             std::vector<string> pulses;
-            it = smoothData.begin() + 3;
-            int pulseStart = -1;
-            int pulsePeak = -1;
-            int sum = 0;
-            // finds pulse
+            std::vector<int>::iterator sit = smoothData.begin() + 3;
+            it = data.begin() + 3;
+            int pulseStart, pulsePeak = -1;
+            int sum, wid, pigs = 0;
+
+            // BEGIN FINDING PULSES
+            // if pulseStart to -1, not currently in a pulse
             for (int k = 3; k < siz-3; ++k) { 
                 // pulse start
-                if (vt < (it[0] - it[-2]) && pulseStart == -1) {
+                cout << sit[0] << endl;
+                if (vt < (sit[0] - sit[-2]) && pulseStart == -1) {
                     cout << "found pulse: " << k << endl;
                     // piggy back
-                    if (k - pulsePeak <= pulseDelta && pulsePeak != -1 && (k - pulsePeak) < (dropRatio * data[pulsePeak]) {
+                    if (k - pulsePeak <= pulseDelta && pulsePeak != -1) {
                         // overwrite previous pulse
-
+                        cout << "piggy back" << endl;
+                        // calc how many points between peak and k are less than dropratio * height
+                        for (int l=pulsePeak; l < k; ++l) 
+                            if (it[l] < (dropRatio * data[pulsePeak])) pigs ++;
+                        // if the number exceeds below_drop_ratio, omit the first pulse
+                        if (pigs > belowDropRatio) pulses.pop_back();
                     }
                     pulseStart = k;
-                    sum += it[0];
                 }
                 // during pulse
-                else if (pulseStart != -1) 
+                if (pulseStart != -1) {
                     sum += it[0];
+                    wid++;
+                }
                 // end of pulse
-                else if (it[0] < it[-1] && pulseStart != -1) {
-                    pulses.push_back(std::to_string(pulseStart) + " (" + std::to_string(sum) + ")");
+                else if ((it[0] < it[-1] && pulseStart != -1) || wid >= width) {
+                    // pulses.push_back(std::tuple<int, int>(pulseStart, sum));
+                    pulses.push_back("(" + std::to_string(pulseStart) + ") " + std::to_string(sum));
+                    cout << pulseStart << " " << sum << endl;
                     pulseStart = -1;
                     pulsePeak = k-1;
-                    sum = 0;
+                    sum, wid = 0;
                 }
-                it++;
+                sit++, it++;
             }
         }
     }
