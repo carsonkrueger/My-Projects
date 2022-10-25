@@ -60,6 +60,7 @@
     "xutility": "cpp",
     "strstream": "cpp",
     "list": "cpp",
-    "xhash": "cpp"
+    "xhash": "cpp",
+    "filesystem": "cpp"
   }
 }
