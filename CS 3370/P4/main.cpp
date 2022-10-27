@@ -92,9 +92,10 @@ int main(int argc, char* argv[]) {
                 if (vt < (sit[0] - sit[-2]) && !isPulse) {
                     isPulse = true;
                     if (pulseStart != -1) pulses.push_back(std::to_string(pulseStart) + " (" + std::to_string(sum) + ")");
+                    cout << "pulse: " << k-2 << " data val: " << it[0] << endl;
                     // piggy back
                     if (k - pulsePeak <= pulseDelta && pulsePeak != -1) {
-                        cout << "Found piggyback at: " << k-2 << ". peak: " << pulsePeak << endl;
+                        cout << "Found piggyback at: " << k-2 << ". peak pos: " << pulsePeak << endl;
                         // calc how many points between peak and k are less than dropRatio * height
                         for (int l=pulsePeak; l < k; ++l)
                             if (data[l] < (dropRatio * data[pulsePeak])) pigs ++;
@@ -112,14 +113,13 @@ int main(int argc, char* argv[]) {
                         // pulses.push_back(std::to_string(pulseStart) + " (" + std::to_string(sum) + ")");
                         isPulse = false;
                         pulsePeak = k-1;
-                        sum = 0, wid = 0;
+                        wid = 0;
                     }
                     // not end of pulse
                     else wid++;
-                    sum += it[0];
                 }
-                // cout << sum << " ";
-                
+                // adds to sum on the way down from peak until width
+                else if (wid <= width) sum += it[0];
                 sit++, it++;
             }
 
