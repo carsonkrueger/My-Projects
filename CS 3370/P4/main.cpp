@@ -40,7 +40,7 @@ int main(int argc, char* argv[]) {
                 else if (var == "below_drop_ratio" && belowDropRatio == -1) iniFile >> belowDropRatio;
                 else {
                     std::cout << "Invalid INI file property: \"" << var << "\"" << endl;
-                    continue;
+                    break;
                 }
                 var = "";
             }
@@ -51,12 +51,12 @@ int main(int argc, char* argv[]) {
             else var.push_back(ch);
         }
         
-        // cout << vt << " " << width << " " << pulseDelta << " " << dropRatio << " " << belowDropRatio << endl;
-
         if (vt == -1 || width == -1 || pulseDelta == -1 || dropRatio == -1 || belowDropRatio == -1) {
             cout << "Invalid INI file: missing one or more properties" << endl;
             continue;
         }
+
+        cout << vt << " " << width << " " << pulseDelta << " " << dropRatio << " " << belowDropRatio << endl;
 
         // READING DAT FILES
         for(size_t j = 0; j < datFiles.size(); ++j){ // for each dat file
@@ -73,57 +73,60 @@ int main(int argc, char* argv[]) {
             const int siz = data.size();
             // smooths data inside data vector, puts into smoothData vector
             for (int k = 0; k < siz; ++k) {
-                if (k == 0 || k == 1 || k == 3 || k == siz-1 || k == siz-2 || k == siz-3) smoothData.push_back(it[0]);
+                if (k == 0 || k == 1 || k == 2 || k == siz || k == siz-1 || k == siz-2) smoothData.push_back(it[0]);
                 else smoothData.push_back((it[-3] + 2*it[-2] + 3*it[-1] + 3*it[0] + 3*it[1] + 2*it[2] + it[3]) / 15);
                 it ++;
             }
 
-            cout << endl << datFiles[j] << ":" << endl << endl;
-            std::vector<string> pulses;
-            std::vector<int>::iterator sit = smoothData.begin() + 3;
-            it = data.begin() + 2;
-            int pulseStart = -1, pulsePeak = -1;
-            int sum = 0, wid = 0, pigs = 0;
-            bool isPulse = false;
+            cout << smoothData[0] << " " << smoothData[1] << " " << smoothData[2] << endl;
 
-            // BEGIN FINDING PULSES
-            for (int k = 2; k < siz-2; ++k) {
-                // pulse start
-                if (vt < (sit[0] - sit[-2]) && !isPulse) {
-                    isPulse = true;
-                    if (pulseStart != -1) pulses.push_back(std::to_string(pulseStart) + " (" + std::to_string(sum) + ")");
-                    cout << "pulse: " << k-2 << " data val: " << it[0] << endl;
-                    // piggy back
-                    if (k - pulsePeak <= pulseDelta && pulsePeak != -1) {
-                        cout << "Found piggyback at: " << k-2 << ". peak pos: " << pulsePeak << endl;
-                        // calc how many points between peak and k are less than dropRatio * height
-                        for (int l=pulsePeak; l < k; ++l)
-                            if (data[l] < (dropRatio * data[pulsePeak])) pigs ++;
-                        // if the number exceeds belowDropRatio, omit the first pulse
-                        if (pigs > belowDropRatio) pulses.pop_back();
-                    }
-                    sum = it[-2] + it[-1];
-                    pulsePeak = -1;
-                    pulseStart = k-2;
+            cout << endl << datFiles[j] << ":" << endl << endl;
+            std::vector<int> pulses;
+            std::vector<int> peaks;
+            std::vector<int>::iterator sit = smoothData.begin();
+            it = data.begin();
+            int pulseStart = -1, pulsePeak = -1;
+            int betweens = 0;
+            bool inPulse = false;
+
+            // dectect pulses and peaks
+            for (size_t k=0; k+2 < siz; ++k) {
+                if (vt < (sit[2] - sit[0]) && !inPulse) {
+                    cout << "FOUND A PULSE: " << k << endl;
+                    pulses.push_back(k);
+                    inPulse = true;
                 }
-                // during pulse
-                if (isPulse) {
-                    // end of pulse
-                    if (it[0] < it[-1] || wid > width) {
-                        // pulses.push_back(std::to_string(pulseStart) + " (" + std::to_string(sum) + ")");
-                        isPulse = false;
-                        pulsePeak = k-1;
-                        wid = 0;
-                    }
-                    // not end of pulse
-                    else wid++;
+                else if (sit[1] < sit[0] && inPulse) {
+                    peaks.push_back(k);
+                    inPulse = false;
                 }
-                // adds to sum on the way down from peak until width
-                else if (wid <= width) sum += it[0];
                 sit++, it++;
             }
-
-            for (auto p: pulses) cout << p << endl;
+            // detect piggybacks
+            for (size_t k=0; k+1 < pulses.size(); ++k) {
+                // found a pulse following a pulse within pulseDelta positions
+                if (pulses[k+1]-pulses[k] < pulseDelta) {
+                    cout << "checking from peak: " << peaks[k]+1 << ", to pulse start: " << pulses[k+1] << endl;
+                    // find the # between the peak and next pulse that are less than the peak height * dropRatio
+                    for (size_t l=peaks[k]+1; l < pulses[k+1]; ++l)
+                        if (data[l] < data[peaks[k]] * dropRatio) ++betweens;
+                    // if the number between is greater than belowDropRatio, omit the pulse
+                    if (betweens > belowDropRatio) { cout << "Piggyback found, discard: " << pulses[k] << endl;} //erase pulse from vec here
+                }
+                betweens = 0;
+            }
+            // accumulate width spaces, or until start of next pulse. Cout the sum
+            for (auto p: pulses) cout << "pulse: " << p << endl;
+            // for (size_t k=0; k<pulses.size(); ++k) {
+            //     int sum = 0, wid = 0;
+            //     int pos = pulses[k];
+            //     cout << "pulse: " << pulses[k];
+            //     while (pos < pulses[k+1] && wid <= width) {
+            //         sum += data[pos];
+            //         ++pos, ++wid;
+            //     }
+            //     cout << " (" << sum << ")" << endl;
+            // }
         }
     }
 }
