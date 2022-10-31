@@ -1,24 +1,21 @@
 #include <iostream>
+#include <iomanip>
 #include <fstream>
 #include <string>
 #include <map>
+#include <cstring>
 
 struct cmp {
-    bool operator()(std::string str1, std::string str2) const {
-        std::string::iterator it1 = str1.begin(), it2 = str2.begin();
-        while(it1 != str1.end() && it2 != str2.end()) {
-            if (std::tolower((it1++)[0]) < std::tolower((it2++)[0])) return true;
-            else if (std::tolower((it1++)[0]) > std::tolower((it2++)[0])) return false;
-        }
-        return false;
+    bool operator()(const std::string& str1, const std::string& str2) const {
+        return _stricmp(str1.c_str(), str2.c_str()) < 0;
     }
 };
 
 int main() { 
     std::fstream f("strings.txt");
     std::string word = "";
-    std::multimap<std::string, std::pair<int, int>> words;
-    int line = 1;
+    std::multimap<std::string, std::pair<int, int>, cmp> words;
+    int line = 1, longWord = 0;
     while(f) {
         char n = f.get();
         if (!std::isalpha(n) && n != '\'' && n != '-') { // found a word to store
@@ -32,15 +29,24 @@ int main() {
             }
             if (!didInc) words.emplace(word, std::make_pair(line, 1)); // create key & pair
             if (n == '\n') ++line;
+            if (word.length() > longWord) longWord = word.length();
             word = "";
         }
-        else if (std::isalpha(n) || n == '\'' || n == '-') word += n;
+        else if ((std::isalpha(n) || n == '\'' || n == '-') && n != '\n') word += n;
     }
 
     std::string prev = words.begin()->first;
+    int nums = 1;
     for (auto w: words) {
-        if (w.first == prev) std::cout << ",  " << w.second.first << ":" << w.second.second;
-        else std::cout << std::endl << w.first << "   :   " << w.second.first << ":" << w.second.second;
+        if (w.first == prev) {
+            std::cout << ",  " << w.second.first << ":" << w.second.second;
+            nums++;
+        }
+        // else if (w.first == prev && nums >= 9) {
+        //     std::cout << std::endl << std::setw(longWord) << ",  " << w.second.first << ":" << w.second.second;
+        //     nums = 1;
+        // }
+        else std::cout << std::endl << std::left << std::setw(longWord) << w.first << " : " << w.second.first << ":" << w.second.second;
         prev = w.first;
     }
 }
