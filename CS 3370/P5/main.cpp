@@ -11,7 +11,7 @@ struct cmp {
     }
 };
 
-int main() { 
+int main(int argc, char* argv[]) {
     std::fstream f("strings.txt");
     std::string word = "";
     std::multimap<std::string, std::pair<int, int>, cmp> words;
@@ -27,27 +27,30 @@ int main() {
                     didInc = true;
                 }
             }
-            if (!didInc) words.emplace(word, std::make_pair(line, 1)); // create key & pair
+            if (!didInc && word != "") words.emplace(word, std::make_pair(line, 1)); // create key & pair
             if (n == '\n') ++line;
             if (word.length() > longWord) longWord = word.length();
             word = "";
         }
-        else if ((std::isalpha(n) || n == '\'' || n == '-') && n != '\n') word += n;
+        else if (word == "" && !std::isalpha(n)) continue; // does not start with alphabetic char
+        else if (std::isalpha(n) || n == '\'' || n == '-') word += n; // found correct char sequence to add to word
     }
 
-    std::string prev = words.begin()->first;
+    std::string prev = "null";
     int nums = 1;
     for (auto w: words) {
         if (w.first == prev) {
             std::cout << ",  " << w.second.first << ":" << w.second.second;
-            nums++;
+            ++nums;
         }
         // else if (w.first == prev && nums >= 9) {
         //     std::cout << std::endl << std::setw(longWord) << ",  " << w.second.first << ":" << w.second.second;
         //     nums = 1;
         // }
-        else std::cout << std::endl << std::left << std::setw(longWord) << w.first << " : " << w.second.first << ":" << w.second.second;
+        else {
+            std::cout << std::endl << "-" << std::left << std::setw(longWord) << w.first << " : " << w.second.first << ":" << w.second.second;
+            nums = 1;
+        }
         prev = w.first;
     }
 }
-
