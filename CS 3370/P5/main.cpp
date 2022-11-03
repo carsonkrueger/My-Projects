@@ -3,19 +3,23 @@
 #include <fstream>
 #include <string>
 #include <map>
-#include <cstring>
 #include <vector>
 #include <algorithm>
 
 struct cmp {
     bool operator()(const std::string& str1, const std::string& str2) const {
-        return _stricmp(str1.c_str(), str2.c_str()) < 0;
+        std::string st1 = "", st2 = "";
+        for(auto c: str1) st1 += std::tolower(c);
+        for(auto c: str2) st2 += std::tolower(c);
+        if (st1 == st2) return str1 < str2;
+        else return st1 < st2;
     }
 };
 
 int main(int argc, char* argv[]) {
     std::string filename;
-    if (argc == 1) {std::cout << "No argument given. Enter file name: "; std::cin >> filename;}
+    if (argc == 1) {std::cout << "No argument given. Enter text file name: "; std::cin >> filename;}
+    else filename = argv[1];
     std::fstream f(filename);
     std::string word = "";
     std::map<std::string, std::vector<size_t>, cmp> wLine, wCount;
@@ -40,7 +44,7 @@ int main(int argc, char* argv[]) {
             word = "";
         }
         else if (word == "" && !std::isalpha(n)) continue; // does not start with alphabetic char
-        else if (std::isalpha(n) || n == '\'' || n == '-') word += n; // found correct char sequence to add to word
+        else if (std::isalpha(n) || n == '\'' || n == '-' || n == '\n') word += n; // found correct char sequence to add to word
     }
 
     std::ofstream ofs("output.txt");
