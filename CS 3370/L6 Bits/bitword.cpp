@@ -25,20 +25,11 @@ public:
       unsigned int mask = ((1u << (n-m)) - 1);
       return (tmp >> m) & mask;
    }
-   operator unsigned int () const;
+   operator unsigned int () const {
+      return word;
+   }
    friend std::ostream& operator<<(std::ostream& os, const BitWord& b) {
       os << b.word << std::endl;
       return os;
    }
 };
-
-int main() {
-   BitWord b{15};
-   std::cout << b;
-   
-   std::cout << b.extract(1,4) << std::endl;
-
-   for (int i=0; i<8; ++i) {
-      std::cout << b.test(i) << " ";
-   }
-}
