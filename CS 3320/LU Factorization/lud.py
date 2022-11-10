@@ -72,7 +72,7 @@ def main():
         try:
             P, L, U = factor(A, nRows, pivot)
         except:
-            print("ERROR: impromper data")
+            print("ERROR: improper data")
             continue
         
 
@@ -99,7 +99,7 @@ def main():
                 print("b = ", bCol)
                 print("x = ", solve(LU, nRows, P, bCol, x))
         except:
-            print("ERROR: impromper data")
+            print("ERROR: improper data")
             continue
     
 if __name__ == "__main__":
