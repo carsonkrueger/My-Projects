@@ -15,13 +15,13 @@ class BitArray {
     bool read_bit(size_t bitpos) {
         size_t block = bitpos / BITS_PER_BLOCK; // 1 = 50/32
         size_t offset = bitpos % BITS_PER_BLOCK;// 18 = 50%32
-        size_t mask = 1u << BITS_PER_BLOCK-bitpos;
+        size_t mask = 1u << BITS_PER_BLOCK-offset;
         return !!(bitStr[block] & mask);
     }
     void assign_bit(size_t bitpos, bool val) {
         size_t block = bitpos / BITS_PER_BLOCK; // 1 = 50/32
         size_t offset = bitpos % BITS_PER_BLOCK;// 18 = 50%32
-        size_t mask = 1u << BITS_PER_BLOCK-bitpos;
+        size_t mask = 1u << BITS_PER_BLOCK-offset;
         if (val) bitStr[block] |= mask; //set
         else bitStr[block] &= mask; // reset
     }
@@ -47,7 +47,14 @@ public:
         return cap;
     } 
     // Mutators
-    BitArray& operator+=(bool); // Append a bit
+    BitArray& operator+=(bool val)  { // Append a bit
+        size_t block = siz / BITS_PER_BLOCK; // 1 = 50/32
+        size_t offset = siz % BITS_PER_BLOCK;// 18 = 50%32
+        size_t mask = 1u << BITS_PER_BLOCK-offset;
+        if (block >= bitStr.size()-1) bitStr.push_back(0);
+        if (val) bitStr[block] |= mask; //set
+        else bitStr[block] &= mask; // reset
+    } 
     BitArray& operator+=(const BitArray& b); // Append a BitArray
     void erase(size_t pos, size_t nbits = 1); // Remove “nbits” bits at a position
     void insert(size_t n, bool b) { // Insert a bit at a position (slide "right")
@@ -57,12 +64,12 @@ public:
     // Bitwise ops
     bitproxy operator[](size_t);
     bool operator[](size_t pos) const;
-    void toggle(size_t) {
-        assign_bit(!read_bit(i));
+    void toggle(size_t i) {
+        assign_bit(i, !read_bit(i));
     }
     void toggle() { // Toggles all bits
         for (size_t i=0; i<siz; ++i) {
-            assign_bit(!read_bit(i));
+            assign_bit(i, !read_bit(i));
         }
     } 
     BitArray operator~() const;
