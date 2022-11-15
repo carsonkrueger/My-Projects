@@ -30,6 +30,9 @@ class BitArray {
         else bitStr[block] &= ~mask; // reset
     }
 public:
+    // struct bitproxy {
+        
+    // }
     // Object Management
     explicit BitArray(size_t n=0) : siz{n} {
         size_t newCap = (n/BITS_PER_BLOCK) + 1;
@@ -73,7 +76,9 @@ public:
     void insert(size_t n, bool val); // Insert a bit at a position (slide "right")
     void insert(size_t pos, const BitArray&); // Insert an entire BitArray object
     // Bitwise ops
-    // bitproxy operator[](size_t); // <--------------------------------- put back in
+    // bitproxy operator[](size_t) { // <--------------------------------- put back in
+    //     return bitproxy(this);
+    // }
     bool operator[](size_t pos) const {
         return read_bit(pos);
     }
