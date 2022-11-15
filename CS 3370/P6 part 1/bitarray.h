@@ -31,15 +31,17 @@ class BitArray {
     }
 public:
     // Object Management
-    explicit BitArray(size_t n=0) : cap{n}, siz{n} {
+    explicit BitArray(size_t n=0) : siz{n} {
         size_t newCap = (n/BITS_PER_BLOCK) + 1;
+        cap = newCap;
         bitStr.resize(newCap);
         std::fill(bitStr.begin(), bitStr.end(), 0);
         for (size_t i=0; i<n; ++i) 
             assign_bit(i, 0);
     }
-    explicit BitArray(const string& s) : cap{s.size()}, siz{s.size()} {
+    explicit BitArray(const string& s) : siz{s.size()} {
         size_t newCap = (cap/BITS_PER_BLOCK) + 1;
+        cap = newCap;
         bitStr.resize(newCap);
         std::fill(bitStr.begin(), bitStr.end(), 0);
         for (size_t i=0; i<s.size(); ++i) {
@@ -50,6 +52,8 @@ public:
     BitArray(const BitArray& b) = default; // Copy constructor
     BitArray& operator=(const BitArray& b) = default; // Copy assignment
     BitArray(BitArray&& b) noexcept; // Move constructor
+
+    
     BitArray& operator=(BitArray&& b) noexcept; // Move assignment
     size_t capacity() const { // # of bits the current allocation can hold
         return cap;
@@ -66,9 +70,7 @@ public:
     } 
     BitArray& operator+=(const BitArray& b); // Append a BitArray
     void erase(size_t pos, size_t nbits = 1); // Remove “nbits” bits at a position
-    void insert(size_t n, bool val) { // Insert a bit at a position (slide "right")
-        assign_bit(n, val);
-    } 
+    void insert(size_t n, bool val); // Insert a bit at a position (slide "right")
     void insert(size_t pos, const BitArray&); // Insert an entire BitArray object
     // Bitwise ops
     // bitproxy operator[](size_t); // <--------------------------------- put back in
@@ -76,15 +78,16 @@ public:
         return read_bit(pos);
     }
     void toggle(size_t i) {
-        assign_bit(i, true);
+        assign_bit(i, !read_bit(i));
     }
     void toggle() { // Toggles all bits
         for (size_t i=0; i<siz; ++i) 
-            assign_bit(i, true);
+            toggle(i);
     } 
     BitArray operator~() const {
-        for (size_t i=0; i<siz; ++i) 
-            assign_bit(i, false);
+        BitArray tmp = *this;
+        tmp.toggle();
+        return tmp;
     }
     BitArray operator<<(unsigned int) const; // Shift operators…
     BitArray operator>>(unsigned int) const;
@@ -112,7 +115,11 @@ public:
             if (read_bit(i) == true) n++;
         return n;
     }
-    bool any() const; // Optimized version of count() > 0
+    bool any() const { // Optimized version of count() > 0
+        for (size_t i=0; i < siz; ++i)
+            if (read_bit(i)) return true;
+        return false;
+    }
     // Stream I/O (define these in situ—meaning the bodies are inside the class)
     friend ostream& operator<<(ostream& os, const BitArray& b) {
         for (size_t i=0; i<b.size(); ++i) {
