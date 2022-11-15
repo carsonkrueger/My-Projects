@@ -60,7 +60,6 @@ public:
             if (siz/BITS_PER_BLOCK >= bitStr.capacity()) bitStr.push_back(0);
             cap++;
         }
-        std::cout << "pos: " << siz << std::endl;
         assign_bit(siz, val);
         siz++;
         return *this;
@@ -77,13 +76,16 @@ public:
         return read_bit(pos);
     }
     void toggle(size_t i) {
-        assign_bit(i, !read_bit(i));
+        assign_bit(i, true);
     }
     void toggle() { // Toggles all bits
         for (size_t i=0; i<siz; ++i) 
-            assign_bit(i, !read_bit(i));
+            assign_bit(i, true);
     } 
-    BitArray operator~() const;
+    BitArray operator~() const {
+        for (size_t i=0; i<siz; ++i) 
+            assign_bit(i, false);
+    }
     BitArray operator<<(unsigned int) const; // Shift operators…
     BitArray operator>>(unsigned int) const;
     BitArray& operator<<=(unsigned int);
