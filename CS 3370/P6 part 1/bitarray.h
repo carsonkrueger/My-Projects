@@ -2,7 +2,7 @@
 #include <string>
 #include <math.h>
 #include <iostream>
-
+#include <algorithm>
 
 using std::string;
 using std::ostream;
@@ -10,42 +10,41 @@ using std::istream;
 
 template<class IType = size_t>
 class BitArray {
-    size_t BITS_PER_BLOCK = sizeof(size_t);
+    size_t BITS_PER_BLOCK = sizeof(IType);
     std::vector<IType> bitStr;
     // in bits
     size_t siz = 0;
     // in bits
     size_t cap = 0;
     bool read_bit(size_t bitpos) const {
-        size_t block = (bitpos / BITS_PER_BLOCK)-1; // 1 = 50/32
-        size_t offset = (bitpos % BITS_PER_BLOCK)-1;// 18 = 50%32
-        size_t mask = 1u << (BITS_PER_BLOCK-offset);
+        size_t block = bitpos / BITS_PER_BLOCK; // 1 = 50/32
+        size_t offset = bitpos % BITS_PER_BLOCK;// 18 = 50%32
+        size_t mask = 1u << offset;
         return !!(bitStr[block] & mask);
     }
     void assign_bit(size_t bitpos, bool val) {
-        size_t block = (bitpos / BITS_PER_BLOCK)-1; // 1 = 50/32
-        size_t offset = (bitpos % BITS_PER_BLOCK)-1;// 18 = 50%32
-        size_t mask = 1u << (BITS_PER_BLOCK-offset);
-        if (siz == cap) {
-            if (block >= bitStr.capacity()-1) bitStr.push_back(0);
-            cap++;
-        }
-        if (val) bitStr[block] = bitStr[block] | mask; //set
-        else bitStr[block] = bitStr[block] & mask; // reset
-        siz++;
+        size_t block = bitpos / BITS_PER_BLOCK; // 1 = 50/32
+        size_t offset = bitpos % BITS_PER_BLOCK;// 18 = 50%32
+        size_t mask = 1u << offset;
+        if (val) bitStr[block] |= mask; //set
+        else bitStr[block] &= ~mask; // reset
     }
 public:
     // Object Management
-    explicit BitArray(size_t n=0) {
-        size_t newSiz = ceil(n/BITS_PER_BLOCK);
-        cap = newSiz * BITS_PER_BLOCK;
-        bitStr.resize(newSiz);
+    explicit BitArray(size_t n=0) : cap{n}, siz{n} {
+        size_t newCap = (n/BITS_PER_BLOCK) + 1;
+        bitStr.resize(newCap);
+        std::fill(bitStr.begin(), bitStr.end(), 0);
+        for (size_t i=0; i<n; ++i) 
+            assign_bit(i, 0);
     }
-    explicit BitArray(const string& s) {
-        siz = s.size();
-        cap = ceil(siz/BITS_PER_BLOCK) * BITS_PER_BLOCK;
+    explicit BitArray(const string& s) : cap{s.size()}, siz{s.size()} {
+        size_t newCap = (cap/BITS_PER_BLOCK) + 1;
+        bitStr.resize(newCap);
+        std::fill(bitStr.begin(), bitStr.end(), 0);
         for (size_t i=0; i<s.size(); ++i) {
-            assign_bit(i, s.at(i));
+            bool val = (s.at(i) == '1') ? true : false;
+            assign_bit(i, val);
         }
     }
     BitArray(const BitArray& b) = default; // Copy constructor
@@ -57,23 +56,19 @@ public:
     } 
     // Mutators
     BitArray& operator+=(bool val) { // Append a bit
-        // size_t block = siz / BITS_PER_BLOCK; // 1 = 50/32
-        // size_t offset = siz % BITS_PER_BLOCK;// 18 = 50%32
-        // size_t mask = 1u << (BITS_PER_BLOCK-offset-1);
-        // if (siz == cap) {
-        //     if (block >= bitStr.capacity()) bitStr.push_back(0);
-        //     cap++;
-        // }
-        // if (val) bitStr[block] = bitStr[block] | mask; //set
-        // else bitStr[block] = bitStr[block] & mask; // reset
-        // siz++;
+        if (siz == cap) {
+            if (siz/BITS_PER_BLOCK >= bitStr.capacity()) bitStr.push_back(0);
+            cap++;
+        }
+        std::cout << "pos: " << siz << std::endl;
         assign_bit(siz, val);
+        siz++;
         return *this;
     } 
     BitArray& operator+=(const BitArray& b); // Append a BitArray
     void erase(size_t pos, size_t nbits = 1); // Remove “nbits” bits at a position
-    void insert(size_t n, bool b) { // Insert a bit at a position (slide "right")
-        assign_bit(n, b);
+    void insert(size_t n, bool val) { // Insert a bit at a position (slide "right")
+        assign_bit(n, val);
     } 
     void insert(size_t pos, const BitArray&); // Insert an entire BitArray object
     // Bitwise ops
@@ -85,9 +80,8 @@ public:
         assign_bit(i, !read_bit(i));
     }
     void toggle() { // Toggles all bits
-        for (size_t i=0; i<siz; ++i) {
+        for (size_t i=0; i<siz; ++i) 
             assign_bit(i, !read_bit(i));
-        }
     } 
     BitArray operator~() const;
     BitArray operator<<(unsigned int) const; // Shift operators…
@@ -119,12 +113,11 @@ public:
     bool any() const; // Optimized version of count() > 0
     // Stream I/O (define these in situ—meaning the bodies are inside the class)
     friend ostream& operator<<(ostream& os, const BitArray& b) {
-        bool val;
-        char ch;
-        for (size_t i=0; i<b.size(); ++i)
-            val = b.read_bit(i);
-            ch = (val) ? '1' : '0';
+        for (size_t i=0; i<b.size(); ++i) {
+            bool val = b.read_bit(i);
+            char ch = (val) ? '1' : '0';
             os << ch;
+        }
         return os;
     }
     friend istream& operator>>(istream& is, BitArray& b) {
@@ -139,12 +132,11 @@ public:
     // String conversion
     string to_string() const {
         std::string str = "";
-        bool val;
-        char ch;
-        for (size_t i=0; i<siz-1; ++i)
-            val = this->read_bit(i);
-            ch = (val) ? '1' : '0';
+        for (size_t i=0; i<siz; ++i) {
+            bool val = this->read_bit(i);
+            char ch = (val) ? '1' : '0';
             str.push_back(ch);
+        }
         return str;
     }
 };
