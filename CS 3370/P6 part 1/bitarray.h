@@ -31,7 +31,9 @@ class BitArray {
     }
 public:
     // struct bitproxy {
-        
+        // constructor
+        // 2 assignment operators, 1 returns bitproxy & 1 that returns a bool
+        // operator bool
     // }
     // Object Management
     explicit BitArray(size_t n=0) : siz{n} {
