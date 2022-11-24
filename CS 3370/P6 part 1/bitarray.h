@@ -35,20 +35,21 @@ public:
         // 2 assignment operators, 1 returns bitproxy & 1 that returns a bool
         // operator bool
     // }
+
     // Object Management
     explicit BitArray(size_t n=0) : siz{n} {
-        size_t newCap = (n/BITS_PER_BLOCK) + 1;
-        cap = newCap;
-        bitStr.resize(newCap);
-        std::fill(bitStr.begin(), bitStr.end(), 0);
-        for (size_t i=0; i<n; ++i) 
-            assign_bit(i, 0);
+        if (n != 0) {
+            size_t newCap = (n/BITS_PER_BLOCK) + 1;
+            cap = newCap;
+            bitStr.resize(newCap);
+            for (size_t i=0; i<n; ++i) 
+                assign_bit(i, 0);
+        }
     }
     explicit BitArray(const string& s) : siz{s.size()} {
         size_t newCap = (cap/BITS_PER_BLOCK) + 1;
         cap = newCap;
         bitStr.resize(newCap);
-        std::fill(bitStr.begin(), bitStr.end(), 0);
         for (size_t i=0; i<s.size(); ++i) {
             bool val = (s.at(i) == '1') ? true : false;
             assign_bit(i, val);
@@ -56,8 +57,7 @@ public:
     }
     BitArray(const BitArray& b) = default; // Copy constructor
     BitArray& operator=(const BitArray& b) = default; // Copy assignment
-    BitArray(BitArray&& b) noexcept; // Move constructor
-
+    BitArray(BitArray&& b) noexcept : BITS_PER_BLOCK{b.BITS_PER_BLOCK}, bitStr{b.bitStr}, siz{b.siz}, cap{b.cap} {} // Move constructor
     
     BitArray& operator=(BitArray&& b) noexcept; // Move assignment
     size_t capacity() const { // # of bits the current allocation can hold
@@ -67,7 +67,6 @@ public:
     BitArray& operator+=(bool val) { // Append a bit
         if (siz == cap) {
             if (siz/BITS_PER_BLOCK >= bitStr.capacity()) bitStr.push_back(0);
-            cap++;
         }
         assign_bit(siz, val);
         siz++;
@@ -105,7 +104,9 @@ public:
     BitArray slice(size_t pos, size_t count) const; // Extracts a new sub-array
 
     // Comparison ops
-    bool operator==(const BitArray& b) const;
+    bool operator==(const BitArray& b) const {
+        return to_string() == b.to_string();
+    }
     bool operator!=(const BitArray& b) const;
     bool operator<(const BitArray& b) const;
     bool operator<=(const BitArray& b) const;
@@ -137,11 +138,21 @@ public:
         return os;
     }
     friend istream& operator>>(istream& is, BitArray& b) {
+        bool found = false;
+        char ch = is.get();
+        while (ch != '1' && ch != '0' && is) ch = is.get();
         while (is) {
-            char ch = is.get();
-            if (ch != '1' && ch != '0') break;
+            if (!found) {
+                found = true;
+                b.siz = 0;
+            }
             bool val = (ch == '1') ? true : false;
             b += val;
+            ch = is.get();
+            if (ch != '1' && ch != '0') {
+                is.unget();
+                break;
+            }
         }
         return is;
     }
