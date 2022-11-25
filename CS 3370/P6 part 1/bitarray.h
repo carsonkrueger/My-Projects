@@ -47,7 +47,8 @@ public:
         }
     }
     explicit BitArray(const string& s) : siz{s.size()} {
-        size_t newCap = (cap/BITS_PER_BLOCK) + 1;
+        size_t newCap = (siz/BITS_PER_BLOCK) + 1;
+        std::cout << "init w/ " << newCap << " " << siz << " " << BITS_PER_BLOCK << std::endl;
         cap = newCap;
         bitStr.resize(newCap);
         for (size_t i=0; i<s.size(); ++i) {
@@ -62,7 +63,7 @@ public:
     BitArray& operator=(BitArray&& b) noexcept; // Move assignment
     size_t capacity() const { // # of bits the current allocation can hold
         return cap;
-    } 
+    }
     // Mutators
     BitArray& operator+=(bool val) { // Append a bit
         if (siz == cap) {
@@ -72,7 +73,12 @@ public:
         siz++;
         return *this;
     } 
-    BitArray& operator+=(const BitArray& b); // Append a BitArray
+    BitArray& operator+=(const BitArray& b) { // Append a BitArray
+        for (size_t i=0; i<b.siz; ++i) {
+            bool val = b.read_bit(i);
+            this->operator+=(val);
+        }
+    }
     void erase(size_t pos, size_t nbits = 1); // Remove “nbits” bits at a position
     void insert(size_t n, bool val); // Insert a bit at a position (slide "right")
     void insert(size_t pos, const BitArray&); // Insert an entire BitArray object
@@ -95,23 +101,71 @@ public:
         tmp.toggle();
         return tmp;
     }
-    BitArray operator<<(unsigned int) const; // Shift operators…
-    BitArray operator>>(unsigned int) const;
-    BitArray& operator<<=(unsigned int);
-    BitArray& operator>>=(unsigned int);
+    BitArray operator<<(unsigned int n) const { // Shift operators…
+        BitArray<> b{to_string()};
+        for (size_t i=bitStr.size()-1; i>=0; --i){ std::cout << i << " ";
+            b.bitStr[i] >>= n;}
+        return b;
+    } 
+    BitArray operator>>(unsigned int n) const {
+        BitArray<> b{to_string()};
+        for (size_t i=0; i<bitStr.size(); ++i){ std::cout << i << " ";
+            b.bitStr[i] <<= n;}
+        return b;
+    }
+    BitArray& operator<<=(unsigned int n) {
+        for (size_t i=bitStr.size()-1; i>=0; --i){ std::cout << i << " ";
+            bitStr[i] >>= n;}
+        return *this;
+    }
+    BitArray& operator>>=(unsigned int n) {
+        for (size_t i=0; i<bitStr.size(); ++i){ std::cout << i << " ";
+            bitStr[i] <<= n;}
+        return *this;
+    }
 
     // Extraction ops
     BitArray slice(size_t pos, size_t count) const; // Extracts a new sub-array
 
     // Comparison ops
     bool operator==(const BitArray& b) const {
-        return to_string() == b.to_string();
+        // return to_string() == b.to_string();
+        if (b.siz != siz) return false;
+        for (size_t i=0; i<siz; ++i) 
+            if (b.read_bit(i) != read_bit(i)) return false;
+        return true;
     }
-    bool operator!=(const BitArray& b) const;
-    bool operator<(const BitArray& b) const;
-    bool operator<=(const BitArray& b) const;
-    bool operator>(const BitArray& b) const;
-    bool operator>=(const BitArray& b) const;
+    bool operator!=(const BitArray& b) const {
+        return !this->operator==(b);
+    }
+    bool operator<(const BitArray& b) const {
+        for (size_t i=siz-1; i>0; --i) {
+            if (!read_bit(i) && b.read_bit(i)) return true;
+            else if (!b.read_bit(i) && read_bit(i)) return false;
+        }
+        return false;
+    }
+    bool operator<=(const BitArray& b) const {
+        for (size_t i=siz-1; i>0; --i) {
+            if (!read_bit(i) && b.read_bit(i)) return true;
+            else if (!b.read_bit(i) && read_bit(i)) return false;
+        }
+        return true;
+    }
+    bool operator>(const BitArray& b) const {
+        for (size_t i=siz-1; i>0; --i) {
+            if (read_bit(i) && !b.read_bit(i)) return true;
+            else if (b.read_bit(i) && !read_bit(i)) return false;
+        }
+        return false;
+    }
+    bool operator>=(const BitArray& b) const {
+        for (size_t i=siz-1; i>0; --i) {
+            if (read_bit(i) && !b.read_bit(i)) return true;
+            else if (b.read_bit(i) && !read_bit(i)) return false;
+        }
+        return true;
+    }
 
     // Counting ops
     size_t size() const { // Number of bits in use in the vector
