@@ -48,7 +48,6 @@ public:
     }
     explicit BitArray(const string& s) : siz{s.size()} {
         size_t newCap = (siz/BITS_PER_BLOCK) + 1;
-        std::cout << "init w/ " << newCap << " " << siz << " " << BITS_PER_BLOCK << std::endl;
         cap = newCap;
         bitStr.resize(newCap);
         for (size_t i=0; i<s.size(); ++i) {
@@ -58,6 +57,14 @@ public:
     }
     BitArray(const BitArray& b) = default; // Copy constructor
     BitArray& operator=(const BitArray& b) = default; // Copy assignment
+    BitArray& operator=(const string s){ // Copy String assignment
+        for (size_t i=0; i<s.size(); ++i) {
+            bool val = (s.at(i) == '1') ? true : false;
+            assign_bit(i, val);
+        }
+        siz = s.size();
+        return *this;
+    }
     BitArray(BitArray&& b) noexcept : BITS_PER_BLOCK{b.BITS_PER_BLOCK}, bitStr{b.bitStr}, siz{b.siz}, cap{b.cap} {} // Move constructor
     
     BitArray& operator=(BitArray&& b) noexcept; // Move assignment
@@ -79,9 +86,21 @@ public:
             this->operator+=(val);
         }
     }
-    void erase(size_t pos, size_t nbits = 1); // Remove “nbits” bits at a position
-    void insert(size_t n, bool val); // Insert a bit at a position (slide "right")
-    void insert(size_t pos, const BitArray&); // Insert an entire BitArray object
+    void erase(size_t pos, size_t nbits = 1) { // Remove “nbits” bits at a position
+        std::string s = to_string();
+        s.erase(pos, nbits);
+        this->operator=(s);
+    }
+    void insert(size_t pos, bool val) { // Insert a bit at a position (slide "right")
+        std::string s = to_string();
+        s.insert(pos, val ? "1" : "0");
+        this->operator=(s);
+    } 
+    void insert(size_t pos, const BitArray& b) {  // Insert an entire BitArray object
+        std::string s = to_string();
+        s.insert(pos, b.to_string());
+        this->operator=(s);
+    }
     // Bitwise ops
     // bitproxy operator[](size_t) { // <--------------------------------- put back in
     //     return bitproxy(this);
@@ -95,7 +114,7 @@ public:
     void toggle() { // Toggles all bits
         for (size_t i=0; i<siz; ++i) 
             toggle(i);
-    } 
+    }
     BitArray operator~() const {
         BitArray tmp = *this;
         tmp.toggle();
@@ -103,32 +122,36 @@ public:
     }
     BitArray operator<<(unsigned int n) const { // Shift operators…
         BitArray<> b{to_string()};
-        std::cout << "size: " << b.bitStr.size() << std::endl;
         for (size_t i=bitStr.size()-1; i>=0; --i){ std::cout << i << " ";
             b.bitStr[i] >>= n;}
         return b;
     } 
     BitArray operator>>(unsigned int n) const {
         BitArray<> b{to_string()};
-        std::cout << b.bitStr.size() << std::endl;
         for (size_t i=0; i<bitStr.size(); ++i){ std::cout << i << " ";
             b.bitStr[i] <<= n;}
         return b;
     }
     BitArray& operator<<=(unsigned int n) {
-        std::cout << "size: " << bitStr.size() << std::endl;
         for (size_t i=bitStr.size()-1; i>=0; --i){ std::cout << i << " ";
             bitStr[i] >>= n;}
         return *this;
     }
     BitArray& operator>>=(unsigned int n) {
-        for (size_t i=0; i<bitStr.size(); ++i){ std::cout << i << " ";
-            bitStr[i] <<= n;}
+        std::string s = to_string();
+        s.erase(siz-n, n);
+        for (int i=0; i<n; ++i) s.insert(0, "0");
+        this->operator=(s);
         return *this;
     }
 
     // Extraction ops
-    BitArray slice(size_t pos, size_t count) const; // Extracts a new sub-array
+    BitArray slice(size_t pos, size_t count) const { // Extracts a new sub-array
+        std::string s;
+        for (int i=pos; i<pos+count; ++i) 
+            s.push_back(read_bit(i) ? '1' : '0');
+        return BitArray<>{s};
+    }
 
     // Comparison ops
     bool operator==(const BitArray& b) const {
@@ -145,17 +168,18 @@ public:
         return !this->operator==(b);
     }
     bool operator<(const BitArray& b) const {
-        if (siz > b.siz) {
-
-        }
         for (size_t i=siz-1; i>0; --i) {
             if (!read_bit(i) && b.read_bit(i)) return true;
             else if (!b.read_bit(i) && read_bit(i)) return false;
         }
         return false;
+        // for (size_t i=siz-1; i>=0; --i) {
+        //     if (!read_bit(i) && b.read_bit(i)) return true;
+        //     else if (!b.read_bit(i) && read_bit(i)) return false;
+        // }
+        // return false;
     }
     bool operator<=(const BitArray& b) const {
-
         for (size_t i=siz-1; i>0; --i) {
             if (!read_bit(i) && b.read_bit(i)) return true;
             else if (!b.read_bit(i) && read_bit(i)) return false;
@@ -163,14 +187,14 @@ public:
         return true;
     }
     bool operator>(const BitArray& b) const {
-        for (size_t i=siz-1; i>0; --i) {
+        for (size_t i=siz-1; i>=0; --i) {
             if (read_bit(i) && !b.read_bit(i)) return true;
             else if (b.read_bit(i) && !read_bit(i)) return false;
         }
         return false;
     }
     bool operator>=(const BitArray& b) const {
-        for (size_t i=siz-1; i>0; --i) {
+        for (size_t i=siz-1; i>=0; --i) {
             if (read_bit(i) && !b.read_bit(i)) return true;
             else if (b.read_bit(i) && !read_bit(i)) return false;
         }
