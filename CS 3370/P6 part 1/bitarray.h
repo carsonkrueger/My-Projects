@@ -157,51 +157,56 @@ public:
         return BitArray<>{s};
     }
 
+    // String mutators
+    void trunc(std::string& s1, std::string& s2, size_t i, size_t j) const {
+        while((i != 0 && j != 0)) {
+            if (s1.at(i) == '1' && s2.at(j) == '1') break;
+            if (s1.at(i) != '1') {
+                s1.pop_back();
+                --i;
+            }
+            if (s2.at(j) != '1') {
+                s2.pop_back();
+                --j;
+            }
+        }
+    }
+    void reverse(std::string& s1) const {
+        for (size_t i=0; i<(s1.size()/2); ++i)
+            std::swap(s1[i],s1[s1.size()-i-1]);
+    }
+
     // Comparison ops
     bool operator==(const BitArray& b) const {
-        // return to_string() == b.to_string();
-        if (b.siz != siz) return false;
-        for (size_t i=0; i<siz; ++i) 
-            if (b.read_bit(i) != read_bit(i)) return false;
-        return true;
+        std::string s1 = to_string();
+        std::string s2 = b.to_string();
+        trunc(s1, s2, siz-1, b.siz-1);
+        return s1 == s2;
     }
     bool operator!=(const BitArray& b) const {
         return !this->operator==(b);
     }
     bool operator<(const BitArray& b) const {
-        if (size() > b.size()) return true;
-        else if (b.size() > size()) return false;
-        for (size_t i=siz-1; i>=0; --i) {
-            if (bitStr[i] > b.bitStr[i]) return true;
-            else if (b.bitStr[i] > bitStr[i]) return false;
-        }
-        return false;
-        // for (size_t i=siz-1; i>=0; --i) {
-        //     if (!read_bit(i) && b.read_bit(i)) return true;
-        //     else if (!b.read_bit(i) && read_bit(i)) return false;
-        // }
-        // return false;
+        std::string s1 = to_string();
+        std::string s2 = b.to_string();
+        reverse(s1);
+        reverse(s2);
+        return std::stoll(s1) < std::stoll(s2);
     }
     bool operator<=(const BitArray& b) const {
-        for (size_t i=siz-1; i>=0; --i) {
-            if (!read_bit(i) && b.read_bit(i)) return true;
-            else if (!b.read_bit(i) && read_bit(i)) return false;
-        }
-        return true;
+        if (*this == b) return true;
+        return *this < b;
     }
     bool operator>(const BitArray& b) const {
-        for (size_t i=siz-1; i>=0; --i) {
-            if (read_bit(i) && !b.read_bit(i)) return true;
-            else if (b.read_bit(i) && !read_bit(i)) return false;
-        }
-        return false;
+        std::string s1 = to_string();
+        std::string s2 = b.to_string();
+        reverse(s1);
+        reverse(s2);
+        return std::stoll(s1) > std::stoll(s2);
     }
     bool operator>=(const BitArray& b) const {
-        for (size_t i=siz-1; i>=0; --i) {
-            if (read_bit(i) && !b.read_bit(i)) return true;
-            else if (b.read_bit(i) && !read_bit(i)) return false;
-        }
-        return true;
+        if (*this == b) return true;
+        return *this > b;
     }
 
     // Counting ops
