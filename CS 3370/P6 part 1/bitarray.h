@@ -103,17 +103,20 @@ public:
     }
     BitArray operator<<(unsigned int n) const { // Shift operators…
         BitArray<> b{to_string()};
+        std::cout << "size: " << b.bitStr.size() << std::endl;
         for (size_t i=bitStr.size()-1; i>=0; --i){ std::cout << i << " ";
             b.bitStr[i] >>= n;}
         return b;
     } 
     BitArray operator>>(unsigned int n) const {
         BitArray<> b{to_string()};
+        std::cout << b.bitStr.size() << std::endl;
         for (size_t i=0; i<bitStr.size(); ++i){ std::cout << i << " ";
             b.bitStr[i] <<= n;}
         return b;
     }
     BitArray& operator<<=(unsigned int n) {
+        std::cout << "size: " << bitStr.size() << std::endl;
         for (size_t i=bitStr.size()-1; i>=0; --i){ std::cout << i << " ";
             bitStr[i] >>= n;}
         return *this;
@@ -129,16 +132,22 @@ public:
 
     // Comparison ops
     bool operator==(const BitArray& b) const {
-        // return to_string() == b.to_string();
-        if (b.siz != siz) return false;
-        for (size_t i=0; i<siz; ++i) 
-            if (b.read_bit(i) != read_bit(i)) return false;
+        // if (b.siz != siz) return false;
+        // for (size_t i=0; i<siz; ++i) 
+        //     if (b.read_bit(i) != read_bit(i)) return false;
+        // return true;
+        size_t max = (siz > b.siz ? siz : b.siz);
+        for (size_t i=0; i<)
+            if (b.bitStr[i]^bitStr[i] != 0) return false;
         return true;
     }
     bool operator!=(const BitArray& b) const {
         return !this->operator==(b);
     }
     bool operator<(const BitArray& b) const {
+        if (siz > b.siz) {
+
+        }
         for (size_t i=siz-1; i>0; --i) {
             if (!read_bit(i) && b.read_bit(i)) return true;
             else if (!b.read_bit(i) && read_bit(i)) return false;
@@ -146,6 +155,7 @@ public:
         return false;
     }
     bool operator<=(const BitArray& b) const {
+
         for (size_t i=siz-1; i>0; --i) {
             if (!read_bit(i) && b.read_bit(i)) return true;
             else if (!b.read_bit(i) && read_bit(i)) return false;
