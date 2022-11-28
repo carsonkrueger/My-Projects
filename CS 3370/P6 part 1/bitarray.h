@@ -30,11 +30,25 @@ class BitArray {
         else bitStr[block] &= ~mask; // reset
     }
 public:
-    // struct bitproxy {
+    struct bitproxy {
+        size_t pos;
+        BitArray* obj;
         // constructor
-        // 2 assignment operators, 1 returns bitproxy & 1 that returns a bool
+        bitproxy (size_t pos, BitArray* obj) : pos{pos}, obj{obj} {
+            if (pos > obj->size()-1) throw std::out_of_range("yo u is out of range, homie");
+        }
+        // 2 assignment operators, 1 returns a bool, & 1 returns a bitproxy
+        bool operator[]() {
+            return obj->read_bit(pos);
+        }
+        bitproxy& operator[]() {
+            return *this;
+        }
         // operator bool
-    // }
+        bitproxy& operator bool() {
+            return *this;
+        }
+    };
 
     // Object Management
     explicit BitArray(size_t n=0) : siz{n} {
