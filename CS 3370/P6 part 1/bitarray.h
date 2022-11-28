@@ -34,19 +34,21 @@ public:
         size_t pos;
         BitArray* obj;
         // constructor
-        bitproxy (size_t pos, BitArray* obj) : pos{pos}, obj{obj} {
-            if (pos > obj->size()-1) throw std::out_of_range("yo u is out of range, homie");
+        bitproxy (BitArray* obj, size_t p) : obj{obj}, pos{p} {
+            if (p > obj->size()-1) throw std::out_of_range("Error: Out of range");
         }
         // 2 assignment operators, 1 returns a bool, & 1 returns a bitproxy
-        bool operator[]() {
-            return obj->read_bit(pos);
+        bitproxy& operator=(bool val) {
+            obj->assign_bit(pos, val);
+            return *this;
         }
-        bitproxy& operator[]() {
+        bitproxy& operator=(bitproxy bp) {
+            obj->assign_bit(pos, bp);
             return *this;
         }
         // operator bool
-        bitproxy& operator bool() {
-            return *this;
+        operator bool() {
+            return obj->read_bit(pos);
         }
     };
 
@@ -81,7 +83,12 @@ public:
     }
     BitArray(BitArray&& b) noexcept : BITS_PER_BLOCK{b.BITS_PER_BLOCK}, bitStr{b.bitStr}, siz{b.siz}, cap{b.cap} {} // Move constructor
     
-    BitArray& operator=(BitArray&& b) noexcept; // Move assignment
+    BitArray& operator=(BitArray&& b) noexcept { // Move assignment
+        bitStr = std::move(b.bitStr);
+        siz = b.siz;
+        cap = b.cap;
+        return *this;
+    }
     size_t capacity() const { // # of bits the current allocation can hold
         return cap;
     }
@@ -99,6 +106,7 @@ public:
             bool val = b.read_bit(i);
             this->operator+=(val);
         }
+        return *this;
     }
     void erase(size_t pos, size_t nbits = 1) { // Remove “nbits” bits at a position
         std::string s = to_string();
@@ -116,9 +124,10 @@ public:
         this->operator=(s);
     }
     // Bitwise ops
-    // bitproxy operator[](size_t) { // <--------------------------------- put back in
-    //     return bitproxy(this);
-    // }
+    bitproxy operator[](size_t pos) {
+        bitproxy bp{this, pos};
+        return bp;
+    }
     bool operator[](size_t pos) const {
         return read_bit(pos);
     }
