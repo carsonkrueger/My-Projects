@@ -5,7 +5,11 @@ int main() {
     // BitArray<> b{"1010101"};
     BitArray<> b{"1011111111"};
     BitArray<> b2{"101111111"};
+    BitArray<> b3;
+    b3[0];
     std::cout << (b <= b2) << std::endl;
+    b[b.size()-1] = b[0];
+    std::cout << "-> " << b[2] << std::endl;
     // b += true;
     // std::cout << b.to_string() << std::endl;
     // for (int i=0; i < 32; ++i)

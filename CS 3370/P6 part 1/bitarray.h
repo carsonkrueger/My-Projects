@@ -35,7 +35,7 @@ public:
         BitArray* obj;
         // constructor
         bitproxy (BitArray* obj, size_t p) : obj{obj}, pos{p} {
-            if (p > obj->size()-1) throw std::out_of_range("Error: Out of range");
+            if (p >= obj->size()) throw std::logic_error("Error: Out of range");
         }
         // 2 assignment operators, 1 returns a bool, & 1 returns a bitproxy
         bitproxy& operator=(bool val) {
@@ -132,6 +132,7 @@ public:
         return read_bit(pos);
     }
     void toggle(size_t i) {
+        if (i >= siz) throw std::logic_error("Error: Out of range");
         assign_bit(i, !read_bit(i));
     }
     void toggle() { // Toggles all bits

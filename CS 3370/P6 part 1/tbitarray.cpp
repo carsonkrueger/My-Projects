@@ -15,7 +15,8 @@ int main() {
    throw_(b.toggle(0),logic_error);
    const BitArray<> b1{b}; // Test copy constructor
    throw_(b1[0],logic_error);
-   
+   std::cout << "hi";
+
    // Test empty Bitarray properties
    test_(b.size() == 0);
    test_(b.count() == 0);
@@ -145,7 +146,6 @@ int main() {
    test_(b12.to_string() == "101");
    b12 += b12;
    test_(b12.to_string() == "101101");
-
    BitArray<> b13("");
    test_(b13.size() == 0);
  
