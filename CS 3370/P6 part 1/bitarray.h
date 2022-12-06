@@ -71,14 +71,14 @@ public:
             assign_bit(i, val);
         }
     }
-    BitArray(const BitArray& b) = default; // Copy constructor
+    BitArray(const BitArray& b) : BITS_PER_BLOCK{b.BITS_PER_BLOCK}, bitStr{b.bitStr}, siz{b.siz}, cap{b.cap} {} // Copy constructor
     BitArray& operator=(const BitArray& b) = default; // Copy assignment
     BitArray& operator=(const string s){ // Copy String assignment
-        for (size_t i=0; i<s.size(); ++i) {
-            bool val = (s.at(i) == '1') ? true : false;
-            assign_bit(i, val);
-        }
         siz = s.size();
+        for (size_t i=0; i<s.size(); ++i) {
+            // bool val = s.at(i) == '1' ? true : false;
+            assign_bit(i, s.at(i) == '1' ? true : false);
+        }
         return *this;
     }
     BitArray(BitArray&& b) noexcept : BITS_PER_BLOCK{b.BITS_PER_BLOCK}, bitStr{b.bitStr}, siz{b.siz}, cap{b.cap} {} // Move constructor
@@ -102,26 +102,28 @@ public:
         return *this;
     } 
     BitArray& operator+=(const BitArray& b) { // Append a BitArray
-        for (size_t i=0; i<b.siz; ++i) {
-            bool val = b.read_bit(i);
-            this->operator+=(val);
-        }
+        this->insert(siz, b);
         return *this;
     }
     void erase(size_t pos, size_t nbits = 1) { // Remove “nbits” bits at a position
+        // if ((pos + nbits - 1) >= siz) throw std::logic_error("Error: Out of range");
         std::string s = to_string();
         s.erase(pos, nbits);
-        this->operator=(s);
+        this->operator=(BitArray<IType>{s});
     }
     void insert(size_t pos, bool val) { // Insert a bit at a position (slide "right")
+        // if (pos >= siz) throw std::logic_error("Error: Out of range");
         std::string s = to_string();
         s.insert(pos, val ? "1" : "0");
-        this->operator=(s);
-    } 
+        this->operator=(BitArray<IType>{s});
+    }
     void insert(size_t pos, const BitArray& b) {  // Insert an entire BitArray object
         std::string s = to_string();
+        // std::cout << s << std::endl;
         s.insert(pos, b.to_string());
-        this->operator=(s);
+        // std::cout << s << std::endl;
+        this->operator=(BitArray<IType>{s});
+        // this->operator=(s);
     }
     // Bitwise ops
     bitproxy operator[](size_t pos) {
@@ -129,9 +131,11 @@ public:
         return bp;
     }
     bool operator[](size_t pos) const {
+        if (pos >= siz) throw std::logic_error("Error: Out of range");
         return read_bit(pos);
     }
     void toggle(size_t i) {
+        // std::cout << "togging pos " << i << " : " << siz << std::endl;
         if (i >= siz) throw std::logic_error("Error: Out of range");
         assign_bit(i, !read_bit(i));
     }
@@ -162,14 +166,14 @@ public:
         std::string s = to_string();
         s.erase(0, n);
         for (int i=0; i<n; ++i) s.push_back('0');
-        this->operator=(s);
+        this->operator=(BitArray<IType>{s});
         return *this;
     }
     BitArray& operator>>=(unsigned int n) {
         std::string s = to_string();
         s.erase(siz-n, n);
         for (int i=0; i<n; ++i) s.insert(0, "0");
-        this->operator=(s);
+        this->operator=(BitArray<IType>{s});
         return *this;
     }
 
@@ -178,7 +182,7 @@ public:
         std::string s;
         for (int i=pos; i<pos+count; ++i) 
             s.push_back(read_bit(i) ? '1' : '0');
-        return BitArray<>{s};
+        return BitArray<>(s);
     }
 
     // String mutators
@@ -204,29 +208,38 @@ public:
     bool operator==(const BitArray& b) const {
         std::string s1 = to_string();
         std::string s2 = b.to_string();
-        trunc(s1, s2, siz-1, b.siz-1);
+        // trunc(s1, s2, siz-1, b.siz-1);
         return s1 == s2;
     }
     bool operator!=(const BitArray& b) const {
         return !this->operator==(b);
     }
     bool operator<(const BitArray& b) const {
+        return siz < b.size();
         std::string s1 = to_string();
         std::string s2 = b.to_string();
+        // trunc(s1, s2, siz-1, b.size()-1);
+        // std::cout << s1 << " :: " << s2 << std::endl;
         reverse(s1);
         reverse(s2);
-        return std::stoll(s1) < std::stoll(s2);
+        // std::cout << s1 << " :RR: " << (std::stoll(s2)+1) << std::endl;
+        bool val = std::stoll(s1) < std::stoll(s2);
+        std::cout << val << std::endl;
+        return val;
     }
     bool operator<=(const BitArray& b) const {
         if (*this == b) return true;
         return *this < b;
     }
     bool operator>(const BitArray& b) const {
+        return siz > b.size();
         std::string s1 = to_string();
         std::string s2 = b.to_string();
         reverse(s1);
         reverse(s2);
-        return std::stoll(s1) > std::stoll(s2);
+        bool val = std::stoll(s1) < std::stoll(s2);
+        std::cout << val << std::endl;
+        return val;
     }
     bool operator>=(const BitArray& b) const {
         if (*this == b) return true;
