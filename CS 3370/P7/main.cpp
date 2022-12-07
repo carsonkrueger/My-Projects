@@ -4,18 +4,23 @@
 #include <thread>
 #include <fstream>
 #include <iostream>
+#include <assert.h>
+#include <atomic>
 using namespace std;
 
 class Pipeline {
     static std::queue<int> q;
+    static std::queue<int> q2;
     static std::condition_variable q_cond;
     static mutex q_sync, print;
     static atomic_size_t nprod;
     static ofstream output;
 public:
-    void produce(int i) {
+    static const size_t nprods = 4, nfilts = 3, ngroupers = 10;
+
+    static void produce(int i) {
         srand(time(nullptr)+i*(i+1));
-        for (int i = 0; i < 1000; ++i) {
+        for (int i = 0; i < 100; ++i) {
             int n = rand();     // Get random int
 
             // Get lock for queue; push int
@@ -31,18 +36,47 @@ public:
         --nprod;
         q_cond.notify_all();
     }
-    void filter() {
 
+    static void filter() {
+        for (;;) {
+            // Get lock for sync mutex
+            unique_lock<mutex> qlck(q_sync);
+
+            // Wait for queue to have something to process
+            q_cond.wait(qlck,[](){return !q.empty() || !nprod;});
+            if (q.empty()) {
+                assert(!nprod);
+                break;
+            }
+            assert(nprod);
+            auto x = q.front();
+            if (x % 3 == 0) {
+                q.pop();
+                q2.push(x);
+            }
+            qlck.unlock();
+
+            // Print trace of consumption
+            // lock_guard<mutex> plck(print);
+            // output << x << " filtered" << endl;
+        }
     }
-    void group() {
+
+    static void group() {
 
     }
 };
 
+queue<int> Pipeline::q, Pipeline::q2;
+condition_variable Pipeline::q_cond;
+mutex Pipeline::q_sync, Pipeline::print;
+ofstream Pipeline::output("out0.out");
+atomic_size_t Pipeline::nprod(nprods);
+
 int main() {
     vector<thread> prods, cons;
-    for (size_t i = 0; i < Pipeline::ncons; ++i)
-        cons.push_back(thread(&Pipeline::consume));
+    for (size_t i = 0; i < Pipeline::nfilts; ++i)
+        cons.push_back(thread(&Pipeline::filter));
     for (size_t i = 0; i < Pipeline::nprods; ++i)
         prods.push_back(thread(&Pipeline::produce,i));
 
