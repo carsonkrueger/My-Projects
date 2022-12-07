@@ -30,11 +30,27 @@ class BitArray {
         else bitStr[block] &= ~mask; // reset
     }
 public:
-    // struct bitproxy {
+    struct bitproxy {
+        size_t pos;
+        BitArray* obj;
         // constructor
-        // 2 assignment operators, 1 returns bitproxy & 1 that returns a bool
+        bitproxy (BitArray* obj, size_t p) : obj{obj}, pos{p} {
+            if (p >= obj->size()) throw std::logic_error("Error: Out of range");
+        }
+        // 2 assignment operators, 1 returns a bool, & 1 returns a bitproxy
+        bitproxy& operator=(bool val) {
+            obj->assign_bit(pos, val);
+            return *this;
+        }
+        bitproxy& operator=(bitproxy bp) {
+            obj->assign_bit(pos, bp);
+            return *this;
+        }
         // operator bool
-    // }
+        operator bool() {
+            return obj->read_bit(pos);
+        }
+    };
 
     // Object Management
     explicit BitArray(size_t n=0) : siz{n} {
@@ -55,19 +71,24 @@ public:
             assign_bit(i, val);
         }
     }
-    BitArray(const BitArray& b) = default; // Copy constructor
+    BitArray(const BitArray& b) : BITS_PER_BLOCK{b.BITS_PER_BLOCK}, bitStr{b.bitStr}, siz{b.siz}, cap{b.cap} {} // Copy constructor
     BitArray& operator=(const BitArray& b) = default; // Copy assignment
     BitArray& operator=(const string s){ // Copy String assignment
-        for (size_t i=0; i<s.size(); ++i) {
-            bool val = (s.at(i) == '1') ? true : false;
-            assign_bit(i, val);
-        }
         siz = s.size();
+        for (size_t i=0; i<s.size(); ++i) {
+            // bool val = s.at(i) == '1' ? true : false;
+            assign_bit(i, s.at(i) == '1' ? true : false);
+        }
         return *this;
     }
     BitArray(BitArray&& b) noexcept : BITS_PER_BLOCK{b.BITS_PER_BLOCK}, bitStr{b.bitStr}, siz{b.siz}, cap{b.cap} {} // Move constructor
     
-    BitArray& operator=(BitArray&& b) noexcept; // Move assignment
+    BitArray& operator=(BitArray&& b) noexcept { // Move assignment
+        bitStr = std::move(b.bitStr);
+        siz = b.siz;
+        cap = b.cap;
+        return *this;
+    }
     size_t capacity() const { // # of bits the current allocation can hold
         return cap;
     }
@@ -81,34 +102,41 @@ public:
         return *this;
     } 
     BitArray& operator+=(const BitArray& b) { // Append a BitArray
-        for (size_t i=0; i<b.siz; ++i) {
-            bool val = b.read_bit(i);
-            this->operator+=(val);
-        }
+        this->insert(siz, b);
+        return *this;
     }
     void erase(size_t pos, size_t nbits = 1) { // Remove “nbits” bits at a position
+        // if ((pos + nbits - 1) >= siz) throw std::logic_error("Error: Out of range");
         std::string s = to_string();
         s.erase(pos, nbits);
-        this->operator=(s);
+        this->operator=(BitArray<IType>{s});
     }
     void insert(size_t pos, bool val) { // Insert a bit at a position (slide "right")
+        // if (pos >= siz) throw std::logic_error("Error: Out of range");
         std::string s = to_string();
         s.insert(pos, val ? "1" : "0");
-        this->operator=(s);
-    } 
+        this->operator=(BitArray<IType>{s});
+    }
     void insert(size_t pos, const BitArray& b) {  // Insert an entire BitArray object
         std::string s = to_string();
+        // std::cout << s << std::endl;
         s.insert(pos, b.to_string());
-        this->operator=(s);
+        // std::cout << s << std::endl;
+        this->operator=(BitArray<IType>{s});
+        // this->operator=(s);
     }
     // Bitwise ops
-    // bitproxy operator[](size_t) { // <--------------------------------- put back in
-    //     return bitproxy(this);
-    // }
+    bitproxy operator[](size_t pos) {
+        bitproxy bp{this, pos};
+        return bp;
+    }
     bool operator[](size_t pos) const {
+        if (pos >= siz) throw std::logic_error("Error: Out of range");
         return read_bit(pos);
     }
     void toggle(size_t i) {
+        // std::cout << "togging pos " << i << " : " << siz << std::endl;
+        if (i >= siz) throw std::logic_error("Error: Out of range");
         assign_bit(i, !read_bit(i));
     }
     void toggle() { // Toggles all bits
@@ -133,15 +161,22 @@ public:
         return b;
     }
     BitArray& operator<<=(unsigned int n) {
+<<<<<<< HEAD
         for (size_t i=bitStr.size()-1; i>=0; --i){ std::cout << i << " ";
             bitStr[i] >>= n;}
+=======
+        std::string s = to_string();
+        s.erase(0, n);
+        for (int i=0; i<n; ++i) s.push_back('0');
+        this->operator=(BitArray<IType>{s});
+>>>>>>> 337a722d9830d70246cfac272e695c05c9d23e95
         return *this;
     }
     BitArray& operator>>=(unsigned int n) {
         std::string s = to_string();
         s.erase(siz-n, n);
         for (int i=0; i<n; ++i) s.insert(0, "0");
-        this->operator=(s);
+        this->operator=(BitArray<IType>{s});
         return *this;
     }
 
@@ -150,11 +185,31 @@ public:
         std::string s;
         for (int i=pos; i<pos+count; ++i) 
             s.push_back(read_bit(i) ? '1' : '0');
-        return BitArray<>{s};
+        return BitArray<>(s);
+    }
+
+    // String mutators
+    void trunc(std::string& s1, std::string& s2, size_t i, size_t j) const {
+        while((i != 0 && j != 0)) {
+            if (s1.at(i) == '1' && s2.at(j) == '1') break;
+            if (s1.at(i) != '1') {
+                s1.pop_back();
+                --i;
+            }
+            if (s2.at(j) != '1') {
+                s2.pop_back();
+                --j;
+            }
+        }
+    }
+    void reverse(std::string& s1) const {
+        for (size_t i=0; i<(s1.size()/2); ++i)
+            std::swap(s1[i],s1[s1.size()-i-1]);
     }
 
     // Comparison ops
     bool operator==(const BitArray& b) const {
+<<<<<<< HEAD
         // if (b.siz != siz) return false;
         // for (size_t i=0; i<siz; ++i) 
         //     if (b.read_bit(i) != read_bit(i)) return false;
@@ -163,11 +218,18 @@ public:
         for (size_t i=0; i<)
             if (b.bitStr[i]^bitStr[i] != 0) return false;
         return true;
+=======
+        std::string s1 = to_string();
+        std::string s2 = b.to_string();
+        // trunc(s1, s2, siz-1, b.siz-1);
+        return s1 == s2;
+>>>>>>> 337a722d9830d70246cfac272e695c05c9d23e95
     }
     bool operator!=(const BitArray& b) const {
         return !this->operator==(b);
     }
     bool operator<(const BitArray& b) const {
+<<<<<<< HEAD
         for (size_t i=siz-1; i>0; --i) {
             if (!read_bit(i) && b.read_bit(i)) return true;
             else if (!b.read_bit(i) && read_bit(i)) return false;
@@ -185,20 +247,37 @@ public:
             else if (!b.read_bit(i) && read_bit(i)) return false;
         }
         return true;
+=======
+        return siz < b.size();
+        std::string s1 = to_string();
+        std::string s2 = b.to_string();
+        // trunc(s1, s2, siz-1, b.size()-1);
+        // std::cout << s1 << " :: " << s2 << std::endl;
+        reverse(s1);
+        reverse(s2);
+        // std::cout << s1 << " :RR: " << (std::stoll(s2)+1) << std::endl;
+        bool val = std::stoll(s1) < std::stoll(s2);
+        std::cout << val << std::endl;
+        return val;
+    }
+    bool operator<=(const BitArray& b) const {
+        if (*this == b) return true;
+        return *this < b;
+>>>>>>> 337a722d9830d70246cfac272e695c05c9d23e95
     }
     bool operator>(const BitArray& b) const {
-        for (size_t i=siz-1; i>=0; --i) {
-            if (read_bit(i) && !b.read_bit(i)) return true;
-            else if (b.read_bit(i) && !read_bit(i)) return false;
-        }
-        return false;
+        return siz > b.size();
+        std::string s1 = to_string();
+        std::string s2 = b.to_string();
+        reverse(s1);
+        reverse(s2);
+        bool val = std::stoll(s1) < std::stoll(s2);
+        std::cout << val << std::endl;
+        return val;
     }
     bool operator>=(const BitArray& b) const {
-        for (size_t i=siz-1; i>=0; --i) {
-            if (read_bit(i) && !b.read_bit(i)) return true;
-            else if (b.read_bit(i) && !read_bit(i)) return false;
-        }
-        return true;
+        if (*this == b) return true;
+        return *this > b;
     }
 
     // Counting ops

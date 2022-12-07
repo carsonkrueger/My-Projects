@@ -15,13 +15,13 @@ int main() {
    throw_(b.toggle(0),logic_error);
    const BitArray<> b1{b}; // Test copy constructor
    throw_(b1[0],logic_error);
-   
+
    // Test empty Bitarray properties
    test_(b.size() == 0);
    test_(b.count() == 0);
    test_(b.capacity() == 0);
    test_(!b.any());
-   
+
    // Validate construction and to_string()
    BitArray<> b2{5};
    test_(b2.size() == 5);
@@ -29,7 +29,6 @@ int main() {
       test_(!b2[i]);
    }
    test_(b2.to_string() == "00000");
-
    // Test copy, assign, equality, and from_string
    BitArray<> b3{b2};
    test_(b2 == b3);
@@ -48,7 +47,7 @@ int main() {
    BitArray<> b4b;
    b4b = move(b4);
    test_(b4b[2]);
-
+   
    // Test bit ops
    BitArray<> x{"011010110"}; // Also tests string constructor
    test_(x.count() == 5);
@@ -104,7 +103,7 @@ int main() {
    is2 >> b3;
    test_(!is2);
    test_(b3.to_string() == "0101");
-   
+
    BitArray<> b5{"11111111111111111111111111000000000000000000000000000011"};
    test_(b5.slice(23,10) == BitArray<>("1110000000"));
    size_t n = b2.size();
@@ -116,13 +115,19 @@ int main() {
    BitArray<> b6{"10101"};
    BitArray<> b7{"101010"};
    BitArray<> b8{b7};
+   // std::cout << b6.to_string() << " : " << b7.to_string() << std::endl;
    test_(b6 < b7);
+   // std::cout << (b6 < b7) << std::endl;
    test_(b6 <= b7);
+   // std::cout << (b6 <= b7) << std::endl;
    test_(b6 <= b6);
    test_(b7 > b6);
+   // std::cout << (b7 > b6) << std::endl;
    test_(b7 >= b6);
+   // std::cout << (b7 >= b6) << std::endl;
    test_(b7 >= b7);
    test_(BitArray<>("111") > BitArray<>("10111"));
+   // std::cout << (BitArray<>("111") > BitArray<>("10111")) << std::endl;
 
    BitArray<> b9{"11111111111111111111111111000000000000000000000000000011"};
    ostringstream ostr;
@@ -131,7 +136,7 @@ int main() {
    test_(b9.count() == 28);
    nothrow_(b9 <<= 2);
    test_(b9.count() == 26);
-   nothrow_(b9 >>=33);   
+   nothrow_(b9 >>=33);
    test_(b9.count() == 23);
    BitArray<> b10{"01"};
    b9[0] = b10[0] = b10[1];
@@ -145,7 +150,6 @@ int main() {
    test_(b12.to_string() == "101");
    b12 += b12;
    test_(b12.to_string() == "101101");
-
    BitArray<> b13("");
    test_(b13.size() == 0);
  
