@@ -13,7 +13,7 @@ class Pipeline {
     static std::queue<int> q;
     static std::queue<int> q2;
     static std::condition_variable q_cond, q2_cond;
-    static mutex q_sync, print;
+    static mutex q_sync, q2_sync, print;
     static atomic_size_t nprod, nfilt;
     // static ofstream output;
 public:
@@ -31,7 +31,7 @@ public:
             q_cond.notify_one();
 
             // Get lock for print mutex
-            lock_guard<mutex> plck(print);
+            // lock_guard<mutex> plck(print);
             // output << n << " produced" << endl;
         }
         --nprod;
@@ -47,41 +47,47 @@ public:
             q_cond.wait(qlck,[](){return !q.empty() || !nprod;});
             auto x = q.front();
             q.pop();
-            if (x % 3 == 0) 
-                q2.push(x);
             qlck.unlock();
 
+            unique_lock<mutex> q2lck(q2_sync);
+            if (x % 3 == 0) 
+                q2.push(x);
+            q2lck.unlock();
+
             // Print trace of consumption
-            lock_guard<mutex> plck(print);
-            // std::cout << q.front() << " ";
-            // output << x << " filtered" << endl;
+            // lock_guard<mutex> plck(print);
         }
         --nfilt;
         q2_cond.notify_all();
     }
 
-    static void group() {
+    static void group(int i) {
         for (;;) {
             // Get lock for sync mutex
-            unique_lock<mutex> qlck(q_sync);
+            unique_lock<mutex> q2lck(q2_sync);
             // Wait for queue 2 to have something to process
-            q2_cond.wait(qlck,[](){return !q2.empty() || !nfilt;});
-            auto x = q2.front();
-            q2.pop();
+            q2_cond.wait(q2lck,[](){return !q2.empty() || !nfilt;});
             std::string outf = "out.out";
-            outf.insert(3, std::to_string(x % 10));
+
+            auto x = q2.front();
+            size_t mod = x % 10;
+            if (i != mod) continue;
+            q2.pop();
+
+            outf.insert(3, std::to_string(mod));
             ofstream output {outf, std::ios_base::app};
-            qlck.unlock();
+            q2lck.unlock();
+            
             // Print trace of consumption
             lock_guard<mutex> plck(print);
-            output << x << " " << (x % 10) << endl;
+            output << x << " " << (x % 10) << " -> " << i << endl;
         }
     }
 };
 
 queue<int> Pipeline::q, Pipeline::q2;
 condition_variable Pipeline::q_cond, Pipeline::q2_cond;
-mutex Pipeline::q_sync, Pipeline::print;
+mutex Pipeline::q_sync, Pipeline::q2_sync, Pipeline::print;
 // ofstream Pipeline::output("out0.out");
 atomic_size_t Pipeline::nprod(nprods), Pipeline::nfilt(nfilts);
 
@@ -101,7 +107,7 @@ int main() {
     for (size_t i = 0; i < Pipeline::nprods; ++i)
         prods.push_back(thread(&Pipeline::produce, i));
     for (size_t i = 0; i < Pipeline::ngrps; ++i)
-        grps.push_back(thread(&Pipeline::group));
+        grps.push_back(thread(&Pipeline::group, i));
 
     // Join all threads
     for (auto &p: prods)
